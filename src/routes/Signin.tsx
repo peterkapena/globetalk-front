@@ -32,7 +32,7 @@ export default function Page() {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       email_or_username: IS_DEVELOPER ? "peterkapenapeter@gmail.com" : "",
-      password: IS_DEVELOPER ? "1234567P" : "",
+      password: IS_DEVELOPER ? "PETER_KAPENA_PASSWORD" : "",
     },
   });
 

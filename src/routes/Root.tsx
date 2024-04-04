@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { IS_DEVELOPER, ROUTES, STR_TOKEN } from "../common";
 import { useAppDispatch } from "../redux/hooks";
 import { setUser } from "../redux/user-slice";
+import { CssVarsProvider, CssBaseline, Box } from "@mui/joy";
+import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
 
 const VERIFY_TOKEN = gql(`
 mutation VerifyToken($input: String!) {
@@ -70,7 +73,7 @@ export default function Root() {
     verifyTokenAsync();
   }, [dispatch, token, verifyToken]);
 
-  if (loaded) return <Home />;
+  if (loaded) return <Layout />;
   else
     return (
       <>
@@ -79,10 +82,26 @@ export default function Root() {
     );
 }
 
-export function Home() {
+export function Layout() {
   return (
     <div>
-      <Outlet />
+      <CssVarsProvider disableTransitionOnChange>
+        <CssBaseline />
+        <Box sx={{ display: 'flex', minHeight: '100dvh' }}>
+          <Sidebar />
+          <Header />
+          <Box component="main" className="MainContent"
+            sx={{
+              pt: { xs: 'calc(12px + var(--Header-height))', md: 3 },
+              pb: { xs: 2, sm: 2, md: 3 }, flex: 1, display: 'flex',
+              flexDirection: 'column', minWidth: 0, height: '100dvh',
+              gap: 1, overflow: 'auto', m: 2
+            }}
+          >
+            <Outlet />
+          </Box>
+        </Box>
+      </CssVarsProvider>
     </div>
   );
 }
