@@ -1,14 +1,11 @@
-import { Outlet } from "react-router-dom";
 import { gql, useMutation } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { IS_DEVELOPER, ROUTES, STR_TOKEN } from "../helpers/common";
 import { useAppDispatch } from "../redux/hooks";
 import { setUser } from "../redux/user-slice";
-import { CssVarsProvider, CssBaseline, Box } from "@mui/joy";
-import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
 import { t } from "i18next";
-
+import Layout from "../Layout";
+ 
 const VERIFY_TOKEN = gql(`
 mutation VerifyToken($input: String!) {
   verifyToken(input: $input) {
@@ -75,6 +72,7 @@ export default function Root() {
   }, [dispatch, token, verifyToken]);
 
   if (loaded) return <Layout />;
+
   else
     return (
       <>
@@ -83,26 +81,4 @@ export default function Root() {
     );
 }
 
-export function Layout() {
-  return (
-    <div>
-      <CssVarsProvider disableTransitionOnChange>
-        <CssBaseline />
-        <Box sx={{ display: 'flex', minHeight: '100dvh' }}>
-          <Sidebar />
-          <Header />
-          <Box component="main" className="MainContent"
-            sx={{
-              pt: { xs: 'calc(12px + var(--Header-height))', md: 3 },
-              pb: { xs: 2, sm: 2, md: 3 }, flex: 1, display: 'flex',
-              flexDirection: 'column', minWidth: 0, height: '100dvh',
-              gap: 1, overflow: 'auto', m: 2
-            }}
-          >
-            <Outlet />
-          </Box>
-        </Box>
-      </CssVarsProvider>
-    </div>
-  );
-}
+
