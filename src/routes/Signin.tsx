@@ -7,7 +7,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { useState } from "react";
 import { z } from "zod";
 import { useNavigate } from "react-router-dom";
-import { IS_DEVELOPER, ROUTES, STR_TOKEN } from "../common";
+import { IS_DEVELOPER, ROUTES, STR_TOKEN } from "../helpers/common";
 import TextField from "../components/TextField";
 import Password from "../components/Password";
 import { SubmitLoadingButton } from "../components/SubmitLoadingButton";

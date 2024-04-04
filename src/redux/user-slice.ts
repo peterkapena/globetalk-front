@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { STR_TOKEN } from "../common";
+import { STR_TOKEN } from "../helpers/common";
 import { useAppSelector } from "./hooks";
 
 // Define a type for the slice state

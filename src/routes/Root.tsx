@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { gql, useMutation } from "@apollo/client";
 import { useEffect, useState } from "react";
-import { IS_DEVELOPER, ROUTES, STR_TOKEN } from "../common";
+import { IS_DEVELOPER, ROUTES, STR_TOKEN } from "../helpers/common";
 import { useAppDispatch } from "../redux/hooks";
 import { setUser } from "../redux/user-slice";
 import { CssVarsProvider, CssBaseline, Box } from "@mui/joy";

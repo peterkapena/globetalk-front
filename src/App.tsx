@@ -1,8 +1,8 @@
 import { CssVarsProvider } from "@mui/joy/styles";
 import { RouterProvider } from "react-router-dom";
-import { router } from "./router";
+import { router } from "./helpers/router";
 import { ApolloProvider } from "@apollo/client";
-import apollo from "./apollo";
+import apollo from "./helpers/apollo";
 
 export default function App() {
   return (

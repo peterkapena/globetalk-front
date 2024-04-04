@@ -20,7 +20,7 @@ import ColorSchemeToggle from './ColorSchemeToggle';
 import { useAppDispatch } from '../redux/hooks';
 import { signOut, useUser } from '../redux/user-slice';
 import { useNavigate } from 'react-router-dom';
-import { ROUTES } from '../common';
+import { ROUTES } from '../helpers/common';
 import { closeSidebar } from '../utils/helpers';
 
 export default function Sidebar() {
