@@ -31,7 +31,6 @@ export default function Sidebar() {
   const dispatch = useAppDispatch();
   return (
     <Sheet
-      className="Sidebar"
       sx={{
         position: { xs: 'fixed', md: 'sticky' },
         transform: {
@@ -40,7 +39,7 @@ export default function Sidebar() {
         }, transition: 'transform 0.4s, width 0.4s', zIndex: 10000,
         height: '100dvh', width: 'var(--Sidebar-width)', top: 0,
         p: 2, flexShrink: 0, display: 'flex',
-        flexDirection: 'column', gap: 2, borderRight: '1px solid', borderColor: 'divider',
+        flexDirection: 'column', gap: 2,
       }}
     >
       <GlobalStyles
