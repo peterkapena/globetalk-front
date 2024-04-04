@@ -1,6 +1,24 @@
 {
-  "home": {
+  "auth": {
     "signup": "Sign up",
-    "signin": "Sign in"
+    "signin": "Sign in",
+    "signin_to_continue": "Sign in to continue",
+    "signup_to_continue": "Register your account to start making multilingual video calls.",
+    "email": "Email",
+    "password": "Password",
+    "click_to_signup": "Do not have an account? Click here to create one",
+    "sign_in_btn": "Sign in",
+    "sign_up_btn": "Sign up",
+    "password_confirm": "Confirm Password",
+    "already_has_acc": "Already have an account? Click here to sign in now!"
+  },
+  "welcome": {
+    "welcome": "Welcome"
+  },
+  "sidebar": {
+    "home": "Home"
+  },
+  "home": {
+    "loading": "Loading...."
   }
 }

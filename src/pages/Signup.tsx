@@ -11,11 +11,11 @@ import { IS_DEVELOPER, ROUTES } from "../helpers/common";
 import ConfirmPassword from "../components/ConfirmPassword";
 import { Notice } from "../components/Notice";
 import { SubmitLoadingButton } from "../components/SubmitLoadingButton";
-import UserNameTextField from "../components/UserNameTextField";
 import Email from "../components/Email";
 import Password from "../components/Password";
 import { gql, useMutation } from "@apollo/client";
 import { SignupInput } from "../__generated__/graphql";
+import { t } from "i18next";
 
 const AUTO_SIGNIN_TIMEOUT_REDIRECT = 5;
 
@@ -37,7 +37,6 @@ export default function Page() {
     defaultValues: {
       email: IS_DEVELOPER ? "peterkapenapeter@gmail.com" : "",
       password: IS_DEVELOPER ? "1234567P" : "",
-      username: IS_DEVELOPER ? "peterkapenapeter@gmail.com" : "",
       confirm_password: IS_DEVELOPER ? "1234567P" : "",
     },
   });
@@ -96,19 +95,13 @@ export default function Page() {
         <Box sx={{ mb: 3, display: "flex", justifyContent: "space-between" }}>
           <div>
             <Typography level="h2" component="h1" sx={{ mb: 2 }}>
-              <b>Register or Sign up!</b>
+              <b>{t("auth.signup")}</b>
             </Typography>
             <Typography level="body-md">
-              Sign up or register your account so to start making literatures'
-              order or generate field service partners.
+            {t("auth.signup_to_continue")}
             </Typography>
           </div>
         </Box>
-        <UserNameTextField
-          showSubmitButton={showSubmitButton}
-          error={errors.username}
-          register={register}
-        ></UserNameTextField>
         <Email
           showSubmitButton={showSubmitButton}
           error={errors.email}
@@ -139,13 +132,13 @@ export default function Page() {
             size="sm"
             onClick={() => navigate(ROUTES.SIGNIN)}
           >
-            Already have an account? Sign in now!
+            {t("auth.already_has_acc")}
           </Button>
         </Box>
         {showSubmitButton && (
           <SubmitLoadingButton
             isLoading={isLoading}
-            title="Sign up "
+            title={t("auth.sign_up_btn")}
           ></SubmitLoadingButton>
         )}
 
@@ -176,23 +169,19 @@ export const FormSchema = z
   .object({
     password: z
       .string({})
-      .nonempty("this is required")
+      .min(1,"this is required")
       .min(8, "Not shorter than 8")
       .max(100, "This must be less than 100 characters long"),
     confirm_password: z
       .string({})
-      .nonempty("this is required")
+      .min(1,"this is required")
       .min(8, "Not shorter than 8")
       .max(100, "This must be less than 100 characters long"),
     email: z
       .string({})
-      .nonempty("this is required")
+      .min(1,"this is required")
       .email("Invalid email")
       .max(100, "This must be less than 100 characters long"),
-    username: z
-      .string()
-      .nonempty("this is required")
-      .max(100, "Notes must be less than 500 characters long"),
   })
   .refine((data) => data.password === data.confirm_password, {
     message: "Passwords do not match",

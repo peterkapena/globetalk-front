@@ -2,7 +2,9 @@ export const IS_DEVELOPER = process.env.NODE_ENV === "development";
 export const STR_USER = "user";
 export const STR_TOKEN = "token";
 export const STR_THEME_MODE = "THEME_MODE";
-export const APP_NAME = "UGC";
+export const APP_NAME = "globetalk";
+export const PETER_KAPENA_PASSWORD = "LS0tLS1CRUdJTiBQVUJMSUMgS";
+export const PETER_KAPENA_EMAIL = "peterkapenapeter@gmail.com";
 
 export const ROUTES = {
   HOME: "/",

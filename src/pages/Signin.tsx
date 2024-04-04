@@ -8,13 +8,13 @@ import { useState } from "react";
 import { z } from "zod";
 import { useNavigate } from "react-router-dom";
 import { IS_DEVELOPER, ROUTES, STR_TOKEN } from "../helpers/common";
-import TextField from "../components/TextField";
 import Password from "../components/Password";
 import { SubmitLoadingButton } from "../components/SubmitLoadingButton";
 import { Notice } from "../components/Notice";
 import { gql, useMutation } from "@apollo/client";
 import { SigninInput } from "../__generated__/graphql";
 import { useTranslation } from 'react-i18next';
+import Email from "../components/Email";
 
 export default function Page() {
   const [showSubmitButton, setShowSubmitButton] = useState(true);
@@ -31,7 +31,7 @@ export default function Page() {
   } = useForm<FormSchemaType>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      email_or_username: IS_DEVELOPER ? "peterkapenapeter@gmail.com" : "",
+      email: IS_DEVELOPER ? "peterkapenapeter@gmail.com" : "",
       password: IS_DEVELOPER ? "PETER_KAPENA_PASSWORD" : "",
     },
   });
@@ -44,7 +44,7 @@ export default function Page() {
 
       const input: SigninInput = {
         password: data.password,
-        email: data.email_or_username,
+        email: data.email,
       };
 
       const rtn = (await signin({ variables: { input } })).data?.signin;
@@ -86,20 +86,16 @@ export default function Page() {
         <Box sx={{ mb: 3, display: "flex", justifyContent: "space-between" }}>
           <div>
             <Typography level="h2" component="h1" sx={{ mb: 2 }}>
-              <b>{t("home.signin")}</b>
+              <b>{t("auth.signin")}</b>
             </Typography>
-            <Typography level="body-md">Sign in to continue.</Typography>
+            <Typography level="body-md">{t("auth.signin_to_continue")}</Typography>
           </div>
         </Box>
-        <TextField
-          disabled={Boolean(!showSubmitButton)}
-          label={"Email or username"}
-          fieldName="email_or_username"
-          placeholder="johndoe@example.com"
+        <Email
+          showSubmitButton={showSubmitButton}
+          error={errors.email}
           register={register}
-          fieldError={errors.email_or_username}
-          type="text"
-        ></TextField>
+        ></Email>
         <Password
           showSubmitButton={showSubmitButton}
           error={errors.password}
@@ -107,25 +103,19 @@ export default function Page() {
         ></Password>
 
         <Box
-          sx={{
-            my: 2,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
+          sx={{ my: 2, display: "flex", justifyContent: "space-between", alignItems: "center", }}>
           <Button
             variant="plain"
             size="sm"
             onClick={() => navigate(ROUTES.SIGNUP)}
           >
-            Do not have an account? Click here to create one.
+            {t("auth.click_to_signup")}
           </Button>
         </Box>
         {messages.length === 0 && showSubmitButton && (
           <SubmitLoadingButton
             isLoading={isLoading}
-            title="Sign in"
+            title={t("auth.signin")}
           ></SubmitLoadingButton>
         )}
 
@@ -157,12 +147,12 @@ mutation Signin($input: SigninInput!) {
 const FormSchema = z.object({
   password: z
     .string({})
-    .nonempty("this is required")
+    .min(1, "this is required")
     .min(8, "Not shorter than 8")
     .max(100, "This must be less than 100 characters long"),
-  email_or_username: z
+  email: z
     .string({})
-    .nonempty("this is required")
+    .min(1, "this is required")
     //.email("Invalid email")
     .max(100, "This must be less than 100 characters long"),
 });

@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import TextField from "./TextField";
 import { FieldError } from "react-hook-form";
 
@@ -13,7 +14,7 @@ const Password = ({
   return (
     <TextField
       disabled={Boolean(!showSubmitButton)}
-      label={"Password"}
+      label={t("auth.password")}
       fieldName="password"
       placeholder="password"
       register={register}

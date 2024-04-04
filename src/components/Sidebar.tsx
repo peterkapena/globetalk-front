@@ -1,27 +1,24 @@
-import * as React from 'react';
 import GlobalStyles from '@mui/joy/GlobalStyles';
 import Avatar from '@mui/joy/Avatar';
 import Box from '@mui/joy/Box';
 import Divider from '@mui/joy/Divider';
 import IconButton from '@mui/joy/IconButton';
-import Input from '@mui/joy/Input';
 import List from '@mui/joy/List';
 import ListItem from '@mui/joy/ListItem';
 import ListItemButton, { listItemButtonClasses } from '@mui/joy/ListItemButton';
 import ListItemContent from '@mui/joy/ListItemContent';
 import Typography from '@mui/joy/Typography';
 import Sheet from '@mui/joy/Sheet';
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
-import BrightnessAutoRoundedIcon from '@mui/icons-material/BrightnessAutoRounded';
 
 import ColorSchemeToggle from './ColorSchemeToggle';
 import { useAppDispatch } from '../redux/hooks';
 import { signOut, useUser } from '../redux/user-slice';
 import { useNavigate } from 'react-router-dom';
-import { ROUTES } from '../helpers/common';
-import { closeSidebar } from '../utils/helpers';
+import { APP_NAME, ROUTES } from '../helpers/common';
+import { closeSidebar } from '../helpers/helpers';
+import { t } from 'i18next';
 
 export default function Sidebar() {
   const navigate = useNavigate()
@@ -69,15 +66,9 @@ export default function Sidebar() {
         onClick={() => closeSidebar()}
       />
       <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-        <IconButton variant="soft" color="primary" size="sm">
-          <BrightnessAutoRoundedIcon />
-        </IconButton>
-        <Typography level="title-lg">Directory Co.</Typography>
+        <Typography level="title-lg">{APP_NAME}</Typography>
         <ColorSchemeToggle sx={{ ml: 'auto' }} />
       </Box>
-
-      <Divider />
-      <Input size="sm" startDecorator={<SearchRoundedIcon />} placeholder="Search" />
       <Box
         sx={{
           minHeight: 0, overflow: 'hidden auto', flexGrow: 1,
@@ -98,7 +89,7 @@ export default function Sidebar() {
             <ListItemButton onClick={() => navigate(ROUTES.HOME)}>
               <HomeRoundedIcon />
               <ListItemContent>
-                <Typography level="title-sm">Home</Typography>
+                <Typography level="title-sm">{t("sidebar.home")}</Typography>
               </ListItemContent>
             </ListItemButton>
           </ListItem>

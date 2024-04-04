@@ -7,6 +7,7 @@ import { setUser } from "../redux/user-slice";
 import { CssVarsProvider, CssBaseline, Box } from "@mui/joy";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
+import { t } from "i18next";
 
 const VERIFY_TOKEN = gql(`
 mutation VerifyToken($input: String!) {
@@ -77,7 +78,7 @@ export default function Root() {
   else
     return (
       <>
-        <p>Loading...</p>
+        <p>{t("home.loading")}</p>
       </>
     );
 }

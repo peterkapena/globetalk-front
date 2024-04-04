@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import TextField from "./TextField";
 import { FieldError } from "react-hook-form";
 
@@ -13,7 +14,7 @@ const Email = ({
   return (
     <TextField
       disabled={Boolean(!showSubmitButton)}
-      label={"Email"}
+      label={t("auth.email")}
       fieldName="email"
       placeholder="johndoe@email.com"
       register={register}
