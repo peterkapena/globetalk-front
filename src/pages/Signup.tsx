@@ -16,6 +16,7 @@ import Password from "../components/Password";
 import { gql, useMutation } from "@apollo/client";
 import { SignupInput } from "../__generated__/graphql";
 import { t } from "i18next";
+import { ColorSchemeToggle } from "../components/ColorSchemeToggle";
 
 const AUTO_SIGNIN_TIMEOUT_REDIRECT = 5;
 
@@ -56,8 +57,8 @@ export default function Page() {
         setMessages([
           ...messages,
           "Sign up was successful. You will be redirected to sign-in in " +
-            AUTO_SIGNIN_TIMEOUT_REDIRECT +
-            " seconds or signin now.",
+          AUTO_SIGNIN_TIMEOUT_REDIRECT +
+          " seconds or signin now.",
         ]);
         setTimeout(
           () => (window.location.href = "/"),
@@ -77,86 +78,98 @@ export default function Page() {
   };
 
   return (
-    <Sheet
-      sx={{
-        mt: 2,
-        width: 500,
-        mx: "auto",
-        p: 2,
-        display: "flex",
-        flexDirection: "column",
-        gap: 2,
-        borderRadius: "sm",
-        boxShadow: "md",
-      }}
-      variant="outlined"
-    >
-      <form onSubmit={handleSubmit(processForm)}>
-        <Box sx={{ mb: 3, display: "flex", justifyContent: "space-between" }}>
-          <div>
-            <Typography level="h2" component="h1" sx={{ mb: 2 }}>
-              <b>{t("auth.signup")}</b>
-            </Typography>
-            <Typography level="body-md">
-            {t("auth.signup_to_continue")}
-            </Typography>
-          </div>
-        </Box>
-        <Email
-          showSubmitButton={showSubmitButton}
-          error={errors.email}
-          register={register}
-        ></Email>
+    <Sheet sx={{
+      width: "100%",
+      height: "100vh",
+      display: "flex",
+      justifyContent: "center",
+      m: 0,
+      p: 2
+    }}>
+      <Sheet
+        sx={{
+          mt: 16,
+          width: 500,
+          height: "60%",
+          mx: "auto",
+          p: 2,
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          borderRadius: "sm",
+          boxShadow: "md",
+        }}
+        variant="outlined"
+      >
+        <form onSubmit={handleSubmit(processForm)}>
+          <Box sx={{ mb: 3, display: "flex", justifyContent: "space-between" }}>
+            <div>
+              <Typography level="h2" component="h1" sx={{ mb: 2 }}>
+                <b>{t("auth.signup")}</b>
+              </Typography>
+              <Typography level="body-md">
+                {t("auth.signup_to_continue")}
+              </Typography>
+            </div>
+            <div>
+              <ColorSchemeToggle />
+            </div>
+          </Box>
+          <Email
+            showSubmitButton={showSubmitButton}
+            error={errors.email}
+            register={register}
+          ></Email>
 
-        <Password
-          showSubmitButton={showSubmitButton}
-          error={errors.password}
-          register={register}
-        ></Password>
-        <ConfirmPassword
-          showSubmitButton={showSubmitButton}
-          error={errors.confirm_password}
-          register={register}
-        ></ConfirmPassword>
+          <Password
+            showSubmitButton={showSubmitButton}
+            error={errors.password}
+            register={register}
+          ></Password>
+          <ConfirmPassword
+            showSubmitButton={showSubmitButton}
+            error={errors.confirm_password}
+            register={register}
+          ></ConfirmPassword>
 
-        <Box
-          sx={{
-            my: 2,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Button
-            variant="plain"
-            size="sm"
-            onClick={() => navigate(ROUTES.SIGNIN)}
-          >
-            {t("auth.already_has_acc")}
-          </Button>
-        </Box>
-        {showSubmitButton && (
-          <SubmitLoadingButton
-            isLoading={isLoading}
-            title={t("auth.sign_up_btn")}
-          ></SubmitLoadingButton>
-        )}
-
-        {!showSubmitButton && messages.length > 0 && (
-          <Notice
-            isSuccess={isSuccess}
-            onClose={() => {
-              setShowSubmitButton(true);
-              setMessages([]);
-              reset();
-              isSuccess && navigate(ROUTES.SIGNIN);
+          <Box
+            sx={{
+              my: 2,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
             }}
-            messages={messages}
-          />
-        )}
-      </form>
-    </Sheet>
-  );
+          >
+            <Button
+              variant="plain"
+              size="sm"
+              onClick={() => navigate(ROUTES.SIGNIN)}
+            >
+              {t("auth.already_has_acc")}
+            </Button>
+          </Box>
+          {showSubmitButton && (
+            <SubmitLoadingButton
+              isLoading={isLoading}
+              title={t("auth.sign_up_btn")}
+            ></SubmitLoadingButton>
+          )}
+
+          {!showSubmitButton && messages.length > 0 && (
+            <Notice
+              isSuccess={isSuccess}
+              onClose={() => {
+                setShowSubmitButton(true);
+                setMessages([]);
+                reset();
+                isSuccess && navigate(ROUTES.SIGNIN);
+              }}
+              messages={messages}
+            />
+          )}
+        </form>
+      </Sheet>
+    </Sheet>);
 }
 
 const SIGNUP = gql(`
@@ -169,17 +182,17 @@ export const FormSchema = z
   .object({
     password: z
       .string({})
-      .min(1,"this is required")
+      .min(1, "this is required")
       .min(8, "Not shorter than 8")
       .max(100, "This must be less than 100 characters long"),
     confirm_password: z
       .string({})
-      .min(1,"this is required")
+      .min(1, "this is required")
       .min(8, "Not shorter than 8")
       .max(100, "This must be less than 100 characters long"),
     email: z
       .string({})
-      .min(1,"this is required")
+      .min(1, "this is required")
       .email("Invalid email")
       .max(100, "This must be less than 100 characters long"),
   })

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import React, { useState } from 'react';
-import { Box, Button, Divider, Grid, Input, Sheet, Typography } from '@mui/joy';
+import { useState } from 'react';
+import { Box, Button, Divider, Grid, Input, Typography } from '@mui/joy';
 import { VideoCallOutlined } from '@mui/icons-material';
 
 function Welcome() {
