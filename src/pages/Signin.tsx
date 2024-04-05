@@ -13,7 +13,7 @@ import { SubmitLoadingButton } from "../components/SubmitLoadingButton";
 import { Notice } from "../components/Notice";
 import { gql, useMutation } from "@apollo/client";
 import { SigninInput } from "../__generated__/graphql";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import Email from "../components/Email";
 
 export default function Page() {
@@ -70,25 +70,24 @@ export default function Page() {
   return (
     <Sheet
       sx={{
-        mt: 2,
+        mt: 10,
         width: 500,
         mx: "auto",
-        p: 2,
+        p: 5,
         display: "flex",
         flexDirection: "column",
         gap: 2,
-        borderRadius: "sm",
+        borderRadius: "xl",
         boxShadow: "md",
       }}
       variant="outlined"
     >
       <form onSubmit={handleSubmit(processForm)}>
-        <Box sx={{ mb: 3, display: "flex", justifyContent: "space-between" }}>
+        <Box sx={{ mb: 2, display: "flex", justifyContent: "center" }}>
           <div>
             <Typography level="h2" component="h1" sx={{ mb: 2 }}>
               <b>{t("auth.signin")}</b>
             </Typography>
-            <Typography level="body-md">{t("auth.signin_to_continue")}</Typography>
           </div>
         </Box>
         <Email
@@ -102,23 +101,12 @@ export default function Page() {
           register={register}
         ></Password>
 
-        <Box
-          sx={{ my: 2, display: "flex", justifyContent: "space-between", alignItems: "center", }}>
-          <Button
-            variant="plain"
-            size="sm"
-            onClick={() => navigate(ROUTES.SIGNUP)}
-          >
-            {t("auth.click_to_signup")}
-          </Button>
-        </Box>
         {messages.length === 0 && showSubmitButton && (
           <SubmitLoadingButton
             isLoading={isLoading}
             title={t("auth.signin")}
           ></SubmitLoadingButton>
         )}
-
         {messages.length > 0 && (
           <Notice
             isSuccess={isSuccess}
@@ -129,6 +117,44 @@ export default function Page() {
             messages={messages}
           />
         )}
+
+        <Box
+          sx={{
+            my: 2,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Typography level="body-md" sx={{ fontSize: "smal" }}>
+            {t("By continuing, you agree to the ")}
+            <span style={{ fontWeight: "bold", textDecoration: "underline" }}>
+              terms of use
+            </span>
+            {" and "}
+            <span style={{ fontWeight: "bold", textDecoration: "underline" }}>
+              Privacy Policy
+            </span>
+            {"."}
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            my: 2,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Button
+            variant="plain"
+            size="sm"
+            onClick={() => navigate(ROUTES.SIGNUP)}
+          >
+            {t("auth.click_to_signup")}
+          </Button>
+        </Box>
       </form>
     </Sheet>
   );
