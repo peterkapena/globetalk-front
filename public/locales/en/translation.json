@@ -2,15 +2,16 @@
   "auth": {
     "signup": "Sign up",
     "signin": "Sign in",
-    "signin_to_continue": "Sign in to continue",
-    "signup_to_continue": "Register your account to start making multilingual video calls.",
+    "signin_to_continue": "By continuing, you agree to the Terms of use and Privacy Policy.",
+    "signup_to_continue": "By creating an account, you agree to the Terms of use and Privacy Policy.",
     "email": "Email",
     "password": "Password",
     "click_to_signup": "Do not have an account? Click here to create one",
     "sign_in_btn": "Sign in",
     "sign_up_btn": "Sign up",
     "password_confirm": "Confirm Password",
-    "already_has_acc": "Already have an account? Click here to sign in now!"
+    "already_has_acc": "Already have an account? Click here to sign in now!",
+    "forgot_password": "Forgot Password"
   },
   "welcome": {
     "welcome": "Welcome",

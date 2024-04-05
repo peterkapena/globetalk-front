@@ -69,19 +69,21 @@ export default function Page() {
   };
 
   return (
-    <Sheet sx={{
-      width: "100%",
-      height: "100vh",
-      display: "flex",
-      justifyContent: "center",
-      m: 0,
-      p: 2
-    }}>
+    <Sheet
+      sx={{
+        width: "100%",
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        m: 0,
+        p: 2,
+      }}
+    >
       <Sheet
         sx={{
           width: "500px",
           mx: "auto",
-          height: "50%",
+          height: "65%",
           mt: 16,
           p: 2,
           display: "flex",
@@ -93,17 +95,17 @@ export default function Page() {
         variant="outlined"
       >
         <form onSubmit={handleSubmit(processForm)}>
-          <Box sx={{ mb: 3, display: "flex", justifyContent: "space-between" }}>
+          <Box sx={{ mb: 3, display: "grid", placeItems: "center" }}>
+            <div style={{ justifySelf: "end" }}>
+              <ColorSchemeToggle />
+            </div>
             <div>
               <Typography level="h2" component="h1" sx={{ mb: 2 }}>
                 <b>{t("auth.signin")}</b>
               </Typography>
-              <Typography level="body-md">{t("auth.signin_to_continue")}</Typography>
-            </div>
-            <div>
-              <ColorSchemeToggle />
             </div>
           </Box>
+
           <Email
             showSubmitButton={showSubmitButton}
             error={errors.email}
@@ -115,16 +117,6 @@ export default function Page() {
             register={register}
           ></Password>
 
-          <Box
-            sx={{ my: 2, display: "flex", justifyContent: "space-between", alignItems: "center", }}>
-            <Button
-              variant="plain"
-              size="sm"
-              onClick={() => navigate(ROUTES.SIGNUP)}
-            >
-              {t("auth.click_to_signup")}
-            </Button>
-          </Box>
           {messages.length === 0 && showSubmitButton && (
             <SubmitLoadingButton
               isLoading={isLoading}
@@ -142,10 +134,61 @@ export default function Page() {
               messages={messages}
             />
           )}
+
+          <Box
+            sx={{
+              my: 1,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            {" "}
+            <Typography style={{ fontSize: 12 }}>
+              {t("auth.signin_to_continue")}
+            </Typography>
+          </Box>
+
+          <Box
+            sx={{
+              my: 6,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Box sx={{ marginLeft: "auto" }}>
+              <Button
+                variant="plain"
+                size="sm"
+                //onClick={() => navigate(ROUTES.SIGNUP)}
+                sx={{ textDecoration: "underline" }}
+              >
+                {t("auth.forgot_password")}
+              </Button>
+            </Box>
+          </Box>
+
+          <Box
+            sx={{
+              my: 2,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Button
+              variant="plain"
+              size="sm"
+              onClick={() => navigate(ROUTES.SIGNUP)}
+            >
+              {t("auth.click_to_signup")}
+            </Button>
+          </Box>
         </form>
       </Sheet>
-
-    </Sheet>);
+    </Sheet>
+  );
 }
 
 const SIGNIN = gql(`

@@ -57,8 +57,8 @@ export default function Page() {
         setMessages([
           ...messages,
           "Sign up was successful. You will be redirected to sign-in in " +
-          AUTO_SIGNIN_TIMEOUT_REDIRECT +
-          " seconds or signin now.",
+            AUTO_SIGNIN_TIMEOUT_REDIRECT +
+            " seconds or signin now.",
         ]);
         setTimeout(
           () => (window.location.href = "/"),
@@ -78,19 +78,21 @@ export default function Page() {
   };
 
   return (
-    <Sheet sx={{
-      width: "100%",
-      height: "100vh",
-      display: "flex",
-      justifyContent: "center",
-      m: 0,
-      p: 2
-    }}>
+    <Sheet
+      sx={{
+        width: "100%",
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        m: 0,
+        p: 2,
+      }}
+    >
       <Sheet
         sx={{
           mt: 16,
           width: 500,
-          height: "60%",
+          height: "65%",
           mx: "auto",
           p: 2,
           display: "flex",
@@ -102,19 +104,25 @@ export default function Page() {
         variant="outlined"
       >
         <form onSubmit={handleSubmit(processForm)}>
-          <Box sx={{ mb: 3, display: "flex", justifyContent: "space-between" }}>
-            <div>
-              <Typography level="h2" component="h1" sx={{ mb: 2 }}>
-                <b>{t("auth.signup")}</b>
-              </Typography>
-              <Typography level="body-md">
-                {t("auth.signup_to_continue")}
-              </Typography>
-            </div>
-            <div>
+          <Box sx={{ mb: 8, display: "grid", placeItems: "center" }}>
+            <div style={{ justifySelf: "end" }}>
               <ColorSchemeToggle />
             </div>
+            <div>
+              <Typography level="h2" component="h1" sx={{ mb: 0 }}>
+                <b>{t("auth.signup")}</b>
+              </Typography>
+            </div>
+            <Button
+              variant="plain"
+              size="sm"
+              onClick={() => navigate(ROUTES.SIGNIN)}
+              sx={{ fontSize: "0.70rem" }}
+            >
+              {t("auth.already_has_acc")}
+            </Button>
           </Box>
+
           <Email
             showSubmitButton={showSubmitButton}
             error={errors.email}
@@ -132,21 +140,18 @@ export default function Page() {
             register={register}
           ></ConfirmPassword>
 
-          <Box
+<Box
             sx={{
-              my: 2,
+              my: 1,
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
             }}
           >
-            <Button
-              variant="plain"
-              size="sm"
-              onClick={() => navigate(ROUTES.SIGNIN)}
-            >
-              {t("auth.already_has_acc")}
-            </Button>
+            {" "}
+            <Typography style={{ fontSize: 12 }}>
+              {t("auth.signup_to_continue")}
+            </Typography>
           </Box>
           {showSubmitButton && (
             <SubmitLoadingButton
@@ -169,7 +174,8 @@ export default function Page() {
           )}
         </form>
       </Sheet>
-    </Sheet>);
+    </Sheet>
+  );
 }
 
 const SIGNUP = gql(`

@@ -15,7 +15,7 @@ export function SubmitLoadingButton(props: SubmitLoadingButtonProps) {
       disabled={isLoading}
       fullWidth
       type="submit"
-      sx={{ mt: 2, borderRadius: 'xl' /* margin top */ }}
+      sx={{ mt: 1, borderRadius: 'xl' /* margin top */ }}
       endDecorator={
         isLoading && ( //The circular check progress when Signing in.
           <CircularProgress
