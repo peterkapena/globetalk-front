@@ -18,6 +18,7 @@ export default function TeamExample() {
           <Navigation />
         </Layout.SideDrawer>
       )}
+
       <TabNavMobile></TabNavMobile>
       <Layout.Root
         sx={{

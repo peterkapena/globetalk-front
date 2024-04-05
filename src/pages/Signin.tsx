@@ -15,6 +15,7 @@ import { gql, useMutation } from "@apollo/client";
 import { SigninInput } from "../__generated__/graphql";
 import { useTranslation } from "react-i18next";
 import Email from "../components/Email";
+import { ColorSchemeToggle } from "../components/ColorSchemeToggle";
 
 export default function Page() {
   const [showSubmitButton, setShowSubmitButton] = useState(true);
@@ -68,96 +69,83 @@ export default function Page() {
   };
 
   return (
-    <Sheet
-      sx={{
-        mt: 10,
-        width: 500,
-        mx: "auto",
-        p: 5,
-        display: "flex",
-        flexDirection: "column",
-        gap: 2,
-        borderRadius: "xl",
-        boxShadow: "md",
-      }}
-      variant="outlined"
-    >
-      <form onSubmit={handleSubmit(processForm)}>
-        <Box sx={{ mb: 2, display: "flex", justifyContent: "center" }}>
-          <div>
-            <Typography level="h2" component="h1" sx={{ mb: 2 }}>
-              <b>{t("auth.signin")}</b>
-            </Typography>
-          </div>
-        </Box>
-        <Email
-          showSubmitButton={showSubmitButton}
-          error={errors.email}
-          register={register}
-        ></Email>
-        <Password
-          showSubmitButton={showSubmitButton}
-          error={errors.password}
-          register={register}
-        ></Password>
+    <Sheet sx={{
+      width: "100%",
+      height: "100vh",
+      display: "flex",
+      justifyContent: "center",
+      m: 0,
+      p: 2
+    }}>
+      <Sheet
+        sx={{
+          width: "500px",
+          mx: "auto",
+          height: "50%",
+          mt: 16,
+          p: 2,
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          borderRadius: "sm",
+          boxShadow: "md",
+        }}
+        variant="outlined"
+      >
+        <form onSubmit={handleSubmit(processForm)}>
+          <Box sx={{ mb: 3, display: "flex", justifyContent: "space-between" }}>
+            <div>
+              <Typography level="h2" component="h1" sx={{ mb: 2 }}>
+                <b>{t("auth.signin")}</b>
+              </Typography>
+              <Typography level="body-md">{t("auth.signin_to_continue")}</Typography>
+            </div>
+            <div>
+              <ColorSchemeToggle />
+            </div>
+          </Box>
+          <Email
+            showSubmitButton={showSubmitButton}
+            error={errors.email}
+            register={register}
+          ></Email>
+          <Password
+            showSubmitButton={showSubmitButton}
+            error={errors.password}
+            register={register}
+          ></Password>
 
-        {messages.length === 0 && showSubmitButton && (
-          <SubmitLoadingButton
-            isLoading={isLoading}
-            title={t("auth.signin")}
-          ></SubmitLoadingButton>
-        )}
-        {messages.length > 0 && (
-          <Notice
-            isSuccess={isSuccess}
-            onClose={() => {
-              setShowSubmitButton(true);
-              setMessages([]);
-            }}
-            messages={messages}
-          />
-        )}
+          <Box
+            sx={{ my: 2, display: "flex", justifyContent: "space-between", alignItems: "center", }}>
+            <Button
+              variant="plain"
+              size="sm"
+              onClick={() => navigate(ROUTES.SIGNUP)}
+            >
+              {t("auth.click_to_signup")}
+            </Button>
+          </Box>
+          {messages.length === 0 && showSubmitButton && (
+            <SubmitLoadingButton
+              isLoading={isLoading}
+              title={t("auth.signin")}
+            ></SubmitLoadingButton>
+          )}
 
-        <Box
-          sx={{
-            my: 2,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Typography level="body-md" sx={{ fontSize: "smal" }}>
-            {t("By continuing, you agree to the ")}
-            <span style={{ fontWeight: "bold", textDecoration: "underline" }}>
-              terms of use
-            </span>
-            {" and "}
-            <span style={{ fontWeight: "bold", textDecoration: "underline" }}>
-              Privacy Policy
-            </span>
-            {"."}
-          </Typography>
-        </Box>
+          {messages.length > 0 && (
+            <Notice
+              isSuccess={isSuccess}
+              onClose={() => {
+                setShowSubmitButton(true);
+                setMessages([]);
+              }}
+              messages={messages}
+            />
+          )}
+        </form>
+      </Sheet>
 
-        <Box
-          sx={{
-            my: 2,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Button
-            variant="plain"
-            size="sm"
-            onClick={() => navigate(ROUTES.SIGNUP)}
-          >
-            {t("auth.click_to_signup")}
-          </Button>
-        </Box>
-      </form>
-    </Sheet>
-  );
+    </Sheet>);
 }
 
 const SIGNIN = gql(`

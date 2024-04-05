@@ -4,7 +4,6 @@ import Typography from '@mui/joy/Typography';
 import IconButton from '@mui/joy/IconButton';
 import Stack from '@mui/joy/Stack';
 import Avatar from '@mui/joy/Avatar';
-import Button from '@mui/joy/Button';
 import Dropdown from '@mui/joy/Dropdown';
 import Menu from '@mui/joy/Menu';
 import MenuButton from '@mui/joy/MenuButton';
@@ -53,7 +52,7 @@ export default function Header() {
         sx={{ display: { xs: 'none', sm: 'flex' } }}
       >
         <Logo />
-        {/* <LeftHeaderNavigation /> */}
+        <LeftHeaderNavigation />
       </Stack>
       <Box sx={{ display: { xs: 'inline-flex', sm: 'none' } }}>
         <IconButton variant="plain" color="neutral" onClick={() => setOpen(true)}>
@@ -206,7 +205,7 @@ function Logo() {
 
 export function LeftHeaderNavigation() {
   return <div>
-    <Button
+    {/* <Button
       variant="plain"
       color="neutral"
       component="a"
@@ -236,6 +235,6 @@ export function LeftHeaderNavigation() {
       sx={{ alignSelf: 'center' }}
     >
       Files
-    </Button>
+    </Button> */}
   </div>;
 }
