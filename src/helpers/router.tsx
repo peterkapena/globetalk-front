@@ -5,6 +5,7 @@ import Signup from "../pages/Signup";
 import Root from "../pages/Root";
 import ErrorPage from "../pages/error-page";
 import Welcome from "../pages/Welcome";
+import Meeting from "../pages/Meeting";
 
 export const router = createBrowserRouter([
   {
@@ -26,4 +27,9 @@ export const router = createBrowserRouter([
     path: ROUTES.SIGNUP,
     element: <Signup />,
   },
+  {
+    path: `${ROUTES.MEETING}:code`,
+    element: <Meeting />,
+  }
+
 ]);

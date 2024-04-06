@@ -2,10 +2,26 @@ import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { Box, Button, Divider, Grid, Input, Typography } from '@mui/joy';
 import { VideoCallOutlined } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../helpers/common';
 
 function Welcome() {
   const { t } = useTranslation();
   const [code_or_link, setCode_or_link] = useState<string>()
+  const navigate = useNavigate()
+
+  function joinMeeting() {
+    let code = code_or_link;
+
+    if (code_or_link) {
+      let codeIndex = code_or_link.lastIndexOf("/");
+      if (codeIndex > 0) {
+        code = code_or_link.substring(codeIndex + 1);
+      }
+
+      navigate(`${ROUTES.MEETING}${code}`);
+    }
+  }
 
   return (
     <Box
@@ -33,7 +49,7 @@ function Welcome() {
               <Input placeholder={t("welcome.enter_code_or_link")} onChange={(event) => setCode_or_link(event.target.value)} />
             </Grid>
             <Grid>
-              <Button color="primary" variant='outlined' sx={{ cursor: "pointer" }} disabled={!Boolean(code_or_link)}>
+              <Button color="primary" variant='outlined' sx={{ cursor: "pointer" }} disabled={!Boolean(code_or_link)} onClick={() => joinMeeting()}>
                 {t("welcome.join")}
               </Button>
             </Grid>

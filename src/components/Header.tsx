@@ -24,8 +24,7 @@ import { APP_NAME } from '../helpers/common';
 import { signOut, useUser } from '../redux/user-slice';
 import { useAppDispatch } from '../redux/hooks';
 import { ColorSchemeToggle } from './ColorSchemeToggle';
-
-const languages = [{ label: "English", script: "en" }]
+import { languages } from '../helpers/i18n';
 
 export default function Header() {
   const [open, setOpen] = React.useState(false);
@@ -98,12 +97,12 @@ export default function Header() {
               '--ListItem-radius': 'var(--joy-radius-sm)',
             }}
           >
-            {languages.map(l => (<>
-              <MenuItem onClick={() => { }}>
+            {languages.map((l, i) => (
+              <MenuItem onClick={() => { }} key={i}>
                 <PublicOutlined />
                 {l.label}
               </MenuItem>
-            </>))}
+            ))}
           </Menu>
         </Dropdown>
         <Dropdown>

@@ -8,6 +8,7 @@ export const PETER_KAPENA_EMAIL = "peterkapenapeter@gmail.com";
 
 export const ROUTES = {
   HOME: "/",
+  MEETING: "/mtng/",
   SIGNIN: "/sgn/",
   SIGNUP: "/sgnup/",
 };

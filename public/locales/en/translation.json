@@ -26,7 +26,12 @@
   "sidebar": {
     "home": "Home"
   },
-  "home": {
-    "loading": "Loading...."
+  "meeting": {
+    "copy_meeting_link": "Copy meeting link",
+    "change_listening_language": "Change listening language",
+    "caption": "Captions toggle",
+    "camera": "Camera toggle",
+    "microphone": "Microphone toggle",
+    "meetingdetails":"Meeting details"
   }
 }

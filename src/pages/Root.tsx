@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import { IS_DEVELOPER, ROUTES, STR_TOKEN } from "../helpers/common";
 import { useAppDispatch } from "../redux/hooks";
 import { setUser } from "../redux/user-slice";
-import { t } from "i18next";
 import Layout from "../Layout";
- 
+import { CircularProgress } from "@mui/joy";
+
 const VERIFY_TOKEN = gql(`
 mutation VerifyToken($input: String!) {
   verifyToken(input: $input) {
@@ -75,9 +75,7 @@ export default function Root() {
 
   else
     return (
-      <>
-        <p>{t("home.loading")}</p>
-      </>
+      <CircularProgress />
     );
 }
 
