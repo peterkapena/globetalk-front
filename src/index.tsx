@@ -7,6 +7,7 @@ import store from "./redux/store";
 import './helpers/i18n';
 import '@fontsource/inter';
 import "./index.css";
+import { CircularProgress } from "@mui/joy";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -15,7 +16,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <Provider store={store}>
     <React.StrictMode>
-      <Suspense fallback={""}>
+      <Suspense fallback={<CircularProgress />}>
         <App />
       </Suspense>
     </React.StrictMode>

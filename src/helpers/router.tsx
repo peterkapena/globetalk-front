@@ -1,11 +1,11 @@
 import { createBrowserRouter } from "react-router-dom";
 import { ROUTES } from "./common";
-import Signin from "../pages/Signin";
-import Signup from "../pages/Signup";
-import Root from "../pages/Root";
-import ErrorPage from "../pages/error-page";
-import Welcome from "../pages/Welcome";
-import Meeting from "../pages/Meeting";
+import Signin from "../routes/Signin";
+import Signup from "../routes/Signup";
+import Root from "../routes/Root";
+import ErrorPage from "../routes/error-page";
+import Welcome from "../routes/Welcome";
+import Meeting from "../routes/Meeting";
 
 export const router = createBrowserRouter([
   {
