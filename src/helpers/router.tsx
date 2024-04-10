@@ -2,15 +2,16 @@ import { createBrowserRouter } from "react-router-dom";
 import { ROUTES } from "./common";
 import Signin from "../routes/Signin";
 import Signup from "../routes/Signup";
-import Root from "../routes/Root";
+import AuthGuard from "../routes/AuthGuard";
 import ErrorPage from "../routes/error-page";
 import Welcome from "../routes/Welcome";
 import Meeting from "../routes/Meeting";
+import Layout from "../Layout";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Root />,
+    element: <AuthGuard><Layout /></AuthGuard>,
     errorElement: <ErrorPage />,
     children: [
       {
@@ -29,7 +30,7 @@ export const router = createBrowserRouter([
   },
   {
     path: `${ROUTES.MEETING}:roomId`,
-    element: <Meeting />,
+    element: <AuthGuard><Meeting /></AuthGuard>,
   }
 
 ]);

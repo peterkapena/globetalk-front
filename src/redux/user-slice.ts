@@ -4,19 +4,11 @@ import { useAppSelector } from "./hooks";
 
 // Define a type for the slice state
 interface UserState {
-  username?: string | null | undefined;
   email?: string | null | undefined;
-  surName?: string | null | undefined;
-  givenName?: string | null | undefined;
-  organisationId: string;
-  organisationName: string;
 }
 
 // Define the initial state using that type
-const initialState: UserState = {
-  organisationId: "",
-  organisationName: "",
-};
+const initialState: UserState = {};
 export const UserSlice = createSlice({
   name: "user",
   // `createSlice` will infer the state type from the `initialState` argument
@@ -24,11 +16,6 @@ export const UserSlice = createSlice({
   reducers: {
     setUser: (state, action: PayloadAction<{ user: UserState }>) => {
       state.email = action.payload.user.email;
-      state.givenName = action.payload.user.givenName;
-      state.surName = action.payload.user.surName;
-      state.username = action.payload.user.username;
-      state.organisationId = action.payload.user.organisationId;
-      state.organisationName = action.payload.user.organisationName;
     },
     signOut: () => {
       sessionStorage.removeItem(STR_TOKEN);
@@ -42,8 +29,6 @@ export const useUser = (): UserState => {
 
   return data;
 };
-
-// export const user = useAppSelector((state) => state.user);
 
 export const { setUser, signOut } = UserSlice.actions;
 
