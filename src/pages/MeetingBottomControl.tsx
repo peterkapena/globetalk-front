@@ -1,15 +1,15 @@
-import { CallEndOutlined, CheckCircleOutline, CheckCircleOutlined, ClosedCaptionOffOutlined, ClosedCaptionOutlined, CopyAllOutlined, InfoOutlined, KeyboardVoiceOutlined, MicOffOutlined, PublicOutlined, TranslateOutlined, VideocamOffOutlined, VideocamOutlined } from '@mui/icons-material';
-import { Box, Dropdown, IconButton, Menu, MenuButton, MenuItem, Sheet, Stack, Tooltip, Typography } from '@mui/joy';
+import { CallEndOutlined, CheckCircleOutlined, ClosedCaptionOffOutlined, ClosedCaptionOutlined, CopyAllOutlined, InfoOutlined, KeyboardVoiceOutlined, MicOffOutlined, PublicOutlined, TranslateOutlined, VideocamOffOutlined, VideocamOutlined } from '@mui/icons-material';
+import { Box, Dropdown, IconButton, Menu, MenuButton, MenuItem, Stack, Tooltip, Typography } from '@mui/joy';
 import { languages } from '../helpers/i18n';
 import { t } from 'i18next';
 import { copyToClipboard } from '../helpers/helpers';
 import { useState } from 'react';
 
 type MeetingBottomControlProps = {
-    setMicIsOn: any; micIsOn: boolean, code: string | undefined
+    setMicIsOn: any; micIsOn: boolean, roomId: string | undefined
 }
 
-export function MeetingBottomControl({ micIsOn, setMicIsOn, code }: MeetingBottomControlProps) {
+export function MeetingBottomControl({ micIsOn, setMicIsOn, roomId }: MeetingBottomControlProps) {
     const [copied_icon, setCopied_icon] = useState(<CopyAllOutlined />)
 
     async function copy() {
@@ -32,7 +32,7 @@ export function MeetingBottomControl({ micIsOn, setMicIsOn, code }: MeetingBotto
     }}>
 
         <Stack direction="row" spacing={1} sx={{ display: { xs: "none", sm: "flex" } }}>
-            <Typography>{new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })} | {code}</Typography>
+            <Typography>{new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })} | {roomId}</Typography>
         </Stack>
         <Stack direction="row" spacing={1}>
             <Tooltip title={t("welcome.microphone")}>

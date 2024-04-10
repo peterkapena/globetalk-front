@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { MeetingBottomControl } from './MeetingBottomControl';
 
 const Meeting = () => {
-    let { code } = useParams();
+    let { roomId } = useParams();
     const [micIsOn, setMicIsOn] = useState(false)
 
     return (
@@ -25,7 +25,7 @@ const Meeting = () => {
                 ))}
             </Grid>
 
-            <MeetingBottomControl setMicIsOn={setMicIsOn} micIsOn={micIsOn} code={code} />
+            <MeetingBottomControl setMicIsOn={setMicIsOn} micIsOn={micIsOn} roomId={roomId} />
         </Sheet >
     )
 }

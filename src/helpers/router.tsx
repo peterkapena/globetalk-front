@@ -28,7 +28,7 @@ export const router = createBrowserRouter([
     element: <Signup />,
   },
   {
-    path: `${ROUTES.MEETING}:code`,
+    path: `${ROUTES.MEETING}:roomId`,
     element: <Meeting />,
   }
 
