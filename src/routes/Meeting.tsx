@@ -132,9 +132,9 @@ const Meeting = () => {
     }, [roomId, user.email]);
 
     useEffect(() => {
-        if (!socketRef.current || !process.env.REACT_APP_SIGNALING_SERVER) return
+        if (!socketRef.current || !process.env.REACT_APP_SOCKET_ENDPOINT) return
 
-        socketRef.current = io(process.env.REACT_APP_SIGNALING_SERVER)
+        socketRef.current = io(process.env.REACT_APP_SOCKET_ENDPOINT)
         getLocalStream();
 
         socketRef.current.on('all_users', handleAllUsers);
