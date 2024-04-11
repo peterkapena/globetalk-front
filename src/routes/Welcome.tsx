@@ -4,11 +4,13 @@ import { Box, Button, Divider, Grid, Input, Typography } from '@mui/joy';
 import { VideoCallOutlined } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../helpers/common';
+import { gql, useMutation } from "@apollo/client";
 
 function Welcome() {
   const { t } = useTranslation();
   const [code_or_link, setCode_or_link] = useState<string>()
   const navigate = useNavigate()
+  const [createRoom] = useMutation(CREATE_ROOM);
 
   function joinMeeting() {
     let code = code_or_link;
@@ -21,6 +23,11 @@ function Welcome() {
 
       navigate(`${ROUTES.MEETING}${code}`);
     }
+  }
+
+  async function generateRoom() {
+    const roomId = (await createRoom()).data?.createRoom;
+    navigate(`${ROUTES.MEETING}${roomId}`);
   }
 
   return (
@@ -60,7 +67,7 @@ function Welcome() {
 
         <Grid container spacing={2} justifyContent="center" textAlign="center" sx={{ my: 1 }}>
           <Grid>
-            <Button color="primary" startDecorator={<VideoCallOutlined />}>
+            <Button color="primary" startDecorator={<VideoCallOutlined />} onClick={generateRoom}>
               {t("welcome.new_meeting")}
             </Button>
           </Grid>
@@ -71,3 +78,9 @@ function Welcome() {
 }
 
 export default Welcome;
+
+const CREATE_ROOM = gql(`
+mutation Mutation {
+  createRoom
+}
+`);

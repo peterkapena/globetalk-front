@@ -55,7 +55,7 @@ export default function Page() {
       if (rtn?.messages.length > 0) {
         setMessages(["sign in failed"]);
       } else if (rtn?.token) {
-        sessionStorage.setItem(STR_TOKEN, rtn.token);
+        localStorage.setItem(STR_TOKEN, rtn.token);
         await new Promise((resolve) => setTimeout(resolve, 1000));
         window.location.href = ROUTES.HOME;
       }
