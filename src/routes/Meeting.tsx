@@ -270,14 +270,7 @@ const Meeting = () => {
             });
         }
     }
-
-    function testSocket() {
-        socketRef.current?.emit('join_room', {
-            room: roomId,
-            email: user.email,
-        });
-    }
-
+    
     return (
         <Sheet sx={{
             width: "100%",
