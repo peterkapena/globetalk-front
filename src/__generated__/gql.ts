@@ -16,6 +16,7 @@ const documents = {
     "\nmutation VerifyToken($input: String!) {\n  verifyToken(input: $input) {\n    isValid\n    token\n    email\n  }\n}\n": types.VerifyTokenDocument,
     "\nmutation Signin($input: SigninInput!) {\n  signin(input: $input) {\n    email\n    messages\n    token\n  }\n}\n": types.SigninDocument,
     "\nmutation Signup($input: SignupInput!) {\n  signup(input: $input)\n}\n": types.SignupDocument,
+    "\nmutation Mutation {\n  createRoom\n}\n": types.MutationDocument,
 };
 
 /**
@@ -44,6 +45,10 @@ export function gql(source: "\nmutation Signin($input: SigninInput!) {\n  signin
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\nmutation Signup($input: SignupInput!) {\n  signup(input: $input)\n}\n"): (typeof documents)["\nmutation Signup($input: SignupInput!) {\n  signup(input: $input)\n}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\nmutation Mutation {\n  createRoom\n}\n"): (typeof documents)["\nmutation Mutation {\n  createRoom\n}\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};
