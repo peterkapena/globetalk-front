@@ -78,26 +78,16 @@ export default function Page() {
   };
 
   return (
-    <Sheet
-      sx={{
-        width: "100%",
-        // height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        m: 0,
-        // p: 2,
-      }}
-    >
+    <Sheet sx={{ width: "100%", display: "flex", justifyContent: "center", m: 0, height: "100vh" }}>
       <Sheet
         sx={{
-          mt: 16,
-          width: 500,
-          height: "55%",
+          width: "500px",
           mx: "auto",
-          p: 4,
+          height: "55%",
+          my: 5,
+          p: 3,
           display: "flex",
           flexDirection: "column",
-          gap: 2,
           borderRadius: "sm",
           boxShadow: "md",
         }}

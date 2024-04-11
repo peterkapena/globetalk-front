@@ -5,7 +5,7 @@ import { Socket, io } from "socket.io-client";
 import { useUser } from '../redux/user-slice';
 import AlertDialogModal, { AlertProps } from '../components/Alert';
 import Video from '../components/Video';
-
+ 
 const alerts: AlertProps[] = [
     {
         message: "The device is currently in use or not accessible",
@@ -260,7 +260,9 @@ const Meeting = () => {
                 });
             }
         }
+    }, [createPeerConnection, getLocalStream])
 
+    useEffect(() => {
         return () => {
             if (socketRef.current) {
                 socketRef.current.disconnect();
@@ -272,8 +274,11 @@ const Meeting = () => {
                     delete pcsRef.current[socketId]; // Delete the entry from pcsRef
                 }
             });
+            localStreamRef.current?.getTracks().forEach(track => {
+                track.stop();
+            });
         }
-    }, [createPeerConnection, getLocalStream])
+    }, []);
 
     return (
         <Sheet sx={{

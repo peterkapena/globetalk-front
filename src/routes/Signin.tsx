@@ -69,26 +69,16 @@ export default function Page() {
   };
 
   return (
-    <Sheet
-      sx={{
-        width: "100%",
-        height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        m: 0,
-        p: 2,
-      }}
-    >
+    <Sheet sx={{ width: "100%", display: "flex", justifyContent: "center", m: 0, height: "100vh" }}>
       <Sheet
         sx={{
           width: "500px",
           mx: "auto",
           height: "55%",
-          mt: 16,
-          p: 4,
+          my: 5,
+          p: 3,
           display: "flex",
           flexDirection: "column",
-          gap: 2,
           borderRadius: "sm",
           boxShadow: "md",
         }}
