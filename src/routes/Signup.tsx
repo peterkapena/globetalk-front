@@ -92,7 +92,7 @@ export default function Page() {
         sx={{
           mt: 16,
           width: 500,
-          height: "65%",
+          height: "55%",
           mx: "auto",
           p: 2,
           display: "flex",
