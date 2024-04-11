@@ -94,7 +94,7 @@ export default function Page() {
           width: 500,
           height: "55%",
           mx: "auto",
-          p: 2,
+          p: 4,
           display: "flex",
           flexDirection: "column",
           gap: 2,

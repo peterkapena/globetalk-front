@@ -85,7 +85,7 @@ export default function Page() {
           mx: "auto",
           height: "55%",
           mt: 16,
-          p: 2,
+          p: 4,
           display: "flex",
           flexDirection: "column",
           gap: 2,
