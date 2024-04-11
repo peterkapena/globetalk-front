@@ -18,7 +18,7 @@ export const UserSlice = createSlice({
       state.email = action.payload.user.email;
     },
     signOut: () => {
-      sessionStorage.removeItem(STR_TOKEN);
+      localStorage.removeItem(STR_TOKEN);
       window.location.href = "/";
     },
   },

@@ -1,4 +1,4 @@
-import { AspectRatio, Button, Card, Grid, Sheet, Skeleton, Typography } from '@mui/joy';
+import { Sheet } from '@mui/joy';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Socket, io } from "socket.io-client";
@@ -26,6 +26,7 @@ type WebRTCUser = {
     email: string;
     stream: MediaStream;
 };
+
 const pc_config = {
     iceServers: [
         {
@@ -63,7 +64,7 @@ const Meeting = () => {
             };
 
             pc.ontrack = (e) => {
-                console.log('ontrack success');
+                console.log('ontrack success', e);
                 setUsers((oldUsers) =>
                     oldUsers
                         .filter((user) => user.id !== socketID)
@@ -128,149 +129,145 @@ const Meeting = () => {
                 console.log('An unexpected error occurred: ', e);
             }
         }
-    }, []);
+    }, [roomId, user.email]);
 
     useEffect(() => {
-        if (process.env.REACT_APP_SIGNALING_SERVER) {
-            socketRef.current = io(process.env.REACT_APP_SIGNALING_SERVER)
-            getLocalStream();
+        if (!socketRef.current || !process.env.REACT_APP_SIGNALING_SERVER) return
+
+        socketRef.current = io(process.env.REACT_APP_SIGNALING_SERVER)
+        getLocalStream();
+
+        socketRef.current.on('all_users', handleAllUsers);
+        socketRef.current.on('getOffer', handleGetOffer);
+        socketRef.current.on('getAnswer', handleGetAnswer);
+        socketRef.current.on('getCandidate', handleGetCandidate);
+        socketRef.current.on('user_exit', handleUserExit);
+
+        function handleUserExit() {
+            if (socketRef.current)
+                socketRef.current.on('user_exit', (data: { id: string; }) => {
+                    if (!pcsRef.current[data.id]) return;
+                    pcsRef.current[data.id].close();
+                    delete pcsRef.current[data.id];
+                    setUsers((oldUsers) => oldUsers.filter((user) => user.id !== data.id));
+                });
         }
 
-        when_i_receive_users_in_room();
+        function handleGetCandidate() {
+            if (socketRef.current)
+                socketRef.current.on(
+                    'getCandidate',
+                    async (data: { candidate: RTCIceCandidateInit; candidateSendID: string; }) => {
+                        console.log('get candidate');
+                        const pc: RTCPeerConnection = pcsRef.current[data.candidateSendID];
+                        if (!pc) return;
+                        await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+                        console.log('candidate add success');
+                    }
+                );
+        }
 
-        when_i_receive_an_offer();
+        function handleGetAnswer() {
+            if (socketRef.current)
+                socketRef.current.on(
+                    'getAnswer',
+                    (data: { sdp: RTCSessionDescription; answerSendID: string; }) => {
+                        const { sdp, answerSendID } = data;
+                        console.log('get answer');
+                        const pc: RTCPeerConnection = pcsRef.current[answerSendID];
+                        if (!pc) return;
+                        // Check if the PeerConnection is in a non-stable state, indicating it's ready for a remote description
+                        if (pc.signalingState !== "stable") {
+                            console.log('Setting remote description on:', answerSendID);
+                            pc.setRemoteDescription(new RTCSessionDescription(sdp))
+                                .then(() => console.log("Remote description set successfully for:", answerSendID))
+                                .catch((error) => console.error("Error setting remote description:", error));
+                        } else {
+                            // If we are in a stable state, this might not be the right time to set a remote description
+                            // This could indicate an issue with the signaling logic or might require renegotiation handling.
+                            console.warn("Attempted to set remote description in a stable state for:", answerSendID);
+                        }
+                    }
+                );
+        }
 
-        when_i_receive_an_answer();
+        function handleGetOffer() {
+            if (socketRef.current) {
+                socketRef.current.on(
+                    'getOffer',
+                    async (data: {
+                        sdp: RTCSessionDescription;
+                        offerSendID: string;
+                        offerSendEmail: string;
+                    }) => {
+                        const { sdp, offerSendID, offerSendEmail } = data;
+                        console.log('get offer');
+                        if (!localStreamRef.current) return;
+                        const pc = createPeerConnection(offerSendID, offerSendEmail);
+                        if (!(pc && socketRef.current)) return;
+                        pcsRef.current = { ...pcsRef.current, [offerSendID]: pc };
+                        try {
+                            await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+                            console.log('answer set remote description success');
+                            const localSdp = await pc.createAnswer({
+                                offerToReceiveVideo: true,
+                                offerToReceiveAudio: true,
+                            });
+                            await pc.setLocalDescription(new RTCSessionDescription(localSdp));
+                            socketRef.current.emit('answer', {
+                                sdp: localSdp,
+                                answerSendID: socketRef.current.id,
+                                answerReceiveID: offerSendID,
+                            });
+                        } catch (e) {
+                            console.error(e);
+                        }
+                    }
+                );
+            }
+        }
 
-        when_i_receive_ice_candidate();
-
-        when_user_exits();
+        function handleAllUsers() {
+            if (socketRef.current) {
+                socketRef.current.on('all_users', (allUsers: Array<{ id: string; email: string; }>) => {
+                    allUsers.forEach(async (user) => {
+                        if (!localStreamRef.current) return;
+                        const pc = createPeerConnection(user.id, user.email);
+                        if (!(pc && socketRef.current)) return;
+                        pcsRef.current = { ...pcsRef.current, [user.id]: pc };
+                        try {
+                            const localSdp = await pc.createOffer({
+                                offerToReceiveAudio: true,
+                                offerToReceiveVideo: true,
+                            });
+                            console.log('create offer success');
+                            await pc.setLocalDescription(new RTCSessionDescription(localSdp));
+                            socketRef.current.emit('offer', {
+                                sdp: localSdp,
+                                offerSendID: socketRef.current.id,
+                                offerSendEmail: user.email,
+                                offerReceiveID: user.id,
+                            });
+                        } catch (e) {
+                            console.error(e);
+                        }
+                    });
+                });
+            }
+        }
 
         return () => {
             if (socketRef.current) {
                 socketRef.current.disconnect();
             }
-            users.forEach((user) => {
-                if (!pcsRef.current[user.id]) return;
-                pcsRef.current[user.id].close();
-                delete pcsRef.current[user.id];
-            });
+            // users.forEach((user) => {
+            //     if (!pcsRef.current[user.id]) return;
+            //     pcsRef.current[user.id].close();
+            //     delete pcsRef.current[user.id];
+            // });
         }
     }, [createPeerConnection, getLocalStream])
 
-    function when_user_exits() {
-        if (socketRef.current)
-            socketRef.current.on('user_exit', (data: { id: string; }) => {
-                if (!pcsRef.current[data.id]) return;
-                pcsRef.current[data.id].close();
-                delete pcsRef.current[data.id];
-                setUsers((oldUsers) => oldUsers.filter((user) => user.id !== data.id));
-            });
-    }
-
-    function when_i_receive_ice_candidate() {
-        if (socketRef.current)
-            socketRef.current.on(
-                'getCandidate',
-                async (data: { candidate: RTCIceCandidateInit; candidateSendID: string; }) => {
-                    console.log('get candidate');
-                    const pc: RTCPeerConnection = pcsRef.current[data.candidateSendID];
-                    if (!pc) return;
-                    await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
-                    console.log('candidate add success');
-                }
-            );
-    }
-
-    function when_i_receive_an_answer() {
-        if (socketRef.current)
-            socketRef.current.on(
-                'getAnswer',
-                (data: { sdp: RTCSessionDescription; answerSendID: string; }) => {
-                    const { sdp, answerSendID } = data;
-                    console.log('get answer');
-                    const pc: RTCPeerConnection = pcsRef.current[answerSendID];
-                    if (!pc) return;
-                    // Check if the PeerConnection is in a non-stable state, indicating it's ready for a remote description
-                    if (pc.signalingState !== "stable") {
-                        console.log('Setting remote description on:', answerSendID);
-                        pc.setRemoteDescription(new RTCSessionDescription(sdp))
-                            .then(() => console.log("Remote description set successfully for:", answerSendID))
-                            .catch((error) => console.error("Error setting remote description:", error));
-                    } else {
-                        // If we are in a stable state, this might not be the right time to set a remote description
-                        // This could indicate an issue with the signaling logic or might require renegotiation handling.
-                        console.warn("Attempted to set remote description in a stable state for:", answerSendID);
-                    }
-                }
-            );
-    }
-
-    function when_i_receive_an_offer() {
-        if (socketRef.current) {
-            socketRef.current.on(
-                'getOffer',
-                async (data: {
-                    sdp: RTCSessionDescription;
-                    offerSendID: string;
-                    offerSendEmail: string;
-                }) => {
-                    const { sdp, offerSendID, offerSendEmail } = data;
-                    console.log('get offer');
-                    if (!localStreamRef.current) return;
-                    const pc = createPeerConnection(offerSendID, offerSendEmail);
-                    if (!(pc && socketRef.current)) return;
-                    pcsRef.current = { ...pcsRef.current, [offerSendID]: pc };
-                    try {
-                        await pc.setRemoteDescription(new RTCSessionDescription(sdp));
-                        console.log('answer set remote description success');
-                        const localSdp = await pc.createAnswer({
-                            offerToReceiveVideo: true,
-                            offerToReceiveAudio: true,
-                        });
-                        await pc.setLocalDescription(new RTCSessionDescription(localSdp));
-                        socketRef.current.emit('answer', {
-                            sdp: localSdp,
-                            answerSendID: socketRef.current.id,
-                            answerReceiveID: offerSendID,
-                        });
-                    } catch (e) {
-                        console.error(e);
-                    }
-                }
-            );
-        }
-    }
-
-    function when_i_receive_users_in_room() {
-        if (socketRef.current) {
-            socketRef.current.on('all_users', (allUsers: Array<{ id: string; email: string; }>) => {
-                allUsers.forEach(async (user) => {
-                    if (!localStreamRef.current) return;
-                    const pc = createPeerConnection(user.id, user.email);
-                    if (!(pc && socketRef.current)) return;
-                    pcsRef.current = { ...pcsRef.current, [user.id]: pc };
-                    try {
-                        const localSdp = await pc.createOffer({
-                            offerToReceiveAudio: true,
-                            offerToReceiveVideo: true,
-                        });
-                        console.log('create offer success');
-                        await pc.setLocalDescription(new RTCSessionDescription(localSdp));
-                        socketRef.current.emit('offer', {
-                            sdp: localSdp,
-                            offerSendID: socketRef.current.id,
-                            offerSendEmail: user.email,
-                            offerReceiveID: user.id,
-                        });
-                    } catch (e) {
-                        console.error(e);
-                    }
-                });
-            });
-        }
-    }
-    
     return (
         <Sheet sx={{
             width: "100%",
@@ -292,7 +289,7 @@ const Meeting = () => {
                 autoPlay
             />
             {users.map((user, index) => (
-                <Video key={index} email={user.email} stream={user.stream} />
+                user.stream.active && <Video key={index} email={user.email} stream={user.stream} />
             ))}
             {/* <MeetingBottomControl setMicIsOn={setMicIsOn} micIsOn={micIsOn} roomId={roomId} /> */}
             {alert && <AlertDialogModal message={alert.message} onClose={alert.onClose} onYes={alert.onYes} type={alert.type}></AlertDialogModal>}

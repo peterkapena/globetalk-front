@@ -21,7 +21,7 @@ type RootProps = {
 
 export default function AuthGuard({ children }: RootProps) {
   const [loaded, setLoaded] = useState(false);
-  const token = sessionStorage.getItem(STR_TOKEN);
+  const token = localStorage.getItem(STR_TOKEN);
 
   const [verifyToken] = useMutation(VERIFY_TOKEN, {
     variables: { input: token || "" },
@@ -39,11 +39,11 @@ export default function AuthGuard({ children }: RootProps) {
           const { isValid } = rtn.data?.verifyToken;
           if (isValid) {
             const { email, token } = rtn.data?.verifyToken;
-            sessionStorage.setItem(STR_TOKEN, token);
+            localStorage.setItem(STR_TOKEN, token);
             dispatch(setUser({ user: { email } }));
             setLoaded(true);
           } else {
-            sessionStorage.removeItem(STR_TOKEN);
+            localStorage.removeItem(STR_TOKEN);
             window.location.href = ROUTES.SIGNIN;
           }
         }

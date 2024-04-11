@@ -5,7 +5,7 @@ const apollo = new ApolloClient({
   uri: process.env.REACT_APP_GRAPHQL_URL,
   cache: new InMemoryCache(),
   headers: {
-    authorization: sessionStorage.getItem(STR_TOKEN) || "",
+    authorization: localStorage.getItem(STR_TOKEN) || "",
   },
 });
 
