@@ -1,7 +1,6 @@
 import { AspectRatio, Button, Card, Grid, Sheet, Skeleton, Typography } from '@mui/joy';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { MeetingBottomControl } from './MeetingBottomControl';
 import { Socket, io } from "socket.io-client";
 import { useUser } from '../redux/user-slice';
 import AlertDialogModal, { AlertProps } from '../components/Alert';
