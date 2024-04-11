@@ -140,7 +140,7 @@ export default function Page() {
             register={register}
           ></ConfirmPassword>
 
-<Box
+          <Box
             sx={{
               my: 1,
               display: "flex",
