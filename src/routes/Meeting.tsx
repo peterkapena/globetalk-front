@@ -132,9 +132,11 @@ const Meeting = () => {
     }, [roomId, user.email]);
 
     useEffect(() => {
-        if (!socketRef.current || !process.env.REACT_APP_SOCKET_ENDPOINT) return
-
+        if (!process.env.REACT_APP_SOCKET_ENDPOINT) return
         socketRef.current = io(process.env.REACT_APP_SOCKET_ENDPOINT)
+
+        if (!socketRef.current) return
+
         getLocalStream();
 
         socketRef.current.on('all_users', handleAllUsers);
@@ -161,7 +163,9 @@ const Meeting = () => {
                         console.log('get candidate');
                         const pc: RTCPeerConnection = pcsRef.current[data.candidateSendID];
                         if (!pc) return;
-                        await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+                        console.log(pc.remoteDescription)
+                        if (pc.remoteDescription)
+                            await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
                         console.log('candidate add success');
                     }
                 );
@@ -276,7 +280,7 @@ const Meeting = () => {
             justifyContent: "center",
             m: 4,
         }}>
-            {/* <Button onClick={testSocket}>Test Socket</Button> */}
+            {/* <Button onClick={() => socketRef.current?.emit('join_room', { room: roomId, email: user.email, })}>Test Socket</Button> */}
             <video
                 style={{
                     width: 240,
