@@ -1,9 +1,9 @@
 # Stage 1: Build the React application
 FROM node:14-alpine as build
 WORKDIR /app
-COPY package.json ./
-RUN npm install
-COPY . .
+COPY ./globetalk-front/package.json ./globetalk-front/package-lock.json ./
+RUN npm ci
+COPY ./globetalk-front ./
 RUN npm run build
 
 # Stage 2: Serve the application with Nginx
