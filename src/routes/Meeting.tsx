@@ -160,13 +160,14 @@ const Meeting = () => {
                 socketRef.current.on(
                     'getCandidate',
                     async (data: { candidate: RTCIceCandidateInit; candidateSendID: string; }) => {
-                        console.log('get candidate');
+                        // console.log('get candidate');
                         const pc: RTCPeerConnection = pcsRef.current[data.candidateSendID];
                         if (!pc) return;
-                        console.log(pc.remoteDescription)
+                        // console.log(pc.remoteDescription)
                         if (pc.remoteDescription)
                             await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
                         console.log('candidate add success');
+                        console.log(pcsRef.current)
                     }
                 );
         }
@@ -264,11 +265,13 @@ const Meeting = () => {
             if (socketRef.current) {
                 socketRef.current.disconnect();
             }
-            // users.forEach((user) => {
-            //     if (!pcsRef.current[user.id]) return;
-            //     pcsRef.current[user.id].close();
-            //     delete pcsRef.current[user.id];
-            // });
+            Object.keys(pcsRef.current).forEach((socketId) => {
+                const pc = pcsRef.current[socketId];
+                if (pc) {
+                    pc.close(); // Close the RTCPeerConnection
+                    delete pcsRef.current[socketId]; // Delete the entry from pcsRef
+                }
+            });
         }
     }, [createPeerConnection, getLocalStream])
 

@@ -27,7 +27,7 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState<boolean>();
   const [signup] = useMutation(SIGNUP);
-
+  const [gotoSigninTimeout, setGotoSigninTimeout] = useState<NodeJS.Timeout>()
   const {
     register,
     handleSubmit,
@@ -50,20 +50,20 @@ export default function Page() {
         email: data.email,
       };
       const rtn = (await signup({ variables: { input } })).data.signup;
-      if (IS_DEVELOPER) console.log(rtn);
+      // if (IS_DEVELOPER) console.log(rtn);
 
       setShowSubmitButton(false);
       if (rtn) {
         setMessages([
           ...messages,
           "Sign up was successful. You will be redirected to sign-in in " +
-            AUTO_SIGNIN_TIMEOUT_REDIRECT +
-            " seconds or signin now.",
+          AUTO_SIGNIN_TIMEOUT_REDIRECT +
+          " seconds or signin now.",
         ]);
-        setTimeout(
+        setGotoSigninTimeout(setTimeout(
           () => (window.location.href = "/"),
           AUTO_SIGNIN_TIMEOUT_REDIRECT * 1000
-        );
+        ));
       } else {
         setMessages([
           ...messages,
@@ -81,11 +81,11 @@ export default function Page() {
     <Sheet
       sx={{
         width: "100%",
-        height: "100vh",
+        // height: "100vh",
         display: "flex",
         justifyContent: "center",
         m: 0,
-        p: 2,
+        // p: 2,
       }}
     >
       <Sheet
@@ -104,7 +104,7 @@ export default function Page() {
         variant="outlined"
       >
         <form onSubmit={handleSubmit(processForm)}>
-          <Box sx={{ mb: 8, display: "grid", placeItems: "center" }}>
+          <Box sx={{ display: "grid", placeItems: "center" }}>
             <div style={{ justifySelf: "end" }}>
               <ColorSchemeToggle />
             </div>
@@ -166,6 +166,7 @@ export default function Page() {
               onClose={() => {
                 setShowSubmitButton(true);
                 setMessages([]);
+                clearTimeout(gotoSigninTimeout)
                 reset();
                 isSuccess && navigate(ROUTES.SIGNIN);
               }}

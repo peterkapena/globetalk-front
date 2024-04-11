@@ -50,7 +50,7 @@ export default function Page() {
 
       const rtn = (await signin({ variables: { input } })).data?.signin;
 
-      if (IS_DEVELOPER) console.log(rtn);
+      // if (IS_DEVELOPER) console.log(rtn);
 
       if (rtn?.messages.length > 0) {
         setMessages(["sign in failed"]);

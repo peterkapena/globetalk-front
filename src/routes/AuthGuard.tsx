@@ -1,6 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 import { useEffect, useState } from "react";
-import { IS_DEVELOPER, ROUTES, STR_TOKEN } from "../helpers/common";
+import { ROUTES, STR_TOKEN } from "../helpers/common";
 import { useAppDispatch } from "../redux/hooks";
 import { setUser } from "../redux/user-slice";
 import { CircularProgress } from "@mui/joy";
@@ -34,7 +34,7 @@ export default function AuthGuard({ children }: RootProps) {
         if (!token) window.location.href = ROUTES.SIGNIN;
 
         const rtn = await verifyToken({ variables: { input: token || "" } });
-        if (IS_DEVELOPER) console.log(rtn.data);
+        // if (IS_DEVELOPER) console.log(rtn.data);
         if (rtn.data) {
           const { isValid } = rtn.data?.verifyToken;
           if (isValid) {
