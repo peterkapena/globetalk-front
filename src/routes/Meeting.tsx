@@ -278,7 +278,6 @@ const Meeting = () => {
             height: "100%",
             display: "flex",
             justifyContent: "center",
-            m: 4,
         }}>
             {/* <Button onClick={() => socketRef.current?.emit('join_room', { room: roomId, email: user.email, })}>Test Socket</Button> */}
             <video
