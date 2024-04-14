@@ -5,7 +5,8 @@ import { Socket, io } from "socket.io-client";
 import { useUser } from '../redux/user-slice';
 import AlertDialogModal, { AlertProps } from '../components/Alert';
 import Video from '../components/Video';
- 
+// https://github.com/millo-L/Typescript-ReactJS-WebRTC-1-N-P2P
+
 const alerts: AlertProps[] = [
     {
         message: "The device is currently in use or not accessible",
@@ -34,6 +35,8 @@ const pc_config = {
         },
     ],
 };
+
+const SOCKET_ENDPOINT = process.env.REACT_APP_SOCKET_ENDPOINT;
 
 const Meeting = () => {
     const user = useUser()
@@ -132,8 +135,8 @@ const Meeting = () => {
     }, [roomId, user.email]);
 
     useEffect(() => {
-        if (!process.env.REACT_APP_SOCKET_ENDPOINT) return
-        socketRef.current = io(process.env.REACT_APP_SOCKET_ENDPOINT)
+        if (!SOCKET_ENDPOINT) return
+        socketRef.current = io(SOCKET_ENDPOINT)
 
         if (!socketRef.current) return
 
