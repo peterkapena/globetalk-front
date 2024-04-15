@@ -1,10 +1,10 @@
 import { Sheet } from '@mui/joy';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { Socket, io } from "socket.io-client";
-import { useUser } from '../redux/user-slice';
-import AlertDialogModal, { AlertProps } from '../components/Alert';
 import Video from '../components/Video';
+import { useUser } from '../redux/user-slice';
+import { useParams } from 'react-router-dom';
+import AlertDialogModal, { AlertProps } from '../components/Alert';
 // https://github.com/millo-L/Typescript-ReactJS-WebRTC-1-N-P2P
 
 const alerts: AlertProps[] = [
@@ -36,7 +36,7 @@ const pc_config = {
     ],
 };
 
-const SOCKET_ENDPOINT = process.env.REACT_APP_SOCKET_ENDPOINT;
+const SOCKET_SERVER_URL = process.env.REACT_APP_SOCKET_ENDPOINT;
 
 const Meeting = () => {
     const user = useUser()
@@ -47,6 +47,41 @@ const Meeting = () => {
     const pcsRef = useRef<{ [socketId: string]: RTCPeerConnection }>({});
     const [alert, setAlert] = useState<AlertProps>()
     const [users, setUsers] = useState<WebRTCUser[]>([]);
+
+    const getLocalStream = useCallback(async () => {
+        try {
+            const localStream = await navigator.mediaDevices.getUserMedia({
+                audio: true,
+                video: {
+                    width: 240,
+                    height: 240,
+                },
+            });
+            localStreamRef.current = localStream;
+            if (localVideoRef.current) localVideoRef.current.srcObject = localStream;
+            if (!socketRef.current) return;
+            socketRef.current.emit('join_room', {
+                room: roomId,
+                email: user.email,
+            });
+        } catch (e) {
+            if (e instanceof DOMException) {
+                switch (e.name) {
+                    case 'NotReadableError':
+                        setAlert(alerts[0])
+                        console.log(alerts[0].message);
+                        break;
+                    default:
+                        setAlert(alerts[alerts.length - 1])
+                        console.log('An error occurred: ', e.message);
+                        break;
+                }
+            } else {
+                // Handle non-DOMException errors
+                console.log('An unexpected error occurred: ', e);
+            }
+        }
+    }, []);
 
     const createPeerConnection = useCallback((socketID: string, email: string) => {
         try {
@@ -67,7 +102,7 @@ const Meeting = () => {
             };
 
             pc.ontrack = (e) => {
-                console.log('ontrack success', e);
+                console.log('ontrack success');
                 setUsers((oldUsers) =>
                     oldUsers
                         .filter((user) => user.id !== socketID)
@@ -96,174 +131,121 @@ const Meeting = () => {
         }
     }, []);
 
-    const getLocalStream = useCallback(async () => {
-        try {
-            const localStream = await navigator.mediaDevices.getUserMedia({
-                audio: true,
-                video: {
-                    width: 240,
-                    height: 240,
-                },
-            });
-            localStreamRef.current = localStream;
-            if (localVideoRef.current) localVideoRef.current.srcObject = localStream;
-
-            if (socketRef.current) {
-                socketRef.current?.emit('join_room', {
-                    room: roomId,
-                    email: user.email,
-                });
-                console.log(`joined room ${roomId}`)
-            }
-        } catch (e) {
-            if (e instanceof DOMException) {
-                switch (e.name) {
-                    case 'NotReadableError':
-                        setAlert(alerts[0])
-                        console.log(alerts[0].message);
-                        break;
-                    default:
-                        setAlert(alerts[alerts.length - 1])
-                        console.log('An error occurred: ', e.message);
-                        break;
-                }
-            } else {
-                // Handle non-DOMException errors
-                console.log('An unexpected error occurred: ', e);
-            }
-        }
-    }, [roomId, user.email]);
-
     useEffect(() => {
-        if (!SOCKET_ENDPOINT) return
-        socketRef.current = io(SOCKET_ENDPOINT)
-
-        if (!socketRef.current) return
-
-        getLocalStream();
-
-        socketRef.current.on('all_users', handleAllUsers);
-        socketRef.current.on('getOffer', handleGetOffer);
-        socketRef.current.on('getAnswer', handleGetAnswer);
-        socketRef.current.on('getCandidate', handleGetCandidate);
-        socketRef.current.on('user_exit', handleUserExit);
-
-        function handleUserExit() {
-            if (socketRef.current)
-                socketRef.current.on('user_exit', (data: { id: string; }) => {
-                    if (!pcsRef.current[data.id]) return;
-                    pcsRef.current[data.id].close();
-                    delete pcsRef.current[data.id];
-                    setUsers((oldUsers) => oldUsers.filter((user) => user.id !== data.id));
+        if (!SOCKET_SERVER_URL) return;
+        socketRef.current = io(SOCKET_SERVER_URL);
+        if (socketRef.current) {
+            console.log(socketRef.current)
+            getLocalStream();
+            socketRef.current.on('all_users', (allUsers: Array<{ id: string; email: string }>) => {
+                allUsers.forEach(async (user) => {
+                    if (!localStreamRef.current) return;
+                    const pc = createPeerConnection(user.id, user.email);
+                    if (!(pc && socketRef.current)) return;
+                    pcsRef.current = { ...pcsRef.current, [user.id]: pc };
+                    try {
+                        const localSdp = await pc.createOffer({
+                            offerToReceiveAudio: true,
+                            offerToReceiveVideo: true,
+                        });
+                        console.log('create offer success');
+                        await pc.setLocalDescription(new RTCSessionDescription(localSdp));
+                        socketRef.current.emit('offer', {
+                            sdp: localSdp,
+                            offerSendID: socketRef.current.id,
+                            offerSendEmail: user.email,
+                            offerReceiveID: user.id,
+                        });
+                    } catch (e) {
+                        console.error(e);
+                    }
                 });
-        }
+            });
 
-        function handleGetCandidate() {
-            if (socketRef.current)
-                socketRef.current.on(
-                    'getCandidate',
-                    async (data: { candidate: RTCIceCandidateInit; candidateSendID: string; }) => {
-                        // console.log('get candidate');
-                        const pc: RTCPeerConnection = pcsRef.current[data.candidateSendID];
-                        if (!pc) return;
-                        // console.log(pc.remoteDescription)
-                        if (pc.remoteDescription)
-                            await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
-                        console.log('candidate add success');
-                        console.log(pcsRef.current)
+            socketRef.current.on(
+                'getOffer',
+                async (data: {
+                    sdp: RTCSessionDescription;
+                    offerSendID: string;
+                    offerSendEmail: string;
+                }) => {
+                    const { sdp, offerSendID, offerSendEmail } = data;
+                    console.log('get offer');
+                    if (!localStreamRef.current) return;
+                    const pc = createPeerConnection(offerSendID, offerSendEmail);
+                    if (!(pc && socketRef.current)) return;
+                    pcsRef.current = { ...pcsRef.current, [offerSendID]: pc };
+                    try {
+                        await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+                        console.log('answer set remote description success');
+                        const localSdp = await pc.createAnswer({
+                            offerToReceiveVideo: true,
+                            offerToReceiveAudio: true,
+                        });
+                        await pc.setLocalDescription(new RTCSessionDescription(localSdp));
+                        socketRef.current.emit('answer', {
+                            sdp: localSdp,
+                            answerSendID: socketRef.current.id,
+                            answerReceiveID: offerSendID,
+                        });
+                    } catch (e) {
+                        console.error(e);
                     }
-                );
-        }
+                },
+            );
 
-        function handleGetAnswer() {
-            if (socketRef.current)
-                socketRef.current.on(
-                    'getAnswer',
-                    (data: { sdp: RTCSessionDescription; answerSendID: string; }) => {
-                        const { sdp, answerSendID } = data;
-                        console.log('get answer');
-                        const pc: RTCPeerConnection = pcsRef.current[answerSendID];
-                        if (!pc) return;
-                        // Check if the PeerConnection is in a non-stable state, indicating it's ready for a remote description
-                        if (pc.signalingState !== "stable") {
-                            console.log('Setting remote description on:', answerSendID);
-                            pc.setRemoteDescription(new RTCSessionDescription(sdp))
-                                .then(() => console.log("Remote description set successfully for:", answerSendID))
-                                .catch((error) => console.error("Error setting remote description:", error));
-                        } else {
-                            // If we are in a stable state, this might not be the right time to set a remote description
-                            // This could indicate an issue with the signaling logic or might require renegotiation handling.
-                            console.warn("Attempted to set remote description in a stable state for:", answerSendID);
-                        }
+            socketRef.current.on(
+                'getAnswer',
+                (data: { sdp: RTCSessionDescription; answerSendID: string; }) => {
+                    const { sdp, answerSendID } = data;
+                    console.log('get answer');
+                    const pc: RTCPeerConnection = pcsRef.current[answerSendID];
+                    if (!pc) return;
+                    // Check if the PeerConnection is in a non-stable state, indicating it's ready for a remote description
+                    if (pc.signalingState !== "stable") {
+                        console.log('Setting remote description on:', answerSendID);
+                        pc.setRemoteDescription(new RTCSessionDescription(sdp))
+                            .then(() => console.log("Remote description set successfully for:", answerSendID))
+                            .catch((error) => console.error("Error setting remote description:", error));
+                    } else {
+                        // If we are in a stable state, this might not be the right time to set a remote description
+                        // This could indicate an issue with the signaling logic or might require renegotiation handling.
+                        console.warn("Attempted to set remote description in a stable state for:", answerSendID);
                     }
-                );
+                }
+            );
+            socketRef.current.on(
+                'getCandidate',
+                async (data: { candidate: RTCIceCandidateInit; candidateSendID: string }) => {
+                    console.log('get candidate');
+                    const pc: RTCPeerConnection = pcsRef.current[data.candidateSendID];
+                    if (!pc) return;
+                    await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+                    console.log('candidate add success');
+                },
+            );
+
+            socketRef.current.on('user_exit', (data: { id: string }) => {
+                if (!pcsRef.current[data.id]) return;
+                pcsRef.current[data.id].close();
+                delete pcsRef.current[data.id];
+                setUsers((oldUsers) => oldUsers.filter((user) => user.id !== data.id));
+            });
+
         }
 
-        function handleGetOffer() {
+        return () => {
             if (socketRef.current) {
-                socketRef.current.on(
-                    'getOffer',
-                    async (data: {
-                        sdp: RTCSessionDescription;
-                        offerSendID: string;
-                        offerSendEmail: string;
-                    }) => {
-                        const { sdp, offerSendID, offerSendEmail } = data;
-                        console.log('get offer');
-                        if (!localStreamRef.current) return;
-                        const pc = createPeerConnection(offerSendID, offerSendEmail);
-                        if (!(pc && socketRef.current)) return;
-                        pcsRef.current = { ...pcsRef.current, [offerSendID]: pc };
-                        try {
-                            await pc.setRemoteDescription(new RTCSessionDescription(sdp));
-                            console.log('answer set remote description success');
-                            const localSdp = await pc.createAnswer({
-                                offerToReceiveVideo: true,
-                                offerToReceiveAudio: true,
-                            });
-                            await pc.setLocalDescription(new RTCSessionDescription(localSdp));
-                            socketRef.current.emit('answer', {
-                                sdp: localSdp,
-                                answerSendID: socketRef.current.id,
-                                answerReceiveID: offerSendID,
-                            });
-                        } catch (e) {
-                            console.error(e);
-                        }
-                    }
-                );
+                socketRef.current.disconnect();
             }
-        }
-
-        function handleAllUsers() {
-            if (socketRef.current) {
-                socketRef.current.on('all_users', (allUsers: Array<{ id: string; email: string; }>) => {
-                    allUsers.forEach(async (user) => {
-                        if (!localStreamRef.current) return;
-                        const pc = createPeerConnection(user.id, user.email);
-                        if (!(pc && socketRef.current)) return;
-                        pcsRef.current = { ...pcsRef.current, [user.id]: pc };
-                        try {
-                            const localSdp = await pc.createOffer({
-                                offerToReceiveAudio: true,
-                                offerToReceiveVideo: true,
-                            });
-                            console.log('create offer success');
-                            await pc.setLocalDescription(new RTCSessionDescription(localSdp));
-                            socketRef.current.emit('offer', {
-                                sdp: localSdp,
-                                offerSendID: socketRef.current.id,
-                                offerSendEmail: user.email,
-                                offerReceiveID: user.id,
-                            });
-                        } catch (e) {
-                            console.error(e);
-                        }
-                    });
-                });
-            }
-        }
-    }, [createPeerConnection, getLocalStream])
+            users.forEach((user) => {
+                if (!pcsRef.current[user.id]) return;
+                pcsRef.current[user.id].close();
+                delete pcsRef.current[user.id];
+            });
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [createPeerConnection, getLocalStream]);
 
     useEffect(() => {
         return () => {
