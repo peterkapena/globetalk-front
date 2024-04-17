@@ -1,4 +1,5 @@
-import { Box } from '@mui/joy';
+import { MicOffOutlined, KeyboardVoiceOutlined } from '@mui/icons-material';
+import { Box, Card, CardContent, CardCover, Typography } from '@mui/joy';
 import { useEffect, useRef, useState } from 'react';
 
 interface Props {
@@ -25,21 +26,26 @@ const Video = ({ email, stream, muted = false, videoRef }: Props) => {
 	const [isMuted, setIsMuted] = useState<boolean>(muted);
 
 	return (
-		<Box sx={{ position: "relative", display: "inline-block", width: "240px", height: "270px", margin: "5px" }}>
-			<video
-				style={{
-					width: "240px",
-					height: "240px",
-					backgroundColor: "black"
+		<Card sx={{ minHeight: '280px', width: 300, m: 1 }}>
+			<CardCover>
+				<video muted={isMuted} ref={usedRef} autoPlay />
+			</CardCover>
+			<CardCover
+				sx={{
+					background:
+						'linear-gradient(to top, rgba(0,0,0,0.0), rgba(0,0,0,0) 50px), linear-gradient(to top, rgba(0,0,0,0), rgba(0,0,0,0) 50px)',
 				}}
-				muted={isMuted}
-				ref={usedRef}
-				autoPlay
 			/>
-			<p style={{ position: "absolute", top: "230px", left: "0px", width: "100%", textAlign: "center" }}>
-				{email}
-			</p>
-		</Box>
+			<CardContent sx={{ justifyContent: 'flex-end' }}>
+				<Box sx={{ display: "flex", justifyContent: "start" }}>
+					<Typography color='neutral'
+						startDecorator={isMuted ? <MicOffOutlined color='error' /> : <KeyboardVoiceOutlined />}
+					>
+						{email}
+					</Typography>
+				</Box>
+			</CardContent>
+		</Card>
 	);
 };
 
