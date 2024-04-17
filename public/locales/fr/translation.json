@@ -1,0 +1,37 @@
+{
+  "auth": {
+    "signup": "S'inscrire",
+    "signin": "Se connecter",
+    "signin_to_continue": "En continuant, vous acceptez les Conditions d'utilisation et la Politique de confidentialité.",
+    "signup_to_continue": "En créant un compte, vous acceptez les Conditions d'utilisation et la Politique de confidentialité.",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "click_to_signup": "Vous n'avez pas de compte ? Cliquez ici pour en créer un",
+    "sign_in_btn": "Se connecter",
+    "sign_up_btn": "S'inscrire",
+    "password_confirm": "Confirmer le mot de passe",
+    "already_has_acc": "Vous avez déjà un compte ? Cliquez ici pour vous connecter maintenant !",
+    "forgot_password": "Mot de passe oublié"
+  },
+  "welcome": {
+    "welcome": "Bienvenue",
+    "vide_calls_for_all": "Appels vidéo et réunions pour tous en plus de 200 langues.",
+    "provide_vid_calls": "Globetalk offre des appels vidéo et des réunions sécurisés, faciles à utiliser pour tous, avec traduction fluide, sur le navigateur de n'importe quel appareil.",
+    "new_meeting": "Nouvelle réunion",
+    "join": "Rejoindre",
+    "try_premium": "Essayez les fonctionnalités Premium de Globetalk",
+    "what_premium_provides": "Globetalk Premium comprend des appels de groupe plus longs, l'enregistrement, et d'autres fonctionnalités.",
+    "enter_code_or_link": "Entrez un code ou un lien"
+  },
+  "sidebar": {
+    "home": "Accueil"
+  },
+  "meeting": {
+    "copy_meeting_link": "Copier le lien de la réunion",
+    "change_listening_language": "Changer la langue d'écoute",
+    "caption": "Activer/désactiver les sous-titres",
+    "camera": "Activer/désactiver la caméra",
+    "microphone": "Activer/désactiver le microphone",
+    "meetingdetails": "Détails de la réunion"
+  }
+}
