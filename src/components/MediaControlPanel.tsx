@@ -1,8 +1,8 @@
-import { CallEndOutlined, CheckCircleOutlined, ClosedCaptionDisabledOutlined, ClosedCaptionOffOutlined, CopyAllOutlined, InfoOutlined, KeyboardVoiceOutlined, MicOffOutlined, PublicOutlined, TranslateOutlined, VideocamOffOutlined, VideocamOutlined } from '@mui/icons-material';
-import { Box, Dropdown, IconButton, Menu, MenuButton, MenuItem, Stack, Tooltip, Typography } from '@mui/joy';
+import { CallEndOutlined, CheckCircleOutlined, ClosedCaptionDisabledOutlined, ClosedCaptionOffOutlined, CopyAllOutlined, KeyboardVoiceOutlined, MicOffOutlined, PublicOutlined, TranslateOutlined, VideocamOffOutlined, VideocamOutlined } from '@mui/icons-material';
+import { Box, Dropdown, IconButton, Menu, MenuButton, MenuItem, Sheet, Stack, Tooltip, } from '@mui/joy';
 import { languages } from '../helpers/i18n';
 import { copyToClipboard } from '../helpers/helpers';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -11,26 +11,15 @@ type MeetingBottomControlProps = {
     toggleVideo: any;
     isAudioMuted: boolean;
     isVideoEnabled: boolean;
-    roomId: string | undefined;
     toggleCaptions: any;
     isCaptionsEnabled: boolean;
     leaveCall: any
 }
 
-export function MediaControlPanel({ isAudioMuted, toggleAudio, roomId, isVideoEnabled, toggleVideo, isCaptionsEnabled, toggleCaptions, leaveCall }: MeetingBottomControlProps) {
+export function MediaControlPanel({ isAudioMuted, toggleAudio, isVideoEnabled, toggleVideo, isCaptionsEnabled, toggleCaptions, leaveCall }: MeetingBottomControlProps) {
     const [copied_icon, setCopied_icon] = useState(<CopyAllOutlined />)
     const navigate = useNavigate()
     const { t } = useTranslation();
-    const [currentTime, setCurrentTime] = useState(new Date());
-
-    useEffect(() => {
-        const timerId = setInterval(() => {
-            setCurrentTime(new Date());
-        }, 1000);
-
-        return () => clearInterval(timerId);
-    }, []);
-
 
     async function copy() {
         if (await copyToClipboard(window.location.href)) {
@@ -46,22 +35,19 @@ export function MediaControlPanel({ isAudioMuted, toggleAudio, roomId, isVideoEn
         navigate("/")
     }
 
-    return <Box
+    return <Sheet variant="outlined"
         sx={{
             display: "flex",
-            width: "97%",
             flexDirection: "row",
-            justifyContent: "space-between",
+            justifyContent: "center",
+            backgroundColor: "black",
             bottom: 0,
             position: 'fixed',
+            p: 2,
+            borderRadius: 8,
             mb: { xs: 4, sm: 2 }
         }}>
-        <Stack direction="row" spacing={1} sx={{ display: { xs: "none", sm: "flex" } }}>
-            <Typography>
-                {currentTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })} | {roomId}
-            </Typography>
-        </Stack>
-        <Stack direction="row" spacing={1}>
+        <Stack direction="row" spacing={2}>
             <Tooltip title={t("meeting.microphone")}>
                 <IconButton sx={{ m: 2 }} variant='solid' size='lg' onClick={() => toggleAudio(!isAudioMuted)}>
                     {isAudioMuted ? <MicOffOutlined /> : <KeyboardVoiceOutlined />}
@@ -77,18 +63,19 @@ export function MediaControlPanel({ isAudioMuted, toggleAudio, roomId, isVideoEn
                     {isCaptionsEnabled ? <ClosedCaptionOffOutlined /> : <ClosedCaptionDisabledOutlined />}
                 </IconButton>
             </Tooltip>
-            <IconButton sx={{ m: 2 }} variant='solid' color='danger' onClick={endCall}>
-                <CallEndOutlined />
-            </IconButton>
             <Tooltip title={t("meeting.copy_meeting_link")}>
-                <IconButton sx={{ m: 2 }} variant='solid' onClick={copy}>
+                <IconButton sx={{ m: 2 }} variant='solid' size='lg' onClick={copy}>
                     {copied_icon}
                 </IconButton>
             </Tooltip>
+            <IconButton sx={{ m: 2 }} variant='solid' size='lg' color='danger' onClick={endCall}>
+                <CallEndOutlined />
+            </IconButton>
+
             <Tooltip title={t("meeting.change_listening_language")}>
-                <Box sx={{ display: "flex" }}>
+                <Box sx={{ display: "flex", backgroundColor: "white" }} borderRadius={6}>
                     <Dropdown>
-                        <MenuButton variant="plain" size="md">
+                        <MenuButton variant="plain" size="lg">
                             <TranslateOutlined />
                         </MenuButton>
                         <Menu
@@ -112,12 +99,5 @@ export function MediaControlPanel({ isAudioMuted, toggleAudio, roomId, isVideoEn
                 </Box>
             </Tooltip>
         </Stack>
-        <Stack direction="row" spacing={1}>
-            <Tooltip title={t("meeting.meetingdetails")}>
-                <IconButton sx={{ m: 2 }} variant='solid' size='lg' >
-                    <InfoOutlined />
-                </IconButton>
-            </Tooltip>
-        </Stack>
-    </Box >;
+    </Sheet >;
 }
