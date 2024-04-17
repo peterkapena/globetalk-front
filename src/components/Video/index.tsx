@@ -3,23 +3,42 @@ import { useEffect, useRef, useState } from 'react';
 
 interface Props {
 	email: string;
-	stream: MediaStream;
+	stream?: MediaStream;
 	muted?: boolean;
+	videoRef?: React.RefObject<HTMLVideoElement>;
 }
 
-const Video = ({ email, stream, muted }: Props) => {
-	const ref = useRef<HTMLVideoElement>(null);
-	const [isMuted, setIsMuted] = useState<boolean>(false);
+const Video = ({ email, stream, muted = false, videoRef }: Props) => {
+	const internalRef = useRef<HTMLVideoElement>(null);
+	const usedRef = videoRef || internalRef;
 
 	useEffect(() => {
-		if (ref.current) ref.current.srcObject = stream;
-		if (muted) setIsMuted(muted);
-	}, [stream, muted]);
+		if (usedRef.current && stream) {
+			usedRef.current.srcObject = stream;
+		}
+	}, [stream, usedRef]);
+
+	useEffect(() => {
+		setIsMuted(muted);
+	}, [muted]);
+
+	const [isMuted, setIsMuted] = useState<boolean>(muted);
 
 	return (
-		<Box sx={{ position: "relative", display: "inline-block", width: "240px", height: "270px", margin: "5px", }}>
-			<video style={{ width: "240px", height: "240px", backgroundColor: "black" }} ref={ref} muted={isMuted} autoPlay />
-			<p style={{ display: "inline-block", position: "absolute", top: "230px", left: "0px" }}> {email}</p>
+		<Box sx={{ position: "relative", display: "inline-block", width: "240px", height: "270px", margin: "5px" }}>
+			<video
+				style={{
+					width: "240px",
+					height: "240px",
+					backgroundColor: "black"
+				}}
+				muted={isMuted}
+				ref={usedRef}
+				autoPlay
+			/>
+			<p style={{ position: "absolute", top: "230px", left: "0px", width: "100%", textAlign: "center" }}>
+				{email}
+			</p>
 		</Box>
 	);
 };

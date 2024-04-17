@@ -295,7 +295,9 @@ const Meeting = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [createPeerConnection, getLocalStream]);
 
-    useEffect(() => { return () => leaveCall() }, [leaveCall]);
+    useEffect(() => {
+        return () => leaveCall()
+    }, [leaveCall]);
 
     return (
         <Sheet sx={{
@@ -305,17 +307,7 @@ const Meeting = () => {
             justifyContent: "center",
         }}>
             {/* <Button onClick={() => socketRef.current?.emit('join_room', { room: roomId, email: user.email, })}>Test Socket</Button> */}
-            <video
-                style={{
-                    width: 240,
-                    height: 240,
-                    margin: 5,
-                    backgroundColor: 'black',
-                }}
-                muted
-                ref={localVideoRef}
-                autoPlay
-            />
+            <Video email={user.email || "..."} videoRef={localVideoRef}  muted={isAudioMuted} />
             {users.map((user, index) => (
                 user.stream.active && <Video key={index} email={user.email} stream={user.stream} />
             ))}
