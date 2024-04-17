@@ -308,10 +308,10 @@ const Meeting = () => {
             justifyContent: "center",
         }}>
             {/* <Button onClick={() => socketRef.current?.emit('join_room', { room: roomId, email: user.email, })}>Test Socket</Button> */}
-            <Video email={user.email || "..."} videoRef={localVideoRef} muted={isAudioMuted} />
+            <Video email={user.email || "..."} videoRef={localVideoRef} muted={isAudioMuted} isLocalStream={true} />
             {users.map((user, index) => (
                 user.stream.active &&
-                <Video key={index} email={user.email}
+                <Video key={index} email={user.email} isLocalStream={false}
                     stream={user.stream} muted={!user.stream.getAudioTracks().some(t => t.enabled)} // Check if any audio track is enabled
                 />
             ))}

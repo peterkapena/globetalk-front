@@ -5,11 +5,12 @@ import { useEffect, useRef, useState } from 'react';
 interface Props {
 	email: string;
 	stream?: MediaStream;
-	muted?: boolean;
+	muted: boolean;
 	videoRef?: React.RefObject<HTMLVideoElement>;
+	isLocalStream?: boolean
 }
 
-const Video = ({ email, stream, muted = false, videoRef }: Props) => {
+const Video = ({ email, stream, muted = false, videoRef, isLocalStream }: Props) => {
 	const internalRef = useRef<HTMLVideoElement>(null);
 	const usedRef = videoRef || internalRef;
 
@@ -29,7 +30,7 @@ const Video = ({ email, stream, muted = false, videoRef }: Props) => {
 		<Card sx={{ maxHeight: 350, width: 300, m: 1 }}>
 			<CardOverflow>
 				<AspectRatio ratio="1">
-					<video muted={isMuted} ref={usedRef} autoPlay />
+					<video muted={isLocalStream || isMuted} ref={usedRef} autoPlay />
 				</AspectRatio>
 				<IconButton
 					size="md"
