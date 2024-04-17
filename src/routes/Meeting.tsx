@@ -6,6 +6,9 @@ import { useUser } from '../redux/user-slice';
 import { useParams } from 'react-router-dom';
 import AlertDialogModal, { AlertProps } from '../components/Alert';
 import { MediaControlPanel } from '../components/MediaControlPanel';
+import AudioProcessor from '../components/AudioProcessor';
+import { Language, } from '../helpers/i18n';
+import { useTranslation } from 'react-i18next';
 // https://github.com/millo-L/Typescript-ReactJS-WebRTC-1-N-P2P
 
 const alerts: AlertProps[] = [
@@ -27,6 +30,7 @@ type WebRTCUser = {
     id: string;
     email: string;
     stream: MediaStream;
+    // language: string
 };
 
 const pc_config = {
@@ -51,6 +55,15 @@ const Meeting = () => {
     const [isAudioMuted, setIsAudioMuted] = useState(false);
     const [isVideoEnabled, setIsVideoEnabled] = useState(true);
     const [isCaptionsEnabled, setIsCaptionsEnabled] = useState(true);
+    const [remoteAudioTrack, setRemoteAudioTrack] = useState<{ socketId: string, audioTrack: MediaStreamTrack }>()
+    const [translationTargetLanguage, setTranslationTargetLanguage] = useState<Language>()
+    const { i18n } = useTranslation();
+    const currentLanguage = i18n.language;
+
+    const setTranslationLanguage = useCallback((l: Language) => {
+        console.log(l)
+        setTranslationTargetLanguage(l)
+    }, [translationTargetLanguage])
 
     const leaveCall = useCallback(() => {
         // Notify other users
@@ -112,6 +125,7 @@ const Meeting = () => {
             socketRef.current.emit('join_room', {
                 room: roomId,
                 email: user.email,
+                language: currentLanguage
             });
         } catch (e) {
             if (e instanceof DOMException) {
@@ -132,7 +146,7 @@ const Meeting = () => {
         }
     }, [roomId, user.email]);
 
-    const createPeerConnection = useCallback((socketID: string, email: string) => {
+    const createPeerConnection = useCallback((socketId: string, email: string) => {
         try {
             const pc = new RTCPeerConnection(pc_config);
 
@@ -142,7 +156,7 @@ const Meeting = () => {
                 socketRef.current.emit('candidate', {
                     candidate: e.candidate,
                     candidateSendID: socketRef.current.id,
-                    candidateReceiveID: socketID,
+                    candidateReceiveID: socketId,
                 });
             };
 
@@ -153,11 +167,14 @@ const Meeting = () => {
             pc.ontrack = (e) => {
                 // console.log(e)
                 console.log('ontrack success');
+                if (e.track.kind === 'audio') {
+                    setRemoteAudioTrack({ socketId, audioTrack: e.track })
+                }
                 setUsers((oldUsers) =>
                     oldUsers
-                        .filter((user) => user.id !== socketID)
+                        .filter((user) => user.id !== socketId)
                         .concat({
-                            id: socketID,
+                            id: socketId,
                             email,
                             stream: e.streams[0],
                         }),
@@ -293,7 +310,6 @@ const Meeting = () => {
                 delete pcsRef.current[user.id];
             });
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [createPeerConnection, getLocalStream]);
 
     useEffect(() => {
@@ -308,6 +324,7 @@ const Meeting = () => {
             justifyContent: "center",
         }}>
             {/* <Button onClick={() => socketRef.current?.emit('join_room', { room: roomId, email: user.email, })}>Test Socket</Button> */}
+            {remoteAudioTrack && translationTargetLanguage && <AudioProcessor {...remoteAudioTrack} ></AudioProcessor>}
             <Video email={user.email || "..."} videoRef={localVideoRef} muted={isAudioMuted} isLocalStream={true} />
             {users.map((user, index) => (
                 user.stream.active &&
@@ -315,13 +332,12 @@ const Meeting = () => {
                     stream={user.stream} muted={!user.stream.getAudioTracks().some(t => t.enabled)} // Check if any audio track is enabled
                 />
             ))}
-            <MediaControlPanel toggleAudio={toggleAudio} toggleVideo={toggleVideo} isAudioMuted={isAudioMuted} leaveCall={leaveCall}
-                isVideoEnabled={isVideoEnabled} roomId={roomId} isCaptionsEnabled={isCaptionsEnabled} toggleCaptions={toggleCaptions} />
+
+            <MediaControlPanel toggleAudio={toggleAudio} toggleVideo={toggleVideo} isAudioMuted={isAudioMuted} leaveCall={leaveCall} setTranslationLanguage={setTranslationLanguage}
+                isVideoEnabled={isVideoEnabled} isCaptionsEnabled={isCaptionsEnabled} toggleCaptions={toggleCaptions} />
             {alert && <AlertDialogModal message={alert.message} onClose={alert.onClose} onYes={alert.onYes} type={alert.type}></AlertDialogModal>}
         </Sheet >
     )
 }
 
 export default Meeting
-
-

@@ -1,4 +1,4 @@
-import { CallEndOutlined, CheckCircleOutlined, ClosedCaptionDisabledOutlined, ClosedCaptionOffOutlined, CopyAllOutlined, KeyboardVoiceOutlined, MicOffOutlined, PublicOutlined, TranslateOutlined, VideocamOffOutlined, VideocamOutlined } from '@mui/icons-material';
+import { CallEndOutlined, CheckCircleOutlined, ClosedCaptionDisabledOutlined, ClosedCaptionOffOutlined, CopyAllOutlined, InterpreterModeOutlined, KeyboardVoiceOutlined, MicOffOutlined,    VideocamOffOutlined, VideocamOutlined } from '@mui/icons-material';
 import { Box, Dropdown, IconButton, Menu, MenuButton, MenuItem, Sheet, Stack, Tooltip, } from '@mui/joy';
 import { languages } from '../helpers/i18n';
 import { copyToClipboard } from '../helpers/helpers';
@@ -13,10 +13,11 @@ type MeetingBottomControlProps = {
     isVideoEnabled: boolean;
     toggleCaptions: any;
     isCaptionsEnabled: boolean;
-    leaveCall: any
+    leaveCall: any;
+    setTranslationLanguage: any
 }
 
-export function MediaControlPanel({ isAudioMuted, toggleAudio, isVideoEnabled, toggleVideo, isCaptionsEnabled, toggleCaptions, leaveCall }: MeetingBottomControlProps) {
+export function MediaControlPanel({ isAudioMuted, toggleAudio, isVideoEnabled, toggleVideo, isCaptionsEnabled, toggleCaptions, leaveCall, setTranslationLanguage }: MeetingBottomControlProps) {
     const [copied_icon, setCopied_icon] = useState(<CopyAllOutlined />)
     const navigate = useNavigate()
     const { t } = useTranslation();
@@ -75,8 +76,8 @@ export function MediaControlPanel({ isAudioMuted, toggleAudio, isVideoEnabled, t
             <Tooltip title={t("meeting.change_listening_language")}>
                 <Box sx={{ display: "flex", backgroundColor: "white" }} borderRadius={6}>
                     <Dropdown>
-                        <MenuButton variant="plain" size="lg">
-                            <TranslateOutlined />
+                        <MenuButton variant="plain" size="md">
+                            <InterpreterModeOutlined />
                         </MenuButton>
                         <Menu
                             placement="bottom-end"
@@ -89,8 +90,8 @@ export function MediaControlPanel({ isAudioMuted, toggleAudio, isVideoEnabled, t
                             }}
                         >
                             {languages.map((l, i) => (
-                                <MenuItem onClick={() => { }} key={i}>
-                                    <PublicOutlined />
+                                <MenuItem onClick={() => { }} key={i} onClickCapture={() => setTranslationLanguage(l)} >
+                                    <InterpreterModeOutlined />
                                     {l.label}
                                 </MenuItem>
                             ))}

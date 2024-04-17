@@ -27,7 +27,7 @@ const Video = ({ email, stream, muted = false, videoRef, isLocalStream }: Props)
 	const [isMuted, setIsMuted] = useState<boolean>(muted);
 
 	return (
-		<Card sx={{ maxHeight: 350, width: 300, m: 1 }}>
+		<Card sx={{ maxHeight: 250, width: 250, m: 1 }}>
 			<CardOverflow>
 				<AspectRatio ratio="1">
 					<video muted={isLocalStream || isMuted} ref={usedRef} autoPlay />
