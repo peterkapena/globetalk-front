@@ -118,7 +118,7 @@ const Meeting = () => {
                 switch (e.name) {
                     case 'NotReadableError':
                         setAlert(alerts[0])
-                        console.log(alerts[0].message);
+                        // console.log(alerts[0].message);
                         break;
                     default:
                         setAlert(alerts[alerts.length - 1])
@@ -138,7 +138,7 @@ const Meeting = () => {
 
             pc.onicecandidate = (e) => {
                 if (!(socketRef.current && e.candidate)) return;
-                console.log('onicecandidate');
+                // console.log('onicecandidate');
                 socketRef.current.emit('candidate', {
                     candidate: e.candidate,
                     candidateSendID: socketRef.current.id,
@@ -151,6 +151,7 @@ const Meeting = () => {
             };
 
             pc.ontrack = (e) => {
+                // console.log(e)
                 console.log('ontrack success');
                 setUsers((oldUsers) =>
                     oldUsers
@@ -164,13 +165,13 @@ const Meeting = () => {
             };
 
             if (localStreamRef.current) {
-                console.log('localstream add');
+                // console.log('localstream add');
                 localStreamRef.current.getTracks().forEach((track) => {
                     if (!localStreamRef.current) return;
                     pc.addTrack(track, localStreamRef.current);
                 });
             } else {
-                console.log('no local stream');
+                // console.log('no local stream');
             }
 
             return pc;
@@ -197,7 +198,7 @@ const Meeting = () => {
                             offerToReceiveAudio: true,
                             offerToReceiveVideo: true,
                         });
-                        console.log('create offer success');
+                        // console.log('create offer success');
                         await pc.setLocalDescription(new RTCSessionDescription(localSdp));
                         socketRef.current.emit('offer', {
                             sdp: localSdp,
@@ -219,14 +220,14 @@ const Meeting = () => {
                     offerSendEmail: string;
                 }) => {
                     const { sdp, offerSendID, offerSendEmail } = data;
-                    console.log('get offer');
+                    // console.log('get offer');
                     if (!localStreamRef.current) return;
                     const pc = createPeerConnection(offerSendID, offerSendEmail);
                     if (!(pc && socketRef.current)) return;
                     pcsRef.current = { ...pcsRef.current, [offerSendID]: pc };
                     try {
                         await pc.setRemoteDescription(new RTCSessionDescription(sdp));
-                        console.log('answer set remote description success');
+                        // console.log('answer set remote description success');
                         const localSdp = await pc.createAnswer({
                             offerToReceiveVideo: true,
                             offerToReceiveAudio: true,
@@ -247,12 +248,12 @@ const Meeting = () => {
                 'getAnswer',
                 (data: { sdp: RTCSessionDescription; answerSendID: string; }) => {
                     const { sdp, answerSendID } = data;
-                    console.log('get answer');
+                    // console.log('get answer');
                     const pc: RTCPeerConnection = pcsRef.current[answerSendID];
                     if (!pc) return;
                     // Check if the PeerConnection is in a non-stable state, indicating it's ready for a remote description
                     if (pc.signalingState !== "stable") {
-                        console.log('Setting remote description on:', answerSendID);
+                        // console.log('Setting remote description on:', answerSendID);
                         pc.setRemoteDescription(new RTCSessionDescription(sdp))
                             .then(() => console.log("Remote description set successfully for:", answerSendID))
                             .catch((error) => console.error("Error setting remote description:", error));
@@ -266,11 +267,11 @@ const Meeting = () => {
             socketRef.current.on(
                 'getCandidate',
                 async (data: { candidate: RTCIceCandidateInit; candidateSendID: string }) => {
-                    console.log('get candidate');
+                    // console.log('get candidate');
                     const pc: RTCPeerConnection = pcsRef.current[data.candidateSendID];
                     if (!pc) return;
                     await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
-                    console.log('candidate add success');
+                    // console.log('candidate add success');
                 },
             );
 
@@ -307,9 +308,12 @@ const Meeting = () => {
             justifyContent: "center",
         }}>
             {/* <Button onClick={() => socketRef.current?.emit('join_room', { room: roomId, email: user.email, })}>Test Socket</Button> */}
-            <Video email={user.email || "..."} videoRef={localVideoRef}  muted={isAudioMuted} />
+            <Video email={user.email || "..."} videoRef={localVideoRef} muted={isAudioMuted} />
             {users.map((user, index) => (
-                user.stream.active && <Video key={index} email={user.email} stream={user.stream} />
+                user.stream.active &&
+                <Video key={index} email={user.email}
+                    stream={user.stream} muted={!user.stream.getAudioTracks().some(t => t.enabled)} // Check if any audio track is enabled
+                />
             ))}
             <MediaControlPanel toggleAudio={toggleAudio} toggleVideo={toggleVideo} isAudioMuted={isAudioMuted} leaveCall={leaveCall}
                 isVideoEnabled={isVideoEnabled} roomId={roomId} isCaptionsEnabled={isCaptionsEnabled} toggleCaptions={toggleCaptions} />
