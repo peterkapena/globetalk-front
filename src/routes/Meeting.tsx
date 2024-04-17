@@ -5,6 +5,7 @@ import Video from '../components/Video';
 import { useUser } from '../redux/user-slice';
 import { useParams } from 'react-router-dom';
 import AlertDialogModal, { AlertProps } from '../components/Alert';
+import { MediaControlPanel } from '../components/MediaControlPanel';
 // https://github.com/millo-L/Typescript-ReactJS-WebRTC-1-N-P2P
 
 const alerts: AlertProps[] = [
@@ -47,6 +48,54 @@ const Meeting = () => {
     const pcsRef = useRef<{ [socketId: string]: RTCPeerConnection }>({});
     const [alert, setAlert] = useState<AlertProps>()
     const [users, setUsers] = useState<WebRTCUser[]>([]);
+    const [isAudioMuted, setIsAudioMuted] = useState(false);
+    const [isVideoEnabled, setIsVideoEnabled] = useState(true);
+    const [isCaptionsEnabled, setIsCaptionsEnabled] = useState(true);
+
+    const leaveCall = useCallback(() => {
+        // Notify other users
+        if (socketRef.current) {
+            socketRef.current.disconnect();
+        }
+
+        // Stop all local media tracks
+        if (localStreamRef.current) {
+            localStreamRef.current.getTracks().forEach(track => track.stop());
+        }
+
+        // Close all PeerConnections
+        Object.values(pcsRef.current).forEach(pc => {
+            pc.close();
+        });
+        pcsRef.current = {};
+
+        // Optionally, manage state to reflect that the user has left the call
+        setUsers([]);
+    }, []);
+
+    const toggleAudio = useCallback(() => {
+        if (localStreamRef.current) {
+            const audioTracks = localStreamRef.current.getAudioTracks();
+            audioTracks.forEach(track => {
+                track.enabled = !track.enabled;
+            });
+            setIsAudioMuted(!isAudioMuted);
+        }
+    }, [isAudioMuted]);
+
+    const toggleCaptions = useCallback(() => {
+        setIsCaptionsEnabled(!isCaptionsEnabled)
+    }, [isCaptionsEnabled]);
+
+    const toggleVideo = useCallback(() => {
+        if (localStreamRef.current) {
+            const videoTracks = localStreamRef.current.getVideoTracks();
+            videoTracks.forEach(track => {
+                track.enabled = !track.enabled;
+            });
+            setIsVideoEnabled(!isVideoEnabled);
+        }
+    }, [isVideoEnabled]);
 
     const getLocalStream = useCallback(async () => {
         try {
@@ -81,7 +130,7 @@ const Meeting = () => {
                 console.log('An unexpected error occurred: ', e);
             }
         }
-    }, []);
+    }, [roomId, user.email]);
 
     const createPeerConnection = useCallback((socketID: string, email: string) => {
         try {
@@ -231,7 +280,6 @@ const Meeting = () => {
                 delete pcsRef.current[data.id];
                 setUsers((oldUsers) => oldUsers.filter((user) => user.id !== data.id));
             });
-
         }
 
         return () => {
@@ -247,23 +295,7 @@ const Meeting = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [createPeerConnection, getLocalStream]);
 
-    useEffect(() => {
-        return () => {
-            if (socketRef.current) {
-                socketRef.current.disconnect();
-            }
-            Object.keys(pcsRef.current).forEach((socketId) => {
-                const pc = pcsRef.current[socketId];
-                if (pc) {
-                    pc.close(); // Close the RTCPeerConnection
-                    delete pcsRef.current[socketId]; // Delete the entry from pcsRef
-                }
-            });
-            localStreamRef.current?.getTracks().forEach(track => {
-                track.stop();
-            });
-        }
-    }, []);
+    useEffect(() => { return () => leaveCall() }, [leaveCall]);
 
     return (
         <Sheet sx={{
@@ -287,7 +319,8 @@ const Meeting = () => {
             {users.map((user, index) => (
                 user.stream.active && <Video key={index} email={user.email} stream={user.stream} />
             ))}
-            {/* <MeetingBottomControl setMicIsOn={setMicIsOn} micIsOn={micIsOn} roomId={roomId} /> */}
+            <MediaControlPanel toggleAudio={toggleAudio} toggleVideo={toggleVideo} isAudioMuted={isAudioMuted} leaveCall={leaveCall}
+                isVideoEnabled={isVideoEnabled} roomId={roomId} isCaptionsEnabled={isCaptionsEnabled} toggleCaptions={toggleCaptions} />
             {alert && <AlertDialogModal message={alert.message} onClose={alert.onClose} onYes={alert.onYes} type={alert.type}></AlertDialogModal>}
         </Sheet >
     )
