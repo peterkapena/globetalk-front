@@ -1,6 +1,6 @@
-import { CallEndOutlined, CheckCircleOutlined, ClosedCaptionDisabledOutlined, ClosedCaptionOffOutlined, CopyAllOutlined, InterpreterModeOutlined, KeyboardVoiceOutlined, MicOffOutlined,    VideocamOffOutlined, VideocamOutlined } from '@mui/icons-material';
+import { CallEndOutlined, CheckCircleOutlined, ClosedCaptionDisabledOutlined, ClosedCaptionOffOutlined, CopyAllOutlined, InterpreterModeOutlined, KeyboardVoiceOutlined, MicOffOutlined, VideocamOffOutlined, VideocamOutlined } from '@mui/icons-material';
 import { Box, Dropdown, IconButton, Menu, MenuButton, MenuItem, Sheet, Stack, Tooltip, } from '@mui/joy';
-import { languages } from '../helpers/i18n';
+import { Language, languages } from '../helpers/i18n';
 import { copyToClipboard } from '../helpers/helpers';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -14,7 +14,7 @@ type MeetingBottomControlProps = {
     toggleCaptions: any;
     isCaptionsEnabled: boolean;
     leaveCall: any;
-    setTranslationLanguage: any
+    setTranslationLanguage: (l: Language) => void
 }
 
 export function MediaControlPanel({ isAudioMuted, toggleAudio, isVideoEnabled, toggleVideo, isCaptionsEnabled, toggleCaptions, leaveCall, setTranslationLanguage }: MeetingBottomControlProps) {

@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 
-async function translateAndSynthesizeSpeech(audioTrack: MediaStreamTrack) {
+async function translateAndSynthesizeSpeech(audioTrack: MediaStreamTrack, _: string, targetLanguage: string) {
     try {
         const stream = new MediaStream([audioTrack]);
         const transcription = await transcribeAudio(stream);
-        const translation = await translateText(transcription, 'target-language-code');
-        const speechBlob = await textToSpeech(translation, 'target-language-code');
+        const translation = await translateText(transcription, targetLanguage);
+        const speechBlob = await textToSpeech(translation, targetLanguage);
         playAudioBlob(speechBlob);
     } catch (error) {
         console.error('Error processing audio:', error);
@@ -40,12 +40,13 @@ function translateText(transcription: void, languageCode: string): Promise<strin
     throw new Error('Function not implemented.' + transcription + languageCode);
 }
 
-const AudioProcessor = ({ socketId, audioTrack }: { socketId: string, audioTrack: MediaStreamTrack }) => {
+const AudioProcessor = ({ socketId, audioTrack, sourceLanguage, targetLanguage }: { socketId: string, audioTrack: MediaStreamTrack, sourceLanguage: string, targetLanguage: string }) => {
+
     useEffect(() => {
         if (!audioTrack) return;
 
         // Assuming translateAndSynthesizeSpeech now correctly handles the audio track
-        translateAndSynthesizeSpeech(audioTrack);
+        translateAndSynthesizeSpeech(audioTrack, sourceLanguage, targetLanguage);
 
         return () => {
             // Optionally stop the audio track when the component unmounts

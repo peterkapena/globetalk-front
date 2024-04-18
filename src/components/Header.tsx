@@ -24,7 +24,8 @@ import { APP_NAME } from '../helpers/common';
 import { signOut, useUser } from '../redux/user-slice';
 import { useAppDispatch } from '../redux/hooks';
 import { ColorSchemeToggle } from './ColorSchemeToggle';
-import { languages } from '../helpers/i18n';
+import { Language, languages } from '../helpers/i18n';
+import { updateLanguage} from '../redux/meeting-slice';
 
 export default function Header() {
   const [open, setOpen] = React.useState(false);
@@ -33,6 +34,11 @@ export default function Header() {
   function logout() {
     dispatch(signOut());
   }
+
+  function changeLanguage(l: Language) {
+    dispatch(updateLanguage(l.script));
+  }
+
   const dispatch = useAppDispatch();
 
   return (
@@ -98,7 +104,7 @@ export default function Header() {
             }}
           >
             {languages.map((l, i) => (
-              <MenuItem onClick={() => { }} key={i}>
+              <MenuItem onClick={() => { }} key={i} onClickCapture={() => changeLanguage(l)}>
                 <PublicOutlined />
                 {l.label}
               </MenuItem>

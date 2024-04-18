@@ -7,8 +7,11 @@ import { useParams } from 'react-router-dom';
 import AlertDialogModal, { AlertProps } from '../components/Alert';
 import { MediaControlPanel } from '../components/MediaControlPanel';
 import AudioProcessor from '../components/AudioProcessor';
-import { Language, } from '../helpers/i18n';
+import { Language } from '../helpers/i18n';
 import { useTranslation } from 'react-i18next';
+import { updateLanguage } from '../redux/meeting-slice';
+import { useAppDispatch } from '../redux/hooks';
+
 // https://github.com/millo-L/Typescript-ReactJS-WebRTC-1-N-P2P
 
 const alerts: AlertProps[] = [
@@ -30,7 +33,7 @@ type WebRTCUser = {
     id: string;
     email: string;
     stream: MediaStream;
-    // language: string
+    language: string
 };
 
 const pc_config = {
@@ -55,15 +58,15 @@ const Meeting = () => {
     const [isAudioMuted, setIsAudioMuted] = useState(false);
     const [isVideoEnabled, setIsVideoEnabled] = useState(true);
     const [isCaptionsEnabled, setIsCaptionsEnabled] = useState(true);
-    const [remoteAudioTrack, setRemoteAudioTrack] = useState<{ socketId: string, audioTrack: MediaStreamTrack }>()
-    const [translationTargetLanguage, setTranslationTargetLanguage] = useState<Language>()
+    const [remoteAudioTrack, setRemoteAudioTrack] = useState<{ socketId: string, audioTrack: MediaStreamTrack, sourceLanguage: string, targetLanguage: string }>()
     const { i18n } = useTranslation();
+    const dispatch = useAppDispatch();
     const currentLanguage = i18n.language;
 
-    const setTranslationLanguage = useCallback((l: Language) => {
-        console.log(l)
-        setTranslationTargetLanguage(l)
-    }, [translationTargetLanguage])
+    function changeLanguage({ script }: Language) {
+        dispatch(updateLanguage(script));
+        socketRef.current?.emit("updateLanguage", script)
+    }
 
     const leaveCall = useCallback(() => {
         // Notify other users
@@ -146,7 +149,7 @@ const Meeting = () => {
         }
     }, [roomId, user.email]);
 
-    const createPeerConnection = useCallback((socketId: string, email: string) => {
+    const createPeerConnection = useCallback((socketId: string, email: string, language: string) => {
         try {
             const pc = new RTCPeerConnection(pc_config);
 
@@ -168,7 +171,7 @@ const Meeting = () => {
                 // console.log(e)
                 console.log('ontrack success');
                 if (e.track.kind === 'audio') {
-                    setRemoteAudioTrack({ socketId, audioTrack: e.track })
+                    setRemoteAudioTrack({ socketId, audioTrack: e.track, sourceLanguage: language, targetLanguage: currentLanguage })
                 }
                 setUsers((oldUsers) =>
                     oldUsers
@@ -177,6 +180,7 @@ const Meeting = () => {
                             id: socketId,
                             email,
                             stream: e.streams[0],
+                            language
                         }),
                 );
             };
@@ -204,10 +208,10 @@ const Meeting = () => {
         if (socketRef.current) {
             console.log(socketRef.current)
             getLocalStream();
-            socketRef.current.on('all_users', (allUsers: Array<{ id: string; email: string }>) => {
+            socketRef.current.on('all_users', (allUsers: [{ id: string; email: string, language: string }]) => {
                 allUsers.forEach(async (user) => {
                     if (!localStreamRef.current) return;
-                    const pc = createPeerConnection(user.id, user.email);
+                    const pc = createPeerConnection(user.id, user.email, user.language);
                     if (!(pc && socketRef.current)) return;
                     pcsRef.current = { ...pcsRef.current, [user.id]: pc };
                     try {
@@ -222,6 +226,7 @@ const Meeting = () => {
                             offerSendID: socketRef.current.id,
                             offerSendEmail: user.email,
                             offerReceiveID: user.id,
+                            offerLanguage: currentLanguage
                         });
                     } catch (e) {
                         console.error(e);
@@ -235,11 +240,12 @@ const Meeting = () => {
                     sdp: RTCSessionDescription;
                     offerSendID: string;
                     offerSendEmail: string;
+                    offerLanguage: string
                 }) => {
-                    const { sdp, offerSendID, offerSendEmail } = data;
+                    const { sdp, offerSendID, offerSendEmail, offerLanguage } = data;
                     // console.log('get offer');
                     if (!localStreamRef.current) return;
-                    const pc = createPeerConnection(offerSendID, offerSendEmail);
+                    const pc = createPeerConnection(offerSendID, offerSendEmail, offerLanguage);
                     if (!(pc && socketRef.current)) return;
                     pcsRef.current = { ...pcsRef.current, [offerSendID]: pc };
                     try {
@@ -298,6 +304,10 @@ const Meeting = () => {
                 delete pcsRef.current[data.id];
                 setUsers((oldUsers) => oldUsers.filter((user) => user.id !== data.id));
             });
+
+            socketRef.current.on('getLanguage', ({ language, id }: { language: string, id: string }) => {
+                setUsers((oldUsers) => oldUsers.map(user => user.id === id ? { ...user, language } : user),);
+            })
         }
 
         return () => {
@@ -323,8 +333,7 @@ const Meeting = () => {
             display: "flex",
             justifyContent: "center",
         }}>
-            {/* <Button onClick={() => socketRef.current?.emit('join_room', { room: roomId, email: user.email, })}>Test Socket</Button> */}
-            {remoteAudioTrack && translationTargetLanguage && <AudioProcessor {...remoteAudioTrack} ></AudioProcessor>}
+            {remoteAudioTrack && <AudioProcessor {...remoteAudioTrack} ></AudioProcessor>}
             <Video email={user.email || "..."} videoRef={localVideoRef} muted={isAudioMuted} isLocalStream={true} />
             {users.map((user, index) => (
                 user.stream.active &&
@@ -333,7 +342,7 @@ const Meeting = () => {
                 />
             ))}
 
-            <MediaControlPanel toggleAudio={toggleAudio} toggleVideo={toggleVideo} isAudioMuted={isAudioMuted} leaveCall={leaveCall} setTranslationLanguage={setTranslationLanguage}
+            <MediaControlPanel toggleAudio={toggleAudio} toggleVideo={toggleVideo} isAudioMuted={isAudioMuted} leaveCall={leaveCall} setTranslationLanguage={changeLanguage}
                 isVideoEnabled={isVideoEnabled} isCaptionsEnabled={isCaptionsEnabled} toggleCaptions={toggleCaptions} />
             {alert && <AlertDialogModal message={alert.message} onClose={alert.onClose} onYes={alert.onYes} type={alert.type}></AlertDialogModal>}
         </Sheet >

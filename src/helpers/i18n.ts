@@ -7,9 +7,9 @@ import { IS_DEVELOPER } from './common';
 export interface Language {
   label: string, script: string
 }
-
+export const English = { label: "English", script: "en" }
 export const languages: Language[] = [
-  { label: "English", script: "en" },
+  English,
   { label: "Francais", script: "fr" },
   { label: "Afrikaans", script: "af" },
 ]
