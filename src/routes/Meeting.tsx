@@ -6,7 +6,6 @@ import { useUser } from '../redux/user-slice';
 import { useParams } from 'react-router-dom';
 import AlertDialogModal, { AlertProps } from '../components/Alert';
 import { MediaControlPanel } from '../components/MediaControlPanel';
-import AudioProcessor from '../components/AudioProcessor';
 import { Language } from '../helpers/i18n';
 import { useTranslation } from 'react-i18next';
 import { updateLanguage } from '../redux/meeting-slice';
@@ -58,7 +57,7 @@ const Meeting = () => {
     const [isAudioMuted, setIsAudioMuted] = useState(false);
     const [isVideoEnabled, setIsVideoEnabled] = useState(true);
     const [isCaptionsEnabled, setIsCaptionsEnabled] = useState(true);
-    const [remoteAudioTrack, setRemoteAudioTrack] = useState<{ socketId: string, audioTrack: MediaStreamTrack, sourceLanguage: string, targetLanguage: string }>()
+    const [_, setRemoteAudioTrack] = useState<{ socketId: string, audioTrack: MediaStreamTrack, sourceLanguage: string, targetLanguage: string }>()
     const { i18n } = useTranslation();
     const dispatch = useAppDispatch();
     const currentLanguage = i18n.language;
@@ -333,7 +332,7 @@ const Meeting = () => {
             display: "flex",
             justifyContent: "center",
         }}>
-            {remoteAudioTrack && <AudioProcessor {...remoteAudioTrack} ></AudioProcessor>}
+            {/* {remoteAudioTrack && <AudioProcessor {...remoteAudioTrack} ></AudioProcessor>} */}
             <Video email={user.email || "..."} videoRef={localVideoRef} muted={isAudioMuted} isLocalStream={true} />
             {users.map((user, index) => (
                 user.stream.active &&
