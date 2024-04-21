@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Globetalk",
+  "name": "A Multi-lingual Video Conferencing Platform with Real-time Translation",
   "icons": [
     {
       "src": "favicon.ico",
