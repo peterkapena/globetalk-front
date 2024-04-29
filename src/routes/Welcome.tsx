@@ -1,15 +1,15 @@
-import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
-import { Box, Button, Divider, Grid, Input, Typography } from '@mui/joy';
-import { VideoCallOutlined } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
-import { ROUTES } from '../helpers/common';
+import { useTranslation } from "react-i18next";
+import { useState } from "react";
+import { Box, Button, Divider, Grid, Input, Typography } from "@mui/joy";
+import { VideoCallOutlined } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../helpers/common";
 // import { gql, useMutation } from "@apollo/client";
 
 function Welcome() {
   const { t } = useTranslation();
-  const [code_or_link, setCode_or_link] = useState<string>()
-  const navigate = useNavigate()
+  const [code_or_link, setCode_or_link] = useState<string>();
+  const navigate = useNavigate();
   // const [createRoom] = useMutation(CREATE_ROOM);
 
   function joinMeeting() {
@@ -28,13 +28,17 @@ function Welcome() {
   async function generateRoom() {
     let counter = Math.floor(Math.random() * 16777216); // Initialize counter with random value
     const timestamp = Math.floor(new Date().getTime() / 1000);
-    const machineIdentifier = Math.floor(Math.random() * 16777216).toString(16).padStart(6, '0');
-    const processIdentifier = Math.floor(Math.random() * 65536).toString(16).padStart(4, '0');
+    const machineIdentifier = Math.floor(Math.random() * 16777216)
+      .toString(16)
+      .padStart(6, "0");
+    const processIdentifier = Math.floor(Math.random() * 65536)
+      .toString(16)
+      .padStart(4, "0");
     counter = (counter + 1) % 16777216; // Ensure the counter wraps around
 
-    const counterBytes = counter.toString(16).padStart(6, '0'); // Ensure the counter is 3 bytes long
+    const counterBytes = counter.toString(16).padStart(6, "0"); // Ensure the counter is 3 bytes long
     return (
-      timestamp.toString(16).padStart(8, '0') +
+      timestamp.toString(16).padStart(8, "0") +
       machineIdentifier +
       processIdentifier +
       counterBytes
@@ -46,28 +50,45 @@ function Welcome() {
       sx={{
         display: "flex",
         minWidth: "70vw",
-        justifyContent: "center"
+        justifyContent: "center",
+        my: 10,
+        p: 4,
       }}
     >
       <Box sx={{ width: "600px", display: "flex", flexDirection: "column" }}>
         <Box sx={{ my: 1 }}>
-          <Typography textAlign={"center"} level='h2'>
+          <Typography textAlign={"center"} level="h2">
             {t("welcome.vide_calls_for_all")}
           </Typography>
         </Box>
         <Box sx={{ my: 1 }}>
-          <Typography textAlign={"center"} >
+          <Typography textAlign={"center"}>
             {t("welcome.provide_vid_calls")}
           </Typography>
         </Box>
 
         <form>
-          <Grid container spacing={2} justifyContent="center" textAlign="center" sx={{ my: 1 }}>
+          <Grid
+            container
+            spacing={2}
+            justifyContent="center"
+            textAlign="center"
+            sx={{ my: 1 }}
+          >
             <Grid>
-              <Input placeholder={t("welcome.enter_code_or_link")} onChange={(event) => setCode_or_link(event.target.value)} />
+              <Input
+                placeholder={t("welcome.enter_code_or_link")}
+                onChange={(event) => setCode_or_link(event.target.value)}
+              />
             </Grid>
             <Grid>
-              <Button color="primary" variant='outlined' sx={{ cursor: "pointer" }} disabled={!Boolean(code_or_link)} onClick={() => joinMeeting()}>
+              <Button
+                color="primary"
+                variant="outlined"
+                sx={{ cursor: "pointer" }}
+                disabled={!Boolean(code_or_link)}
+                onClick={() => joinMeeting()}
+              >
                 {t("welcome.join")}
               </Button>
             </Grid>
@@ -76,9 +97,23 @@ function Welcome() {
 
         <Divider>Or</Divider>
 
-        <Grid container spacing={2} justifyContent="center" textAlign="center" sx={{ my: 1 }}>
+        <Grid
+          container
+          spacing={2}
+          justifyContent="center"
+          textAlign="center"
+          sx={{ my: 1 }}
+        >
           <Grid>
-            <Button color="primary" startDecorator={<VideoCallOutlined />} onClick={() => generateRoom().then(room => navigate(`${ROUTES.MEETING}${room}`))}>
+            <Button
+              color="primary"
+              startDecorator={<VideoCallOutlined />}
+              onClick={() =>
+                generateRoom().then((room) =>
+                  navigate(`${ROUTES.MEETING}${room}`)
+                )
+              }
+            >
               {t("welcome.new_meeting")}
             </Button>
           </Grid>

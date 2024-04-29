@@ -11,7 +11,11 @@
     "sign_up_btn": "S'inscrire",
     "password_confirm": "Confirmer le mot de passe",
     "already_has_acc": "Vous avez déjà un compte ? Cliquez ici pour vous connecter maintenant !",
-    "forgot_password": "Mot de passe oublié"
+    "forgot_password": "Mot de passe oublié",
+    "terms_of_use": "Conditions d'utilisation",
+    "privacy_policy": "Politique de confidentialité",
+    "help": "Assistance",
+    "log_out": "Déconnexion"
   },
   "welcome": {
     "welcome": "Bienvenue",
@@ -24,7 +28,10 @@
     "enter_code_or_link": "Entrez un code ou un lien"
   },
   "sidebar": {
-    "home": "Accueil"
+    "home": "Accueil",
+    "notifications": "Notifications",
+    "settings": "Paramètres",
+    "support": "Assistance"
   },
   "meeting": {
     "copy_meeting_link": "Copier le lien de la réunion",

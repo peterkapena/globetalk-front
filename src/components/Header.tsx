@@ -1,35 +1,37 @@
-import * as React from 'react';
-import Box from '@mui/joy/Box';
-import Typography from '@mui/joy/Typography';
-import IconButton from '@mui/joy/IconButton';
-import Stack from '@mui/joy/Stack';
-import Avatar from '@mui/joy/Avatar';
-import Dropdown from '@mui/joy/Dropdown';
-import Menu from '@mui/joy/Menu';
-import MenuButton from '@mui/joy/MenuButton';
-import MenuItem from '@mui/joy/MenuItem';
-import ListDivider from '@mui/joy/ListDivider';
-import Drawer from '@mui/joy/Drawer';
-import ModalClose from '@mui/joy/ModalClose';
-import DialogTitle from '@mui/joy/DialogTitle';
-import LanguageRoundedIcon from '@mui/icons-material/LanguageRounded';
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import HelpRoundedIcon from '@mui/icons-material/HelpRounded';
-import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded';
-import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
-import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
-import SideBarNavigation from './Navigation';
-import { PublicOutlined, TranslateOutlined } from '@mui/icons-material';
-import { APP_NAME } from '../helpers/common';
-import { signOut, useUser } from '../redux/user-slice';
-import { useAppDispatch } from '../redux/hooks';
-import { ColorSchemeToggle } from './ColorSchemeToggle';
-import { Language, languages } from '../helpers/i18n';
-import { updateLanguage} from '../redux/meeting-slice';
+import * as React from "react";
+import Box from "@mui/joy/Box";
+import Typography from "@mui/joy/Typography";
+import IconButton from "@mui/joy/IconButton";
+import Stack from "@mui/joy/Stack";
+import Avatar from "@mui/joy/Avatar";
+import Dropdown from "@mui/joy/Dropdown";
+import Menu from "@mui/joy/Menu";
+import MenuButton from "@mui/joy/MenuButton";
+import MenuItem from "@mui/joy/MenuItem";
+import ListDivider from "@mui/joy/ListDivider";
+import Drawer from "@mui/joy/Drawer";
+import ModalClose from "@mui/joy/ModalClose";
+import DialogTitle from "@mui/joy/DialogTitle";
+import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
+import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
+import HelpRoundedIcon from "@mui/icons-material/HelpRounded";
+import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
+import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import SideBarNavigation from "./Navigation";
+import { PublicOutlined, TranslateOutlined } from "@mui/icons-material";
+import { APP_NAME } from "../helpers/common";
+import { signOut, useUser } from "../redux/user-slice";
+import { useAppDispatch } from "../redux/hooks";
+import { ColorSchemeToggle } from "./ColorSchemeToggle";
+import { Language, languages } from "../helpers/i18n";
+import { updateLanguage } from "../redux/meeting-slice";
+import { ListItemContent } from "@mui/joy";
+import { t } from "i18next";
 
 export default function Header() {
   const [open, setOpen] = React.useState(false);
-  const user = useUser()
+  const user = useUser();
 
   function logout() {
     dispatch(signOut());
@@ -44,9 +46,9 @@ export default function Header() {
   return (
     <Box
       sx={{
-        display: 'flex',
+        display: "flex",
         flexGrow: 1,
-        justifyContent: 'space-between',
+        justifyContent: "space-between",
       }}
     >
       <Stack
@@ -54,17 +56,21 @@ export default function Header() {
         justifyContent="center"
         alignItems="center"
         spacing={1}
-        sx={{ display: { xs: 'none', sm: 'flex' } }}
+        sx={{ display: { xs: "none", sm: "flex" } }}
       >
         <Logo />
         <LeftHeaderNavigation />
       </Stack>
-      <Box sx={{ display: { xs: 'inline-flex', sm: 'none' } }}>
-        <IconButton variant="plain" color="neutral" onClick={() => setOpen(true)}>
+      <Box sx={{ display: { xs: "inline-flex", sm: "none" } }}>
+        <IconButton
+          variant="plain"
+          color="neutral"
+          onClick={() => setOpen(true)}
+        >
           <MenuRoundedIcon />
         </IconButton>
         <Drawer
-          sx={{ display: { xs: 'inline-flex', sm: 'none' } }}
+          sx={{ display: { xs: "inline-flex", sm: "none" } }}
           open={open}
           onClose={() => setOpen(false)}
         >
@@ -78,10 +84,10 @@ export default function Header() {
 
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: 'row',
+          display: "flex",
+          flexDirection: "row",
           gap: 1.5,
-          alignItems: 'center',
+          alignItems: "center",
         }}
       >
         <ColorSchemeToggle />
@@ -89,7 +95,11 @@ export default function Header() {
           <MenuButton
             variant="plain"
             size="sm"
-            sx={{ maxWidth: '32px', maxHeight: '32px', borderRadius: '9999999px' }}
+            sx={{
+              maxWidth: "32px",
+              maxHeight: "32px",
+              borderRadius: "9999999px",
+            }}
           >
             <TranslateOutlined />
           </MenuButton>
@@ -97,14 +107,18 @@ export default function Header() {
             placement="bottom-end"
             size="sm"
             sx={{
-              zIndex: '99999',
+              zIndex: "99999",
               p: 1,
               gap: 1,
-              '--ListItem-radius': 'var(--joy-radius-sm)',
+              "--ListItem-radius": "var(--joy-radius-sm)",
             }}
           >
             {languages.map((l, i) => (
-              <MenuItem onClick={() => { }} key={i} onClickCapture={() => changeLanguage(l)}>
+              <MenuItem
+                onClick={() => {}}
+                key={i}
+                onClickCapture={() => changeLanguage(l)}
+              >
                 <PublicOutlined />
                 {l.label}
               </MenuItem>
@@ -115,35 +129,39 @@ export default function Header() {
           <MenuButton
             variant="plain"
             size="sm"
-            sx={{ maxWidth: '32px', maxHeight: '32px', borderRadius: '9999999px' }}
+            sx={{
+              maxWidth: "32px",
+              maxHeight: "32px",
+              borderRadius: "9999999px",
+            }}
           >
             <Avatar
               src="https://i.pravatar.cc/40?img=2"
               srcSet="https://i.pravatar.cc/80?img=2"
-              sx={{ maxWidth: '32px', maxHeight: '32px' }}
+              sx={{ maxWidth: "32px", maxHeight: "32px" }}
             />
           </MenuButton>
           <Menu
             placement="bottom-end"
             size="sm"
             sx={{
-              zIndex: '99999',
+              zIndex: "99999",
               p: 1,
               gap: 1,
-              '--ListItem-radius': 'var(--joy-radius-sm)',
+              "--ListItem-radius": "var(--joy-radius-sm)",
             }}
           >
             <MenuItem>
               <Box
                 sx={{
-                  display: 'flex',
-                  alignItems: 'center',
+                  display: "flex",
+                  alignItems: "center",
                 }}
               >
                 <Avatar
                   src="https://i.pravatar.cc/40?img=2"
                   srcSet="https://i.pravatar.cc/80?img=2"
-                  sx={{ borderRadius: '50%' }}
+                  sx={{ borderRadius: "50%" }}
                 />
                 <Box sx={{ ml: 1.5 }}>
                   <Typography level="title-sm" textColor="text.primary">
@@ -155,36 +173,36 @@ export default function Header() {
             <ListDivider />
             <MenuItem>
               <HelpRoundedIcon />
-              Help
+              <ListItemContent>{t("auth.help")}</ListItemContent>
             </MenuItem>
             <MenuItem>
               <SettingsRoundedIcon />
-              Settings
+              <ListItemContent>{t("sidebar.settings")}</ListItemContent>
             </MenuItem>
             <ListDivider />
             <MenuItem component="a" href="/">
-              Report a problem
+              <ListItemContent></ListItemContent>
               <OpenInNewRoundedIcon />
             </MenuItem>
             <MenuItem
               component="a"
               href="https://github.com/mui/material-ui/tree/master/docs/data/joy/getting-started/templates/email"
             >
-              Terms of service
+              <ListItemContent>{t("auth.terms_of_use")}</ListItemContent>
               <OpenInNewRoundedIcon />
             </MenuItem>
             <MenuItem
               component="a"
               href="https://github.com/mui/material-ui/tree/master/docs/data/joy/getting-started/templates/email"
             >
-              Privacy policy
+              <ListItemContent>{t("auth.privacy_policy")}</ListItemContent>
               <OpenInNewRoundedIcon />
             </MenuItem>
 
             <ListDivider />
             <MenuItem onClick={logout}>
               <LogoutRoundedIcon />
-              Log out
+              <ListItemContent>{t("auth.log_out")}</ListItemContent>
             </MenuItem>
           </Menu>
         </Dropdown>
@@ -194,23 +212,26 @@ export default function Header() {
 }
 
 function Logo() {
-  return <IconButton
-    size="md"
-    variant="outlined"
-    color="neutral"
-    sx={{
-      p: 2,
-      display: { xs: 'none', sm: 'inline-flex' },
-      borderRadius: '50%',
-    }}
-  >
-    {APP_NAME}  <LanguageRoundedIcon />
-  </IconButton>;
+  return (
+    <IconButton
+      size="md"
+      variant="outlined"
+      color="neutral"
+      sx={{
+        p: 2,
+        display: { xs: "none", sm: "inline-flex" },
+        borderRadius: "50%",
+      }}
+    >
+      {APP_NAME} <LanguageRoundedIcon />
+    </IconButton>
+  );
 }
 
 export function LeftHeaderNavigation() {
-  return <div>
-    {/* <Button
+  return (
+    <div>
+      {/* <Button
       variant="plain"
       color="neutral"
       component="a"
@@ -241,5 +262,6 @@ export function LeftHeaderNavigation() {
     >
       Files
     </Button> */}
-  </div>;
+    </div>
+  );
 }

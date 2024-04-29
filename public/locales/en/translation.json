@@ -11,7 +11,11 @@
     "sign_up_btn": "Sign up",
     "password_confirm": "Confirm Password",
     "already_has_acc": "Already have an account? Click here to sign in now!",
-    "forgot_password": "Forgot Password"
+    "forgot_password": "Forgot Password",
+    "terms_of_use": "Terms of use",
+    "privacy_policy": "Privacy Policy",
+    "help": "Help",
+    "log_out": "Log out"
   },
   "welcome": {
     "welcome": "Welcome",
@@ -24,7 +28,10 @@
     "enter_code_or_link": "Enter a code or link"
   },
   "sidebar": {
-    "home": "Home"
+    "home": "Home",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "support": "Support"
   },
   "meeting": {
     "copy_meeting_link": "Copy meeting link",

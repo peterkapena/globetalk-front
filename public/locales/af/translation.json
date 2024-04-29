@@ -11,7 +11,11 @@
     "sign_up_btn": "Teken aan",
     "password_confirm": "Bevestig Wagwoord",
     "already_has_acc": "Het jy reeds 'n rekening? Klik hier om nou aan te meld!",
-    "forgot_password": "Wagwoord vergeet"
+    "forgot_password": "Wagwoord vergeet",
+    "terms_of_use": "Gebruiksvoorwaardes",
+    "privacy_policy": "Privaatheidsbeleid",
+    "help": "Hulp",
+    "log_out": "Afmeld"
   },
   "welcome": {
     "welcome": "Welkom",
@@ -24,7 +28,10 @@
     "enter_code_or_link": "Voer 'n kode of skakel in"
   },
   "sidebar": {
-    "home": "Tuis"
+    "home": "Tuis",
+    "notifications": "Kennisgewings",
+    "settings": "Instellings",
+    "support": "Ondersteuning"
   },
   "meeting": {
     "copy_meeting_link": "Kopieer vergaderingskakel",

@@ -11,7 +11,11 @@ import Layout from "../Layout";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <AuthGuard><Layout /></AuthGuard>,
+    element: (
+      <AuthGuard>
+        <Layout />
+      </AuthGuard>
+    ),
     errorElement: <ErrorPage />,
     children: [
       {
@@ -30,7 +34,10 @@ export const router = createBrowserRouter([
   },
   {
     path: `${ROUTES.MEETING}:roomId`,
-    element: <AuthGuard><Meeting /></AuthGuard>,
-  }
-
+    element: (
+      <AuthGuard>
+        <Meeting />
+      </AuthGuard>
+    ),
+  },
 ]);

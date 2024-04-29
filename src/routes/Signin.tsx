@@ -175,6 +175,7 @@ export default function Page() {
               {t("auth.click_to_signup")}
             </Button>
           </Box>
+          
         </form>
       </Sheet>
     </Sheet>
