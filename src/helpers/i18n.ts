@@ -9,10 +9,11 @@ export interface Language {
 }
 export const English = { label: "English", script: "en" }
 export const languages: Language[] = [
-  English,
-  { label: "Francais", script: "fr" },
+  { label: "English", script: "en" }, // Assuming you want to define "English" similarly to others
+  { label: "Français", script: "fr" },
   { label: "Afrikaans", script: "af" },
-]
+].sort((a, b) => a.label.localeCompare(b.label));
+
 
 i18n
   // load translation using http -> see /public/locales (i.e. https://github.com/i18next/react-i18next/tree/master/example/react/public/locales)
