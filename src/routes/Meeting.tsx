@@ -278,7 +278,7 @@ const Meeting = () => {
                         // console.log('Setting remote description on:', answerSendID);
                         pc.setRemoteDescription(new RTCSessionDescription(sdp))
                             .then(() => console.log("Remote description set successfully for:", answerSendID))
-                            .catch((error) => console.error("Error setting remote description:", error));
+                            .catch((error) => console.error(`pc.signalingStateError"${pc.signalingState} setting remote description:`, error));
                     } else {
                         // If we are in a stable state, this might not be the right time to set a remote description
                         // This could indicate an issue with the signaling logic or might require renegotiation handling.
