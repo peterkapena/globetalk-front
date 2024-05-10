@@ -7,6 +7,7 @@ import ErrorPage from "../routes/error-page";
 import Welcome from "../routes/Welcome";
 import Meeting from "../routes/Meeting";
 import Layout from "../Layout";
+// import Meeting2 from "../routes/Meeting2";
 
 export const router = createBrowserRouter([
   {
