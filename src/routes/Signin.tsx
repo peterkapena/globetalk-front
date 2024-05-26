@@ -2,7 +2,7 @@
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Sheet, Typography } from "@mui/joy";
+import { Divider, Sheet, Typography } from "@mui/joy";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useState } from "react";
 import { z } from "zod";
@@ -69,10 +69,18 @@ export default function Page() {
   };
 
   return (
-    <Sheet sx={{ width: "100%", display: "flex", justifyContent: "center", m: 0, height: "100vh" }}>
+    <Sheet
+      sx={{
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        m: 0,
+        height: "100vh",
+      }}
+    >
       <Sheet
         sx={{
-          width: "500px",
+          width: "550px",
           mx: "auto",
           height: "55%",
           my: 5,
@@ -141,7 +149,7 @@ export default function Page() {
 
           <Box
             sx={{
-              my: 6,
+              my: 4,
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
@@ -159,9 +167,11 @@ export default function Page() {
             </Box>
           </Box>
 
+          <Divider> New to our community </Divider>
+
           <Box
             sx={{
-              my: 2,
+              my: 3,
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
@@ -175,7 +185,6 @@ export default function Page() {
               {t("auth.click_to_signup")}
             </Button>
           </Box>
-          
         </form>
       </Sheet>
     </Sheet>

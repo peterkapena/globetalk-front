@@ -11,7 +11,7 @@ export const ROUTES = {
   MEETING: "/mtng/",
   SIGNIN: "/sgn/",
   SIGNUP: "/sgnup/",
-  //FORGOT-PASSWORD: "/fgpw",
+  SETTING: "/stt/", 
 };
 
 export function getRandomInt(min: number, max: number) {

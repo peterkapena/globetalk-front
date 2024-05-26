@@ -6,7 +6,9 @@ import AuthGuard from "../routes/AuthGuard";
 import ErrorPage from "../routes/error-page";
 import Welcome from "../routes/Welcome";
 import Meeting from "../routes/Meeting";
+import Settings from "../routes/Setting";
 import Layout from "../Layout";
+
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +24,10 @@ export const router = createBrowserRouter([
         path: ROUTES.HOME,
         element: <Welcome />,
       },
+      {
+        path: ROUTES.SETTING,
+        element: <Settings />,
+      }
     ],
   },
   {

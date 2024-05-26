@@ -45,7 +45,7 @@ export default function Navigation() {
           }}
         >
           <ListItem>
-            <ListItemButton selected onClick={() => navigate(ROUTES.HOME)}>
+            <ListItemButton selected>
               <ListItemDecorator>
                 <NotificationsOutlined fontSize="small" />
               </ListItemDecorator>
@@ -55,36 +55,36 @@ export default function Navigation() {
         </List>
 
         <List
-            aria-labelledby="nav-list-browse"
-            sx={{
-              "& .JoyListItemButton-root": { p: "8px" },
-            }}
-          >
-            <ListItem>
-              <ListItemButton selected onClick={() => navigate(ROUTES.HOME)}>
-                <ListItemDecorator>
-                  <SupportOutlined fontSize="small" />
-                </ListItemDecorator>
-                <ListItemContent>{t("sidebar.support")}</ListItemContent>
-              </ListItemButton>
-            </ListItem>
-          </List>
+          aria-labelledby="nav-list-browse"
+          sx={{
+            "& .JoyListItemButton-root": { p: "8px" },
+          }}
+        >
+          <ListItem>
+            <ListItemButton selected>
+              <ListItemDecorator>
+                <SupportOutlined fontSize="small" />
+              </ListItemDecorator>
+              <ListItemContent>{t("sidebar.support")}</ListItemContent>
+            </ListItemButton>
+          </ListItem>
+        </List>
 
         <List
-            aria-labelledby="nav-list-browse"
-            sx={{
-              "& .JoyListItemButton-root": { p: "8px" },
-            }}
-          >
-            <ListItem>
-              <ListItemButton selected onClick={() => navigate(ROUTES.HOME)}>
-                <ListItemDecorator>
-                  <SettingsOutlined fontSize="small" />
-                </ListItemDecorator>
-                <ListItemContent>{t("sidebar.settings")}</ListItemContent>
-              </ListItemButton>
-            </ListItem>
-          </List>
+          aria-labelledby="nav-list-browse"
+          sx={{
+            "& .JoyListItemButton-root": { p: "8px" },
+          }}
+        >
+          <ListItem>
+            <ListItemButton selected onClick={() => navigate(ROUTES.SETTING)}>
+              <ListItemDecorator>
+                <SettingsOutlined fontSize="small" />
+              </ListItemDecorator>
+              <ListItemContent>{t("sidebar.settings")}</ListItemContent>
+            </ListItemButton>
+          </ListItem>
+        </List>
       </ListItem>
     </List>
   );

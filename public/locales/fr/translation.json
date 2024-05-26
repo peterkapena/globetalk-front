@@ -6,7 +6,7 @@
     "signup_to_continue": "En créant un compte, vous acceptez les Conditions d'utilisation et la Politique de confidentialité.",
     "email": "E-mail",
     "password": "Mot de passe",
-    "click_to_signup": "Vous n'avez pas de compte ? Cliquez ici pour en créer un",
+    "click_to_signup": "cliquez ici pour créer un compte",
     "sign_in_btn": "Se connecter",
     "sign_up_btn": "S'inscrire",
     "password_confirm": "Confirmer le mot de passe",
@@ -40,5 +40,8 @@
     "camera": "Activer/désactiver la caméra",
     "microphone": "Activer/désactiver le microphone",
     "meetingdetails": "Détails de la réunion"
+  },
+  "settings":{
+    
   }
 }

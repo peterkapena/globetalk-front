@@ -6,7 +6,7 @@
     "signup_to_continue": "Deur 'n rekening te skep, stem jy in tot die Gebruiksvoorwaardes en Privaatheidsbeleid.",
     "email": "E-pos",
     "password": "Wagwoord",
-    "click_to_signup": "Het jy nie 'n rekening nie? Klik hier om een te skep",
+    "click_to_signup": "Kliek hier om 'n rekening te skep",
     "sign_in_btn": "Meld aan",
     "sign_up_btn": "Teken aan",
     "password_confirm": "Bevestig Wagwoord",
@@ -40,5 +40,8 @@
     "camera": "Kamera skakel",
     "microphone": "Mikrofoon skakel",
     "meetingdetails": "Vergaderingbesonderhede"
+  },
+  "settings":{
+    
   }
 }

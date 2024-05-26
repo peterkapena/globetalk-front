@@ -81,7 +81,7 @@ export default function Page() {
     <Sheet sx={{ width: "100%", display: "flex", justifyContent: "center", m: 0, height: "100vh" }}>
       <Sheet
         sx={{
-          width: "500px",
+          width: "550px",
           mx: "auto",
           height: "55%",
           my: 5,

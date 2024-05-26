@@ -6,7 +6,7 @@
     "signup_to_continue": "By creating an account, you agree to the Terms of use and Privacy Policy.",
     "email": "Email",
     "password": "Password",
-    "click_to_signup": "Do not have an account? Click here to create one",
+    "click_to_signup": "Click here to create an account",
     "sign_in_btn": "Sign in",
     "sign_up_btn": "Sign up",
     "password_confirm": "Confirm Password",
@@ -40,5 +40,16 @@
     "camera": "Camera toggle",
     "microphone": "Microphone toggle",
     "meetingdetails":"Meeting details"
+  },
+  "settings":{
+    "account_settings": "Account Settings",
+    "edit_profile": "Edit Profile",
+    "change_password": "Change Password",
+    "add_a_payment_method": "Add a payment method",
+    "push_notifications": "Push notifications",
+    "More": "More",
+    "about_us": "About us",
+    "terms_of_use": "Terms of use",
+    "privacy_policy": "Privacy Policy"
   }
 }
