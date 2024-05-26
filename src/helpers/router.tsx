@@ -8,6 +8,7 @@ import Welcome from "../routes/Welcome";
 import Meeting from "../routes/Meeting";
 import Settings from "../routes/Setting";
 import Layout from "../Layout";
+// import Meeting2 from "../routes/Meeting2";
 
 
 export const router = createBrowserRouter([

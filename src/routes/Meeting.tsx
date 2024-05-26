@@ -37,9 +37,16 @@ type WebRTCUser = {
 
 const pc_config = {
     iceServers: [
-        {
-            urls: 'stun:stun.l.google.com:19302',
-        },
+        { urls: "stun:stun.l.google.com:19302" },
+        { urls: "stun:stun.l.google.com:5349" },
+        { urls: "stun:stun1.l.google.com:3478" },
+        { urls: "stun:stun1.l.google.com:5349" },
+        { urls: "stun:stun2.l.google.com:19302" },
+        { urls: "stun:stun2.l.google.com:5349" },
+        { urls: "stun:stun3.l.google.com:3478" },
+        { urls: "stun:stun3.l.google.com:5349" },
+        { urls: "stun:stun4.l.google.com:19302" },
+        { urls: "stun:stun4.l.google.com:5349" }
     ],
 };
 
@@ -124,11 +131,16 @@ const Meeting = () => {
             localStreamRef.current = localStream;
             if (localVideoRef.current) localVideoRef.current.srcObject = localStream;
             if (!socketRef.current) return;
-            socketRef.current.emit('join_room', {
-                room: roomId,
-                email: user.email,
-                language: currentLanguage
-            });
+
+            const current_id = sessionStorage.getItem("id")
+            if (current_id !== socketRef.current.id) {
+                socketRef.current.emit('join_room', {
+                    room: roomId,
+                    email: user.email,
+                    language: currentLanguage
+                });
+                sessionStorage.setItem("id", String(socketRef.current.id));
+            }
         } catch (e) {
             if (e instanceof DOMException) {
                 switch (e.name) {
@@ -204,6 +216,7 @@ const Meeting = () => {
     useEffect(() => {
         if (!SOCKET_SERVER_URL) return;
         socketRef.current = io(SOCKET_SERVER_URL);
+
         if (socketRef.current) {
             console.log(socketRef.current)
             getLocalStream();
@@ -278,7 +291,7 @@ const Meeting = () => {
                         // console.log('Setting remote description on:', answerSendID);
                         pc.setRemoteDescription(new RTCSessionDescription(sdp))
                             .then(() => console.log("Remote description set successfully for:", answerSendID))
-                            .catch((error) => console.error("Error setting remote description:", error));
+                            .catch((error) => console.error(`pc.signalingStateError"${pc.signalingState} setting remote description:`, error));
                     } else {
                         // If we are in a stable state, this might not be the right time to set a remote description
                         // This could indicate an issue with the signaling logic or might require renegotiation handling.
