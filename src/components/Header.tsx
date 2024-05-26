@@ -20,7 +20,7 @@ import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import SideBarNavigation from "./Navigation";
 import { PublicOutlined, TranslateOutlined } from "@mui/icons-material";
-import { APP_NAME } from "../helpers/common";
+import { APP_NAME, ROUTES } from "../helpers/common";
 import { signOut, useUser } from "../redux/user-slice";
 import { useAppDispatch } from "../redux/hooks";
 import { ColorSchemeToggle } from "./ColorSchemeToggle";
@@ -28,10 +28,12 @@ import { Language, languages } from "../helpers/i18n";
 import { updateLanguage } from "../redux/meeting-slice";
 import { ListItemContent } from "@mui/joy";
 import { t } from "i18next";
+import { useNavigate } from "react-router-dom";
 
 export default function Header() {
   const [open, setOpen] = React.useState(false);
   const user = useUser();
+  const navigate = useNavigate();
 
   function logout() {
     dispatch(signOut());
@@ -175,7 +177,7 @@ export default function Header() {
               <HelpRoundedIcon />
               <ListItemContent>{t("auth.help")}</ListItemContent>
             </MenuItem>
-            <MenuItem>
+            <MenuItem onClick={() => navigate(ROUTES.SETTING)}>
               <SettingsRoundedIcon />
               <ListItemContent>{t("sidebar.settings")}</ListItemContent>
             </MenuItem>

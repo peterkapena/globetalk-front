@@ -11,6 +11,7 @@ export const ROUTES = {
   MEETING: "/mtng/",
   SIGNIN: "/sgn/",
   SIGNUP: "/sgnup/",
+  FORGOT_PASSWORD: "/fpw/",
   SETTING: "/stt/", 
 };
 

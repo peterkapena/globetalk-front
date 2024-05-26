@@ -7,6 +7,7 @@ import ErrorPage from "../routes/error-page";
 import Welcome from "../routes/Welcome";
 import Meeting from "../routes/Meeting";
 import Settings from "../routes/Setting";
+import Forgot_Password from "../routes/Forgot_Password";
 import Layout from "../Layout";
 // import Meeting2 from "../routes/Meeting2";
 
@@ -38,6 +39,10 @@ export const router = createBrowserRouter([
   {
     path: ROUTES.SIGNUP,
     element: <Signup />,
+  },
+  {
+    path: ROUTES.FORGOT_PASSWORD,
+    element: <Forgot_Password />,
   },
   {
     path: `${ROUTES.MEETING}:roomId`,

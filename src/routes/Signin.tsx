@@ -82,7 +82,7 @@ export default function Page() {
         sx={{
           width: "550px",
           mx: "auto",
-          height: "55%",
+          height: "65%",
           my: 5,
           p: 3,
           display: "flex",
@@ -159,7 +159,7 @@ export default function Page() {
               <Button
                 variant="plain"
                 size="sm"
-                //onClick={() => navigate(ROUTES.SIGNUP)}
+                onClick={() => navigate(ROUTES.FORGOT_PASSWORD)}
                 sx={{ textDecoration: "underline" }}
               >
                 {t("auth.forgot_password")}
