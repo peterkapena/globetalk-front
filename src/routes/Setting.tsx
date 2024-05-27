@@ -3,8 +3,35 @@
 import { Box, Divider, IconButton, Typography } from "@mui/joy";
 import { t } from "i18next";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import Password from "../components/Password";
+import ConfirmPassword from "../components/ConfirmPassword";
+import { useState } from "react";
+import { FormSchema, FormSchemaType } from "./Signup";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { IS_DEVELOPER } from "../helpers/common";
 
 export default function Setting() {
+  const [showSubmitButton, _] = useState(true);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormSchemaType>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      email: IS_DEVELOPER ? "peterkapenapeter@gmail.com" : "",
+      password: IS_DEVELOPER ? "1234567P" : "",
+      confirm_password: IS_DEVELOPER ? "1234567P" : "",
+    },
+  });
+
+  const processForm: SubmitHandler<FormSchemaType> = async (_) => {
+
+
+  };
+
   return (
     <>
       <Box
@@ -26,10 +53,21 @@ export default function Setting() {
 
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <form>
-              <Box sx={{ my: 6}}>
-                <Typography level="h4">{t("settings.account_settings")}</Typography>
+              <Box sx={{ my: 6 }}>
+                <Typography level="h4">{t("settings.change_password")}</Typography>
               </Box>
-              <Box
+              <form onSubmit={handleSubmit(processForm)}>
+                <Password
+                  showSubmitButton={showSubmitButton}
+                  error={errors.password}
+                  register={register}
+                ></Password>
+                <ConfirmPassword
+                  showSubmitButton={showSubmitButton}
+                  error={errors.confirm_password}
+                  register={register}
+                ></ConfirmPassword>
+              </form>    <Box
                 sx={{
                   mb: 1,
                   display: "grid",
