@@ -7,10 +7,11 @@ interface Props {
 	stream?: MediaStream;
 	muted: boolean;
 	videoRef?: React.RefObject<HTMLVideoElement>;
-	isLocalStream?: boolean
+	isLocalStream?: boolean;
+	toggleAudio: () => void
 }
 
-const Video = ({ email, stream, muted = false, videoRef, isLocalStream }: Props) => {
+const Video = ({ email, stream, muted = false, videoRef, isLocalStream, toggleAudio }: Props) => {
 	const internalRef = useRef<HTMLVideoElement>(null);
 	const usedRef = videoRef || internalRef;
 
@@ -44,6 +45,7 @@ const Video = ({ email, stream, muted = false, videoRef, isLocalStream }: Props)
 						bottom: 0,
 						transform: 'translateY(50%)',
 					}}
+					onClick={toggleAudio}
 				>
 					{isMuted ? <MicOffOutlined color='error' /> : <KeyboardVoiceOutlined />}
 				</IconButton>

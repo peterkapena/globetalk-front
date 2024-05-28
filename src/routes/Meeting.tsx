@@ -32,7 +32,8 @@ type WebRTCUser = {
     id: string;
     email: string;
     stream: MediaStream;
-    language: string
+    language: string;
+    muted?: boolean
 };
 
 const pc_config = {
@@ -101,7 +102,12 @@ const Meeting = () => {
             audioTracks.forEach(track => {
                 track.enabled = !track.enabled;
             });
-            setIsAudioMuted(!isAudioMuted);
+
+            const muted = !isAudioMuted
+
+            setIsAudioMuted(muted);
+
+            socketRef.current?.emit('muted', muted)
         }
     }, [isAudioMuted]);
 
@@ -118,6 +124,10 @@ const Meeting = () => {
             setIsVideoEnabled(!isVideoEnabled);
         }
     }, [isVideoEnabled]);
+
+    const muteUser = useCallback((id: string) => {
+        socketRef.current?.emit('mute_user', id)
+    }, []);
 
     const getLocalStream = useCallback(async () => {
         try {
@@ -137,7 +147,7 @@ const Meeting = () => {
                 socketRef.current.emit('join_room', {
                     room: roomId,
                     email: user.email,
-                    language: currentLanguage
+                    language: currentLanguage,
                 });
                 sessionStorage.setItem("id", String(socketRef.current.id));
             }
@@ -317,6 +327,13 @@ const Meeting = () => {
                 setUsers((oldUsers) => oldUsers.filter((user) => user.id !== data.id));
             });
 
+            socketRef.current.on('muted', (data) => {
+                const { muted, id } = data
+                setUsers((oldUsers) => oldUsers.map(user => user.id === id ? { ...user, muted } : user),);
+            })
+
+            socketRef.current.on('mute_user', toggleAudio)
+          
             socketRef.current.on('getLanguage', ({ language, id }: { language: string, id: string }) => {
                 setUsers((oldUsers) => oldUsers.map(user => user.id === id ? { ...user, language } : user),);
             })
@@ -346,13 +363,16 @@ const Meeting = () => {
             justifyContent: "center",
         }}>
             {/* {remoteAudioTrack && <AudioProcessor {...remoteAudioTrack} ></AudioProcessor>} */}
-            <Video email={user.email || "..."} videoRef={localVideoRef} muted={isAudioMuted} isLocalStream={true} />
-            {users.map((user, index) => (
-                user.stream.active &&
-                <Video key={index} email={user.email} isLocalStream={false}
-                    stream={user.stream} muted={!user.stream.getAudioTracks().some(t => t.enabled)} // Check if any audio track is enabled
-                />
-            ))}
+            <Video toggleAudio={toggleAudio} email={user.email || "..."} videoRef={localVideoRef} muted={isAudioMuted} isLocalStream={true} />
+            {users.map((user, index) => {
+                console.log(!user.stream.getAudioTracks().some(t => t.enabled));
+                return (
+                    user.stream.active &&
+                    <Video key={index} email={user.email} isLocalStream={false}
+                        stream={user.stream} muted={Boolean(user.muted)} toggleAudio={() => muteUser(user.id)}// Check if any audio track is enabled
+                    />
+                )
+            })}
 
             <MediaControlPanel toggleAudio={toggleAudio} toggleVideo={toggleVideo} isAudioMuted={isAudioMuted} leaveCall={leaveCall} setTranslationLanguage={changeLanguage}
                 isVideoEnabled={isVideoEnabled} isCaptionsEnabled={isCaptionsEnabled} toggleCaptions={toggleCaptions} />
