@@ -1,4 +1,4 @@
-import { Sheet } from '@mui/joy';
+import { Box, Grid, Sheet } from '@mui/joy';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Socket, io } from "socket.io-client";
 import Video from '../components/Video';
@@ -59,6 +59,8 @@ const Meeting = () => {
     const socketRef = useRef<Socket>()
     const localStreamRef = useRef<MediaStream>();
     const localVideoRef = useRef<HTMLVideoElement>(null);
+    const localScreenVideoRef = useRef<HTMLVideoElement>(null);
+    const [isSharingScreen, setIsSharingScreen] = useState(false)
     const pcsRef = useRef<{ [socketId: string]: RTCPeerConnection }>({});
     const [alert, setAlert] = useState<AlertProps>()
     const [users, setUsers] = useState<WebRTCUser[]>([]);
@@ -131,15 +133,15 @@ const Meeting = () => {
 
     const getLocalStream = useCallback(async () => {
         try {
-            const localStream = await navigator.mediaDevices.getUserMedia({
+            localStreamRef.current = await navigator.mediaDevices.getUserMedia({
                 audio: true,
                 video: {
                     width: 240,
                     height: 240,
                 },
             });
-            localStreamRef.current = localStream;
-            if (localVideoRef.current) localVideoRef.current.srcObject = localStream;
+
+            if (localVideoRef.current) localVideoRef.current.srcObject = localStreamRef.current;
             if (!socketRef.current) return;
 
             const current_id = sessionStorage.getItem("id")
@@ -358,23 +360,37 @@ const Meeting = () => {
     return (
         <Sheet sx={{
             width: "100%",
-            height: "100%",
+            height: "100vh",
             display: "flex",
             justifyContent: "center",
         }}>
             {/* {remoteAudioTrack && <AudioProcessor {...remoteAudioTrack} ></AudioProcessor>} */}
+            <Box sx={{ flexGrow: 1 }}>
+                <Grid container direction={"row"}>
+                    {isSharingScreen &&
+                        <Grid xs={12} sm={6} md={9}>
+                            <Box sx={{ display: 'flex', }}>
+                                {isSharingScreen && <video style={{ width: "100%", height: "100%" }} ref={localScreenVideoRef} muted autoPlay />}
+                            </Box>
+                        </Grid>}
+
+                    <Grid container spacing={2} xs={12} justifyContent={'center'} sm={isSharingScreen ? 6 : 12} md={isSharingScreen ? 3 : 12}>
+                        <Grid xs={12} sm={6} md={3} >
             <Video toggleAudio={toggleAudio} email={user.email || "..."} videoRef={localVideoRef} muted={isAudioMuted} isLocalStream={true} />
+                        </Grid>
             {users.map((user, index) => {
-                console.log(!user.stream.getAudioTracks().some(t => t.enabled));
                 return (
                     user.stream.active &&
+                                <Grid xs={12} sm={6} md={3} key={index}>
                     <Video key={index} email={user.email} isLocalStream={false}
                         stream={user.stream} muted={Boolean(user.muted)} toggleAudio={() => muteUser(user.id)}// Check if any audio track is enabled
                     />
+                                </Grid>
                 )
             })}
-
-            <MediaControlPanel toggleAudio={toggleAudio} toggleVideo={toggleVideo} isAudioMuted={isAudioMuted} leaveCall={leaveCall} setTranslationLanguage={changeLanguage}
+                    </Grid>  </Grid>
+            </Box>
+            <MediaControlPanel shareScreen={() => { }} toggleAudio={toggleAudio} toggleVideo={toggleVideo} isAudioMuted={isAudioMuted} leaveCall={leaveCall} setTranslationLanguage={changeLanguage}
                 isVideoEnabled={isVideoEnabled} isCaptionsEnabled={isCaptionsEnabled} toggleCaptions={toggleCaptions} />
             {alert && <AlertDialogModal message={alert.message} onClose={alert.onClose} onYes={alert.onYes} type={alert.type}></AlertDialogModal>}
         </Sheet >

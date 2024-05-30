@@ -1,4 +1,4 @@
-import { CallEndOutlined, CheckCircleOutlined, ClosedCaptionDisabledOutlined, ClosedCaptionOffOutlined, CopyAllOutlined, InterpreterModeOutlined, KeyboardVoiceOutlined, MicOffOutlined, VideocamOffOutlined, VideocamOutlined } from '@mui/icons-material';
+import { CallEndOutlined, CheckCircleOutlined, ClosedCaptionDisabledOutlined, ClosedCaptionOffOutlined, CopyAllOutlined, InterpreterModeOutlined, KeyboardVoiceOutlined, MicOffOutlined, MonitorOutlined, ScreenShare, ScreenShareOutlined, VideocamOffOutlined, VideocamOutlined } from '@mui/icons-material';
 import { Box, Dropdown, IconButton, Menu, MenuButton, MenuItem, Sheet, Stack, Tooltip, } from '@mui/joy';
 import { Language, languages } from '../helpers/i18n';
 import { copyToClipboard } from '../helpers/helpers';
@@ -14,10 +14,11 @@ type MeetingBottomControlProps = {
     toggleCaptions: any;
     isCaptionsEnabled: boolean;
     leaveCall: any;
-    setTranslationLanguage: (l: Language) => void
+    setTranslationLanguage: (l: Language) => void;
+    shareScreen: () => void;
 }
 
-export function MediaControlPanel({ isAudioMuted, toggleAudio, isVideoEnabled, toggleVideo, isCaptionsEnabled, toggleCaptions, leaveCall, setTranslationLanguage }: MeetingBottomControlProps) {
+export function MediaControlPanel({ isAudioMuted, toggleAudio, isVideoEnabled, toggleVideo, isCaptionsEnabled, toggleCaptions, leaveCall, setTranslationLanguage, shareScreen }: MeetingBottomControlProps) {
     const [copied_icon, setCopied_icon] = useState(<CopyAllOutlined />)
     const navigate = useNavigate()
     const { t } = useTranslation();
@@ -59,6 +60,12 @@ export function MediaControlPanel({ isAudioMuted, toggleAudio, isVideoEnabled, t
                     {isVideoEnabled ? <VideocamOutlined /> : <VideocamOffOutlined />}
                 </IconButton>
             </Tooltip>
+            <Tooltip title={t("meeting.share_screen")}>
+                <IconButton sx={{ m: 2 }} variant='solid' size='lg' onClick={shareScreen}>
+                    <MonitorOutlined />
+                </IconButton>
+            </Tooltip>
+
             <Tooltip title={t("meeting.caption")}>
                 <IconButton sx={{ m: 2 }} variant='solid' size='lg' onClick={() => toggleCaptions(!isCaptionsEnabled)}>
                     {isCaptionsEnabled ? <ClosedCaptionOffOutlined /> : <ClosedCaptionDisabledOutlined />}

@@ -1,5 +1,5 @@
 import { MicOffOutlined, KeyboardVoiceOutlined } from '@mui/icons-material';
-import { AspectRatio, Card, CardContent, CardOverflow, IconButton, Typography } from '@mui/joy';
+import { AspectRatio, Box, Card, CardContent, CardOverflow, IconButton, Typography } from '@mui/joy';
 import { useEffect, useRef, useState } from 'react';
 
 interface Props {
@@ -28,11 +28,23 @@ const Video = ({ email, stream, muted = false, videoRef, isLocalStream, toggleAu
 	const [isMuted, setIsMuted] = useState<boolean>(muted);
 
 	return (
-		<Card sx={{ maxHeight: 250, width: 250, m: 1 }}>
-			<CardOverflow>
-				<AspectRatio ratio="1">
-					<video muted={isLocalStream || isMuted} ref={usedRef} autoPlay />
-				</AspectRatio>
+		<Box sx={{ m: 1, position: 'relative',width:"100%"}}>
+			<Box sx={{ position: 'relative', pb: '100%', overflow: 'hidden' }}>
+				<Box
+					component="video"
+					muted={isLocalStream || isMuted}
+					ref={usedRef}
+					autoPlay
+					sx={{
+						position: 'absolute',
+						top: 0,
+						left: 0,
+						width: '100%',
+						height: '100%',
+						objectFit: 'cover',
+						borderRadius: 20
+					}}
+				/>
 				<IconButton
 					size="md"
 					variant="solid"
@@ -42,20 +54,20 @@ const Video = ({ email, stream, muted = false, videoRef, isLocalStream, toggleAu
 						zIndex: 2,
 						borderRadius: '50%',
 						right: '1rem',
-						bottom: 0,
+						bottom: 30,
 						transform: 'translateY(50%)',
 					}}
 					onClick={toggleAudio}
 				>
 					{isMuted ? <MicOffOutlined color='error' /> : <KeyboardVoiceOutlined />}
 				</IconButton>
-			</CardOverflow>
-			<CardContent>
-				<Typography level="body-sm">
+			</Box>
+			<Box sx={{  }}>
+				<Typography level="body-sm" textOverflow={'ellipsis'} overflow={'hidden'}>
 					{email}
 				</Typography>
-			</CardContent>
-		</Card>
+			</Box>
+		</Box>
 	);
 };
 

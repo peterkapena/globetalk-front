@@ -42,9 +42,10 @@
     "caption": "Captions toggle",
     "camera": "Camera toggle",
     "microphone": "Microphone toggle",
-    "meetingdetails":"Meeting details"
+    "meetingdetails": "Meeting details",
+    "share_screen": "Share screen"
   },
-  "settings":{
+  "settings": {
     "account_settings": "Account Settings",
     "edit_profile": "Edit Profile",
     "change_password": "Change Password",
