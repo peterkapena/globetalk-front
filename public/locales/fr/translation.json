@@ -44,7 +44,16 @@
     "microphone": "Activer/désactiver le microphone",
     "meetingdetails": "Détails de la réunion"
   },
-  "settings":{
-    
+  "settings": {
+    "account_settings": "Paramètres du compte",
+    "edit_profile": "Modifier le profil",
+    "change_password": "Changer le mot de passe",
+    "add_a_payment_method": "Ajouter un mode de paiement",
+    "push_notifications": "Notifications push",
+    "More": "Plus",
+    "about_us": "À propos de nous",
+    "terms_of_use": "Conditions d'utilisation",
+    "privacy_policy": "Politique de confidentialité",
+    "save": "Enregistrer"
   }
 }
