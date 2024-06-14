@@ -181,22 +181,17 @@ export default function Header() {
               <SettingsRoundedIcon />
               <ListItemContent>{t("sidebar.settings")}</ListItemContent>
             </MenuItem>
+
             <ListDivider />
-            <MenuItem component="a" href="/">
-              <ListItemContent></ListItemContent>
+            <MenuItem onClick={() => navigate(ROUTES.ABOUT_US)}>
+              <ListItemContent>{t("settings.about_us")}</ListItemContent>
               <OpenInNewRoundedIcon />
             </MenuItem>
-            <MenuItem
-              component="a"
-              href="https://github.com/mui/material-ui/tree/master/docs/data/joy/getting-started/templates/email"
-            >
+            <MenuItem onClick={() => navigate(ROUTES.TERMS_OF_USE)}>
               <ListItemContent>{t("auth.terms_of_use")}</ListItemContent>
               <OpenInNewRoundedIcon />
             </MenuItem>
-            <MenuItem
-              component="a"
-              href="https://github.com/mui/material-ui/tree/master/docs/data/joy/getting-started/templates/email"
-            >
+            <MenuItem onClick={() => navigate(ROUTES.PRIVACY_POLICY)}>
               <ListItemContent>{t("auth.privacy_policy")}</ListItemContent>
               <OpenInNewRoundedIcon />
             </MenuItem>

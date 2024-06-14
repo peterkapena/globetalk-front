@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button, Divider, IconButton, Typography,  } from "@mui/joy";
+import { Box, Button, Divider, IconButton, Typography } from "@mui/joy";
 import { t } from "i18next";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import Password from "../components/Password";
@@ -9,10 +9,12 @@ import { useState } from "react";
 import { FormSchema, FormSchemaType } from "./Signup";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { IS_DEVELOPER } from "../helpers/common";
+import { useNavigate } from "react-router-dom";
+import { IS_DEVELOPER, ROUTES } from "../helpers/common";
 
 export default function Setting() {
   const [showSubmitButton, _] = useState(true);
+  const navigate = useNavigate();
 
   const {
     register,
@@ -27,6 +29,30 @@ export default function Setting() {
     },
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const menuItems = [
+    {
+      label: t("settings.add_a_payment_method"),
+      icon: <ChevronRightIcon />,
+      onClick: () => navigate(ROUTES.ADD_A_PAYMENT_METHOD),
+    },
+    {
+      label: t("settings.about_us"),
+      icon: <ChevronRightIcon />,
+      onClick: () => navigate(ROUTES.ABOUT_US),
+    },
+    {
+      label: t("settings.privacy_policy"),
+      icon: <ChevronRightIcon />,
+      onClick: () => navigate(ROUTES.PRIVACY_POLICY),
+    },
+    {
+      label: t("settings.terms_of_use"),
+      icon: <ChevronRightIcon />,
+      onClick: () => navigate(ROUTES.TERMS_OF_USE),
+    },
+  ];
+
   const processForm: SubmitHandler<FormSchemaType> = async (_) => {};
 
   return (
@@ -39,22 +65,21 @@ export default function Setting() {
       >
         <Box sx={{ width: "600px", display: "flex", flexDirection: "column" }}>
           <Box sx={{ my: 1, justifyContent: "center" }}>
-            <Typography
-              textAlign={"left"}
-              level="h2"
-              sx={{ color: "text.secondary" }}
-            >
-              {t("sidebar.settings")}
-            </Typography>
+            <Box sx={{ my: 2 }}>
+              <Typography component="h6" sx={{ fontSize: "2rem" }}>
+                {t("sidebar.settings")}
+              </Typography>
+            </Box>
           </Box>
 
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <form>
               <Box sx={{ my: 4 }}>
-                <Typography level="h4">
+                <Typography component="h6" sx={{ fontSize: "1.5rem" }}>
                   {t("settings.change_password")}
                 </Typography>
               </Box>
+
               <form onSubmit={handleSubmit(processForm)}>
                 <Password
                   showSubmitButton={showSubmitButton}
@@ -73,99 +98,39 @@ export default function Setting() {
             </form>
           </Box>
 
-          <Box sx={{ my: 6, textAlign: "center" }}>
+          <Box sx={{ my: 4, textAlign: "center" }}>
             <Divider />
           </Box>
 
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <form>
               <Box sx={{ my: 2 }}>
-                <Typography level="h4">{t("settings.More")}</Typography>
+                <Typography component="h6" sx={{ fontSize: "1.5rem" }}>
+                  {t("settings.More")}
+                </Typography>
               </Box>
 
-              <Box
-                sx={{
-                  mb: 1,
-                  display: "grid",
-                  placeItems: "center",
-                  gridTemplateColumns: "100% 100%",
-                }}
-              >
-                <div>
-                  <Typography sx={{ mb: 2 }}>
-                    {t("settings.add_a_payment_method")}
+              {menuItems.map((item, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    mb: 1,
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    alignItems: "center",
+                    width: "100%",
+                    maxWidth: 400,
+                    margin: "0 auto",
+                  }}
+                >
+                  <Typography sx={{ mb: 0 }}>
+                    <span onClick={item.onClick} style={{ cursor: "pointer" }}>
+                      {item.label}
+                    </span>
                   </Typography>
-                </div>
-                <div style={{ justifySelf: "end" }}>
-                  <IconButton>
-                    {" "}
-                    <ChevronRightIcon />
-                  </IconButton>
-                </div>
-              </Box>
-
-              <Box
-                sx={{
-                  mb: 1,
-                  display: "grid",
-                  placeItems: "center",
-                  gridTemplateColumns: "50% 150%",
-                }}
-              >
-                <div>
-                  <Typography sx={{ mb: 2 }}>
-                    {t("settings.about_us")}
-                  </Typography>
-                </div>
-                <div style={{ justifySelf: "end" }}>
-                  <IconButton>
-                    {" "}
-                    <ChevronRightIcon />
-                  </IconButton>
-                </div>
-              </Box>
-
-              <Box
-                sx={{
-                  mb: 1,
-                  display: "grid",
-                  placeItems: "center",
-                  gridTemplateColumns: "68% 132%",
-                }}
-              >
-                <div>
-                  <Typography sx={{ mb: 2 }}>
-                    {t("settings.privacy_policy")}
-                  </Typography>
-                </div>
-                <div style={{ justifySelf: "end" }}>
-                  <IconButton>
-                    {" "}
-                    <ChevronRightIcon />
-                  </IconButton>
-                </div>
-              </Box>
-
-              <Box
-                sx={{
-                  mb: 1,
-                  display: "grid",
-                  placeItems: "center",
-                  gridTemplateColumns: "63% 137%",
-                }}
-              >
-                <div>
-                  <Typography sx={{ mb: 2 }}>
-                    {t("settings.terms_of_use")}
-                  </Typography>
-                </div>
-                <div style={{ justifySelf: "end" }}>
-                  <IconButton>
-                    {" "}
-                    <ChevronRightIcon />
-                  </IconButton>
-                </div>
-              </Box>
+                  <IconButton onClick={item.onClick}>{item.icon}</IconButton>
+                </Box>
+              ))}
             </form>
           </Box>
         </Box>

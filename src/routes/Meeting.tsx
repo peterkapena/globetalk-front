@@ -351,7 +351,7 @@ const Meeting = () => {
                 delete pcsRef.current[user.id];
             });
         };
-    }, [createPeerConnection, getLocalStream]);
+    }, [createPeerConnection, currentLanguage, getLocalStream, toggleAudio, users]);
 
     useEffect(() => {
         return () => leaveCall()

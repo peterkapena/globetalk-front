@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-pascal-case */
 import { createBrowserRouter } from "react-router-dom";
 import { ROUTES } from "./common";
 import Signin from "../routes/Signin";
@@ -9,6 +10,10 @@ import Meeting from "../routes/Meeting";
 import Settings from "../routes/Setting";
 import Forgot_Password from "../routes/Forgot_Password";
 import Layout from "../Layout";
+import Add_Payment_Method from "../routes/Add_Payment_Method";
+import About_Us from "../routes/About_Us";
+import Privacy_Policy from "../routes/Privacy_Policy";
+import Terms_Of_Use from "../routes/Terms_Of_Use";
 // import Meeting2 from "../routes/Meeting2";
 
 
@@ -29,7 +34,25 @@ export const router = createBrowserRouter([
       {
         path: ROUTES.SETTING,
         element: <Settings />,
-      }
+      },
+      {
+        path: ROUTES.ADD_A_PAYMENT_METHOD,
+        // eslint-disable-next-line react/jsx-pascal-case
+        element: <Add_Payment_Method />,
+      },
+      {
+        path: ROUTES.ABOUT_US,
+        element: <About_Us />,
+      },
+      {
+        path: ROUTES.PRIVACY_POLICY,
+        element: <Privacy_Policy />,
+      },
+      {
+        path: ROUTES.TERMS_OF_USE,
+        element: <Terms_Of_Use />,
+      },
+
     ],
   },
   {
@@ -42,6 +65,7 @@ export const router = createBrowserRouter([
   },
   {
     path: ROUTES.FORGOT_PASSWORD,
+    // eslint-disable-next-line react/jsx-pascal-case
     element: <Forgot_Password />,
   },
   {
