@@ -1,4 +1,3 @@
-"use client";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
 import { zodResolver } from "@hookform/resolvers/zod";

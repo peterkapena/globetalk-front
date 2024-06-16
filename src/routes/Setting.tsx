@@ -1,4 +1,3 @@
-"use client";
 
 import { Box, Button, Divider, IconButton, Typography } from "@mui/joy";
 import { t } from "i18next";
