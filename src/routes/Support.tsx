@@ -13,7 +13,7 @@ export default function Support() {
     },
     {
       type: "Phone Support",
-      details: "+25 (800) 123-4567",
+      details: "+27 (800) 123-4567",
       icon: <PhoneIcon />,
     },
     {
