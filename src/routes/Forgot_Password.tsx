@@ -1,4 +1,3 @@
-"use client";
 import Box from "@mui/joy/Box";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Sheet, Typography } from "@mui/joy";

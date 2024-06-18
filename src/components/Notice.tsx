@@ -1,4 +1,3 @@
-"use client";
 import Box from "@mui/joy/Box";
 import { Typography, Alert, IconButton } from "@mui/joy";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
