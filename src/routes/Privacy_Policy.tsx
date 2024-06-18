@@ -128,7 +128,7 @@ export default function PrivacyPolicy() {
         </Typography>
         <Typography sx={{ mb: 1 }}>
           If you have any questions about this Privacy Policy, please contact us
-          at [Your Contact Information].
+          at globetalk@email.co.za.
         </Typography>
       </Box>
     </Box>

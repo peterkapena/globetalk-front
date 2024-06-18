@@ -45,7 +45,10 @@ export default function Navigation() {
           }}
         >
           <ListItem>
-            <ListItemButton selected>
+            <ListItemButton
+              selected
+              onClick={() => navigate(ROUTES.NOTIFICATION)}
+            >
               <ListItemDecorator>
                 <NotificationsOutlined fontSize="small" />
               </ListItemDecorator>
@@ -61,7 +64,7 @@ export default function Navigation() {
           }}
         >
           <ListItem>
-            <ListItemButton selected>
+            <ListItemButton selected onClick={() => navigate(ROUTES.SUPPORT)}>
               <ListItemDecorator>
                 <SupportOutlined fontSize="small" />
               </ListItemDecorator>

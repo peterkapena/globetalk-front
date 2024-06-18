@@ -173,7 +173,7 @@ export default function Header() {
               </Box>
             </MenuItem>
             <ListDivider />
-            <MenuItem>
+            <MenuItem onClick={() => navigate(ROUTES.SUPPORT)}>
               <HelpRoundedIcon />
               <ListItemContent>{t("auth.help")}</ListItemContent>
             </MenuItem>

@@ -112,19 +112,19 @@ export default function TermsOfUse() {
           Limitation of Liability
         </Typography>
         <Typography sx={{ mb: 1 }}>
-          In no event shall [Your Company Name], its directors, employees, or
-          agents be liable for any indirect, incidental, special, consequential,
-          or punitive damages, including without limitation, loss of profits,
-          data, use, goodwill, or other intangible losses, resulting from (i)
-          your use or inability to use the service; (ii) any unauthorized access
-          to or use of our servers and/or any personal information stored
-          therein; (iii) any interruption or cessation of transmission to or
-          from the service; (iv) any bugs, viruses, trojan horses, or the like
-          that may be transmitted to or through our service by any third party;
-          (v) any errors or omissions in any content or for any loss or damage
-          incurred as a result of the use of any content posted, emailed,
-          transmitted, or otherwise made available through the service; and/or
-          (vi) the defamatory, offensive, or illegal conduct of any third party.
+          In no event shall GlobeTalk, its directors, employees, or agents be
+          liable for any indirect, incidental, special, consequential, or
+          punitive damages, including without limitation, loss of profits, data,
+          use, goodwill, or other intangible losses, resulting from (i) your use
+          or inability to use the service; (ii) any unauthorized access to or
+          use of our servers and/or any personal information stored therein;
+          (iii) any interruption or cessation of transmission to or from the
+          service; (iv) any bugs, viruses, trojan horses, or the like that may
+          be transmitted to or through our service by any third party; (v) any
+          errors or omissions in any content or for any loss or damage incurred
+          as a result of the use of any content posted, emailed, transmitted, or
+          otherwise made available through the service; and/or (vi) the
+          defamatory, offensive, or illegal conduct of any third party.
         </Typography>
       </Box>
 
@@ -158,7 +158,7 @@ export default function TermsOfUse() {
         </Typography>
         <Typography sx={{ mb: 1 }}>
           If you have any questions about these Terms, please contact us at
-          [Your Contact Information].
+          globetalk@email.co.za.
         </Typography>
       </Box>
     </Box>

@@ -12,6 +12,8 @@ export const ROUTES = {
   SIGNIN: "/sgn/",
   SIGNUP: "/sgnup/",
   FORGOT_PASSWORD: "/fpw/",
+  NOTIFICATION: "/ntt/",
+  SUPPORT: "/sppt/",
   SETTING: "/stt/",
   ADD_A_PAYMENT_METHOD: "/apm/",
   ABOUT_US: "/aus/",

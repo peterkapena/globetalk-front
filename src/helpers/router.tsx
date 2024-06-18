@@ -14,8 +14,9 @@ import Add_Payment_Method from "../routes/Add_Payment_Method";
 import About_Us from "../routes/About_Us";
 import Privacy_Policy from "../routes/Privacy_Policy";
 import Terms_Of_Use from "../routes/Terms_Of_Use";
+import Notifications from "../routes/Notifications";
+import Support from "../routes/Support";
 // import Meeting2 from "../routes/Meeting2";
-
 
 export const router = createBrowserRouter([
   {
@@ -31,6 +32,14 @@ export const router = createBrowserRouter([
         path: ROUTES.HOME,
         element: <Welcome />,
       },
+      {
+        path: ROUTES.NOTIFICATION,
+        element: <Notifications />,
+      },
+      {
+        path: ROUTES.SUPPORT,
+        element: <Support />,
+      },      
       {
         path: ROUTES.SETTING,
         element: <Settings />,
@@ -52,7 +61,6 @@ export const router = createBrowserRouter([
         path: ROUTES.TERMS_OF_USE,
         element: <Terms_Of_Use />,
       },
-
     ],
   },
   {
