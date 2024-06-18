@@ -13,7 +13,7 @@ export default function Support() {
     },
     {
       type: "Phone Support",
-      details: "+1 (800) 123-4567",
+      details: "+25 (800) 123-4567",
       icon: <PhoneIcon />,
     },
     {
@@ -55,7 +55,7 @@ export default function Support() {
         </List>
 
         <Typography component="p" sx={{ mt: 4 }}>
-          For immediate assistance, please call our 24/7 support line at +1
+          For immediate assistance, please call our 24/7 support line at +27
           (800) 123-4567.
         </Typography>
       </Box>
