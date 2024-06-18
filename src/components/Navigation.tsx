@@ -10,7 +10,7 @@ import { ROUTES } from "../helpers/common";
 import {
   SettingsOutlined,
   VideoCallOutlined,
-  NotificationsOutlined,
+  //NotificationsOutlined,
   SupportOutlined,
 } from "@mui/icons-material";
 
@@ -38,6 +38,7 @@ export default function Navigation() {
           </ListItem>
         </List>
 
+        {/*
         <List
           aria-labelledby="nav-list-browse"
           sx={{
@@ -56,6 +57,7 @@ export default function Navigation() {
             </ListItemButton>
           </ListItem>
         </List>
+        */}
 
         <List
           aria-labelledby="nav-list-browse"
