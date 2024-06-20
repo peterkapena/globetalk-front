@@ -28,7 +28,7 @@ const Video = ({ email, stream, muted = false, videoRef, isLocalStream, toggleAu
 	const [isMuted, setIsMuted] = useState<boolean>(muted);
 
 	return (
-		<Box sx={{ m: 1, position: 'relative',width:"100%"}}>
+		<Box sx={{ m: 1, position: 'relative', width: "100%", height: "100%" }}>
 			<Box sx={{ position: 'relative', pb: '100%', overflow: 'hidden' }}>
 				<Box
 					component="video"
@@ -62,7 +62,7 @@ const Video = ({ email, stream, muted = false, videoRef, isLocalStream, toggleAu
 					{isMuted ? <MicOffOutlined color='error' /> : <KeyboardVoiceOutlined />}
 				</IconButton>
 			</Box>
-			<Box sx={{  }}>
+			<Box sx={{}}>
 				<Typography level="body-sm" textOverflow={'ellipsis'} overflow={'hidden'}>
 					{email}
 				</Typography>
