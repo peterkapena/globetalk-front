@@ -66,6 +66,8 @@ const Meeting = () => {
     const [isVideoEnabled, setIsVideoEnabled] = useState(true);
     const [isCaptionsEnabled, setIsCaptionsEnabled] = useState(true);
     const [_, setRemoteAudioTrack] = useState<{ socketId: string, audioTrack: MediaStreamTrack, sourceLanguage: string, targetLanguage: string }>()
+    const [isScreenSharing, setIsScreenSharing] = useState(false);
+
     const { i18n } = useTranslation();
     const dispatch = useAppDispatch();
     const currentLanguage = i18n.language;
@@ -220,6 +222,44 @@ const Meeting = () => {
         } catch (e) {
             console.error(e);
             return undefined;
+        }
+    }, []);
+
+    const startScreenShare = useCallback(async () => {
+        try {
+            const screenStream = await navigator.mediaDevices.getDisplayMedia({
+                video: true,
+            });
+
+            // Replace video track in the local stream
+            const videoTrack = screenStream.getVideoTracks()[0];
+            const sender = pcsRef.current[Object.keys(pcsRef.current)[0]].getSenders().find(s => s.track?.kind === 'video');
+            sender?.replaceTrack(videoTrack);
+
+            videoTrack.onended = () => {
+                stopScreenShare();
+            };
+
+            setIsScreenSharing(true);
+        } catch (e) {
+            console.error("Error starting screen share: ", e);
+        }
+    }, []);
+
+    const stopScreenShare = useCallback(async () => {
+        try {
+            const webcamStream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+            });
+
+            // Replace screen track with webcam track in the local stream
+            const videoTrack = webcamStream.getVideoTracks()[0];
+            const sender = pcsRef.current[Object.keys(pcsRef.current)[0]].getSenders().find(s => s.track?.kind === 'video');
+            sender?.replaceTrack(videoTrack);
+
+            setIsScreenSharing(false);
+        } catch (e) {
+            console.error("Error stopping screen share: ", e);
         }
     }, []);
 
@@ -380,7 +420,7 @@ const Meeting = () => {
                     })}
                 </Grid>
             </Box>
-            <MediaControlPanel shareScreen={() => { }} toggleAudio={toggleAudio} toggleVideo={toggleVideo} isAudioMuted={isAudioMuted} leaveCall={leaveCall} setTranslationLanguage={changeLanguage}
+            <MediaControlPanel shareScreen={startScreenShare} toggleAudio={toggleAudio} toggleVideo={toggleVideo} isAudioMuted={isAudioMuted} leaveCall={leaveCall} setTranslationLanguage={changeLanguage}
                 isVideoEnabled={isVideoEnabled} isCaptionsEnabled={isCaptionsEnabled} toggleCaptions={toggleCaptions} />
             {alert && <AlertDialogModal message={alert.message} onClose={alert.onClose} onYes={alert.onYes} type={alert.type}></AlertDialogModal>}
         </Sheet >
