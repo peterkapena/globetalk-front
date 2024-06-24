@@ -66,7 +66,6 @@ const Meeting = () => {
     const [isVideoEnabled, setIsVideoEnabled] = useState(true);
     const [isCaptionsEnabled, setIsCaptionsEnabled] = useState(true);
     const [_, setRemoteAudioTrack] = useState<{ socketId: string, audioTrack: MediaStreamTrack, sourceLanguage: string, targetLanguage: string }>()
-    const [isScreenSharing, setIsScreenSharing] = useState(false);
 
     const { i18n } = useTranslation();
     const dispatch = useAppDispatch();
@@ -236,11 +235,12 @@ const Meeting = () => {
             const sender = pcsRef.current[Object.keys(pcsRef.current)[0]].getSenders().find(s => s.track?.kind === 'video');
             sender?.replaceTrack(videoTrack);
 
+            socketRef.current?.emit('screen_share', { isScreenSharing: true, socketId: socketRef.current.id });
+
             videoTrack.onended = () => {
                 stopScreenShare();
             };
 
-            setIsScreenSharing(true);
         } catch (e) {
             console.error("Error starting screen share: ", e);
         }
@@ -257,7 +257,6 @@ const Meeting = () => {
             const sender = pcsRef.current[Object.keys(pcsRef.current)[0]].getSenders().find(s => s.track?.kind === 'video');
             sender?.replaceTrack(videoTrack);
 
-            setIsScreenSharing(false);
         } catch (e) {
             console.error("Error stopping screen share: ", e);
         }
@@ -397,29 +396,20 @@ const Meeting = () => {
 
     return (
         <Sheet sx={{
-            width: "100%",
-            height: "100vh",
             display: "flex",
-            justifyContent: "center",
+            justifyContent: "center", height: "100vh"
         }}>
             {/* {remoteAudioTrack && <AudioProcessor {...remoteAudioTrack} ></AudioProcessor>} */}
-            <Box sx={{ flexGrow: 1 }}>
-                <Grid container spacing={1} justifyContent={'center'}>
-                    <Grid xs={12} sm={6} md={3} >
-                        <Video toggleAudio={toggleAudio} email={user.email || "..."} videoRef={localVideoRef} muted={isAudioMuted} isLocalStream={true} />
-                    </Grid>
-                    {users.map((user, index) => {
-                        return (
-                            user.stream.active &&
-                            <Grid xs={12} sm={6} md={3} key={index}>
-                                <Video key={index} email={user.email} isLocalStream={false}
-                                    stream={user.stream} muted={Boolean(user.muted)} toggleAudio={() => muteUser(user.id)}// Check if any audio track is enabled
-                                />
-                            </Grid>
-                        )
-                    })}
-                </Grid>
-            </Box>
+            <Video toggleAudio={toggleAudio} email={user.email || "..."} videoRef={localVideoRef} muted={isAudioMuted} isLocalStream={true} />
+
+            {users.map((user, index) => {
+                return (
+                    user.stream.active &&
+                    <Video key={index} email={user.email} isLocalStream={false}
+                        stream={user.stream} muted={Boolean(user.muted)} toggleAudio={() => muteUser(user.id)}// Check if any audio track is enabled
+                    />
+                )
+            })}
             <MediaControlPanel shareScreen={startScreenShare} toggleAudio={toggleAudio} toggleVideo={toggleVideo} isAudioMuted={isAudioMuted} leaveCall={leaveCall} setTranslationLanguage={changeLanguage}
                 isVideoEnabled={isVideoEnabled} isCaptionsEnabled={isCaptionsEnabled} toggleCaptions={toggleCaptions} />
             {alert && <AlertDialogModal message={alert.message} onClose={alert.onClose} onYes={alert.onYes} type={alert.type}></AlertDialogModal>}
