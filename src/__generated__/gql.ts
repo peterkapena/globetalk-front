@@ -14,9 +14,9 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "\nmutation VerifyToken($input: String!) {\n  verifyToken(input: $input) {\n    isValid\n    token\n    email\n  }\n}\n": types.VerifyTokenDocument,
-    "\nmutation Signin($input: SigninInput!) {\n  signin(input: $input) {\n    email\n    messages\n    token\n  }\n}\n": types.SigninDocument,
     "\nmutation Signup($input: SignupInput!) {\n  signup(input: $input)\n}\n": types.SignupDocument,
-    "\nmutation Mutation {\n  createRoom\n}\n": types.MutationDocument,
+    "\nmutation PasswordUpdate($password: String!) {\n  passwordUpdate(password: $password)\n}\n  ": types.PasswordUpdateDocument,
+    "\nmutation Signin($input: SigninInput!) {\n  signin(input: $input) {\n    email\n    messages\n    token\n  }\n}\n": types.SigninDocument,
 };
 
 /**
@@ -40,15 +40,15 @@ export function gql(source: "\nmutation VerifyToken($input: String!) {\n  verify
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\nmutation Signin($input: SigninInput!) {\n  signin(input: $input) {\n    email\n    messages\n    token\n  }\n}\n"): (typeof documents)["\nmutation Signin($input: SigninInput!) {\n  signin(input: $input) {\n    email\n    messages\n    token\n  }\n}\n"];
-/**
- * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
 export function gql(source: "\nmutation Signup($input: SignupInput!) {\n  signup(input: $input)\n}\n"): (typeof documents)["\nmutation Signup($input: SignupInput!) {\n  signup(input: $input)\n}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\nmutation Mutation {\n  createRoom\n}\n"): (typeof documents)["\nmutation Mutation {\n  createRoom\n}\n"];
+export function gql(source: "\nmutation PasswordUpdate($password: String!) {\n  passwordUpdate(password: $password)\n}\n  "): (typeof documents)["\nmutation PasswordUpdate($password: String!) {\n  passwordUpdate(password: $password)\n}\n  "];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\nmutation Signin($input: SigninInput!) {\n  signin(input: $input) {\n    email\n    messages\n    token\n  }\n}\n"): (typeof documents)["\nmutation Signin($input: SigninInput!) {\n  signin(input: $input) {\n    email\n    messages\n    token\n  }\n}\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

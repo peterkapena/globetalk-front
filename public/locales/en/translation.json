@@ -42,9 +42,10 @@
     "caption": "Captions toggle",
     "camera": "Camera toggle",
     "microphone": "Microphone toggle",
-    "meetingdetails":"Meeting details"
+    "meetingdetails": "Meeting details",
+    "share_screen": "Share screen"
   },
-  "settings":{
+  "settings": {
     "account_settings": "Account Settings",
     "edit_profile": "Edit Profile",
     "change_password": "Change Password",
@@ -53,6 +54,7 @@
     "More": "More",
     "about_us": "About us",
     "terms_of_use": "Terms of use",
-    "privacy_policy": "Privacy Policy"
+    "privacy_policy": "Privacy Policy",
+    "save": "Save"
   }
 }

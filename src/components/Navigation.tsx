@@ -10,7 +10,7 @@ import { ROUTES } from "../helpers/common";
 import {
   SettingsOutlined,
   VideoCallOutlined,
-  NotificationsOutlined,
+  //NotificationsOutlined,
   SupportOutlined,
 } from "@mui/icons-material";
 
@@ -38,6 +38,7 @@ export default function Navigation() {
           </ListItem>
         </List>
 
+        {/*
         <List
           aria-labelledby="nav-list-browse"
           sx={{
@@ -45,7 +46,10 @@ export default function Navigation() {
           }}
         >
           <ListItem>
-            <ListItemButton selected>
+            <ListItemButton
+              selected
+              onClick={() => navigate(ROUTES.NOTIFICATION)}
+            >
               <ListItemDecorator>
                 <NotificationsOutlined fontSize="small" />
               </ListItemDecorator>
@@ -53,6 +57,7 @@ export default function Navigation() {
             </ListItemButton>
           </ListItem>
         </List>
+        */}
 
         <List
           aria-labelledby="nav-list-browse"
@@ -61,7 +66,7 @@ export default function Navigation() {
           }}
         >
           <ListItem>
-            <ListItemButton selected>
+            <ListItemButton selected onClick={() => navigate(ROUTES.SUPPORT)}>
               <ListItemDecorator>
                 <SupportOutlined fontSize="small" />
               </ListItemDecorator>

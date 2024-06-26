@@ -12,7 +12,13 @@ export const ROUTES = {
   SIGNIN: "/sgn/",
   SIGNUP: "/sgnup/",
   FORGOT_PASSWORD: "/fpw/",
-  SETTING: "/stt/", 
+  NOTIFICATION: "/ntt/",
+  SUPPORT: "/sppt/",
+  SETTING: "/stt/",
+  ADD_A_PAYMENT_METHOD: "/apm/",
+  ABOUT_US: "/aus/",
+  PRIVACY_POLICY: "/pp/",
+  TERMS_OF_USE: "/tou",
 };
 
 export function getRandomInt(min: number, max: number) {

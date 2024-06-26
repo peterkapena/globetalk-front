@@ -1,4 +1,3 @@
-"use client";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -198,10 +197,5 @@ export const FormSchema = z
     path: ["confirm_password"],
   });
 
-export type FormSchemaType = z.infer<typeof FormSchema>;
+type FormSchemaType = z.infer<typeof FormSchema>;
 
-export interface ValidationResult {
-  success: boolean;
-  data: FormSchemaType;
-  _id?: string;
-}

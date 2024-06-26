@@ -1,4 +1,3 @@
-"use client";
 import { Box } from "@mui/joy";
 import React from "react";
 import Button from "@mui/joy/Button";

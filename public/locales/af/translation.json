@@ -44,7 +44,16 @@
     "microphone": "Mikrofoon skakel",
     "meetingdetails": "Vergaderingbesonderhede"
   },
-  "settings":{
-    
+  "settings": {
+    "account_settings": "Rekeninginstellings",
+    "edit_profile": "Wysig Profiel",
+    "change_password": "Verander Wagwoord",
+    "add_a_payment_method": "Voeg 'n Betaalmetode By",
+    "push_notifications": "Stootkennisgewings",
+    "More": "Meer",
+    "about_us": "Oor Ons",
+    "terms_of_use": "Gebruiksvoorwaardes",
+    "privacy_policy": "Privaatheidsbeleid",
+    "save": "Stoor"
   }
 }

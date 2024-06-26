@@ -1,4 +1,4 @@
-import { Sheet } from '@mui/joy';
+import { AspectRatio, Avatar, Box, CardContent, CardCover, Grid, Sheet, Typography, styled } from '@mui/joy';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Socket, io } from "socket.io-client";
 import Video from '../components/Video';
@@ -10,6 +10,7 @@ import { Language } from '../helpers/i18n';
 import { useTranslation } from 'react-i18next';
 import { updateLanguage } from '../redux/meeting-slice';
 import { useAppDispatch } from '../redux/hooks';
+import { LocationOnRounded } from '@mui/icons-material';
 
 // https://github.com/millo-L/Typescript-ReactJS-WebRTC-1-N-P2P
 
@@ -32,7 +33,8 @@ type WebRTCUser = {
     id: string;
     email: string;
     stream: MediaStream;
-    language: string
+    language: string;
+    muted?: boolean
 };
 
 const pc_config = {
@@ -65,6 +67,7 @@ const Meeting = () => {
     const [isVideoEnabled, setIsVideoEnabled] = useState(true);
     const [isCaptionsEnabled, setIsCaptionsEnabled] = useState(true);
     const [_, setRemoteAudioTrack] = useState<{ socketId: string, audioTrack: MediaStreamTrack, sourceLanguage: string, targetLanguage: string }>()
+
     const { i18n } = useTranslation();
     const dispatch = useAppDispatch();
     const currentLanguage = i18n.language;
@@ -101,7 +104,12 @@ const Meeting = () => {
             audioTracks.forEach(track => {
                 track.enabled = !track.enabled;
             });
-            setIsAudioMuted(!isAudioMuted);
+
+            const muted = !isAudioMuted
+
+            setIsAudioMuted(muted);
+
+            socketRef.current?.emit('muted', muted)
         }
     }, [isAudioMuted]);
 
@@ -119,17 +127,21 @@ const Meeting = () => {
         }
     }, [isVideoEnabled]);
 
+    const muteUser = useCallback((id: string) => {
+        socketRef.current?.emit('mute_user', id)
+    }, []);
+
     const getLocalStream = useCallback(async () => {
         try {
-            const localStream = await navigator.mediaDevices.getUserMedia({
+            localStreamRef.current = await navigator.mediaDevices.getUserMedia({
                 audio: true,
                 video: {
                     width: 240,
                     height: 240,
                 },
             });
-            localStreamRef.current = localStream;
-            if (localVideoRef.current) localVideoRef.current.srcObject = localStream;
+
+            if (localVideoRef.current) localVideoRef.current.srcObject = localStreamRef.current;
             if (!socketRef.current) return;
 
             const current_id = sessionStorage.getItem("id")
@@ -137,7 +149,7 @@ const Meeting = () => {
                 socketRef.current.emit('join_room', {
                     room: roomId,
                     email: user.email,
-                    language: currentLanguage
+                    language: currentLanguage,
                 });
                 sessionStorage.setItem("id", String(socketRef.current.id));
             }
@@ -212,6 +224,48 @@ const Meeting = () => {
             return undefined;
         }
     }, []);
+
+    const startScreenShare = useCallback(async () => {
+        try {
+            const screenStream = await navigator.mediaDevices.getDisplayMedia({
+                video: true,
+            });
+
+            // Replace video track in the local stream
+            const videoTrack = screenStream.getVideoTracks()[0];
+            Object.values(pcsRef.current).forEach(pc => {
+                const sender = pc.getSenders().find(s => s.track?.kind === 'video');
+                sender?.replaceTrack(videoTrack);
+            });
+
+            videoTrack.onended = () => {
+                stopScreenShare();
+            };
+
+        } catch (e) {
+            console.error("Error starting screen share: ", e);
+        }
+    }, []);
+
+    const stopScreenShare = useCallback(async () => {
+        try {
+            const webcamStream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+            });
+
+            // Replace screen track with webcam track in the local stream
+            const videoTrack = webcamStream.getVideoTracks()[0];
+            Object.values(pcsRef.current).forEach(pc => {
+                const sender = pc.getSenders().find(s => s.track?.kind === 'video');
+                sender?.replaceTrack(videoTrack);
+            });
+
+            setIsVideoEnabled(true)
+        } catch (e) {
+            console.error("Error stopping screen share: ", e);
+        }
+    }, []);
+
 
     useEffect(() => {
         if (!SOCKET_SERVER_URL) return;
@@ -317,6 +371,13 @@ const Meeting = () => {
                 setUsers((oldUsers) => oldUsers.filter((user) => user.id !== data.id));
             });
 
+            socketRef.current.on('muted', (data) => {
+                const { muted, id } = data
+                setUsers((oldUsers) => oldUsers.map(user => user.id === id ? { ...user, muted } : user),);
+            })
+
+            socketRef.current.on('mute_user', toggleAudio)
+
             socketRef.current.on('getLanguage', ({ language, id }: { language: string, id: string }) => {
                 setUsers((oldUsers) => oldUsers.map(user => user.id === id ? { ...user, language } : user),);
             })
@@ -338,26 +399,49 @@ const Meeting = () => {
         return () => leaveCall()
     }, [leaveCall]);
 
-    return (
-        <Sheet sx={{
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            justifyContent: "center",
-        }}>
-            {/* {remoteAudioTrack && <AudioProcessor {...remoteAudioTrack} ></AudioProcessor>} */}
-            <Video email={user.email || "..."} videoRef={localVideoRef} muted={isAudioMuted} isLocalStream={true} />
-            {users.map((user, index) => (
-                user.stream.active &&
-                <Video key={index} email={user.email} isLocalStream={false}
-                    stream={user.stream} muted={!user.stream.getAudioTracks().some(t => t.enabled)} // Check if any audio track is enabled
-                />
-            ))}
 
-            <MediaControlPanel toggleAudio={toggleAudio} toggleVideo={toggleVideo} isAudioMuted={isAudioMuted} leaveCall={leaveCall} setTranslationLanguage={changeLanguage}
+    return (
+        <Box sx={{
+            width: "auto",
+            justifyContent: "center",
+            display: "flex",
+            height: "100vh",
+            backgroundColor: "GrayText"
+        }}>
+            <Grid container minWidth={"50%"} spacing={1}>
+                <Grid
+                    xs={true}
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    minHeight={"50vh"}
+                    minWidth={"50%"}
+
+                >
+                    <Video toggleAudio={toggleAudio} email={user.email || "..."} videoRef={localVideoRef} muted={true} isLocalStream={true} />
+                </Grid>
+                {users.map((user, index) => {
+                    return (
+                        user.stream.active &&
+                        <Grid
+                            xs={true}
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                            minHeight={"50vh"}
+                            minWidth={"50%"}
+                        >
+                            <Video key={index} email={user.email} isLocalStream={false}
+                                stream={user.stream} muted={true} toggleAudio={() => muteUser(user.id)}// Check if any audio track is enabled
+                            />
+                        </Grid>
+                    )
+                })}
+            </Grid>
+            <MediaControlPanel shareScreen={startScreenShare} toggleAudio={toggleAudio} toggleVideo={toggleVideo} isAudioMuted={isAudioMuted} leaveCall={leaveCall} setTranslationLanguage={changeLanguage}
                 isVideoEnabled={isVideoEnabled} isCaptionsEnabled={isCaptionsEnabled} toggleCaptions={toggleCaptions} />
             {alert && <AlertDialogModal message={alert.message} onClose={alert.onClose} onYes={alert.onYes} type={alert.type}></AlertDialogModal>}
-        </Sheet >
+        </Box>
     )
 }
 

@@ -16,6 +16,7 @@ const ConfirmPassword = ({
       disabled={Boolean(!showSubmitButton)}
       label={t("auth.password_confirm")}
       fieldName="confirm_password"
+      placeholder="confirm password"
       register={register}
       fieldError={error}
       type="password"
