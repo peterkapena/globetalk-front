@@ -1,4 +1,4 @@
-import { Box, Grid, Sheet } from '@mui/joy';
+import { AspectRatio, Avatar, Box, CardContent, CardCover, Grid, Sheet, Typography, styled } from '@mui/joy';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Socket, io } from "socket.io-client";
 import Video from '../components/Video';
@@ -10,6 +10,7 @@ import { Language } from '../helpers/i18n';
 import { useTranslation } from 'react-i18next';
 import { updateLanguage } from '../redux/meeting-slice';
 import { useAppDispatch } from '../redux/hooks';
+import { LocationOnRounded } from '@mui/icons-material';
 
 // https://github.com/millo-L/Typescript-ReactJS-WebRTC-1-N-P2P
 
@@ -232,10 +233,10 @@ const Meeting = () => {
 
             // Replace video track in the local stream
             const videoTrack = screenStream.getVideoTracks()[0];
-            const sender = pcsRef.current[Object.keys(pcsRef.current)[0]].getSenders().find(s => s.track?.kind === 'video');
-            sender?.replaceTrack(videoTrack);
-
-            socketRef.current?.emit('screen_share', { isScreenSharing: true, socketId: socketRef.current.id });
+            Object.values(pcsRef.current).forEach(pc => {
+                const sender = pc.getSenders().find(s => s.track?.kind === 'video');
+                sender?.replaceTrack(videoTrack);
+            });
 
             videoTrack.onended = () => {
                 stopScreenShare();
@@ -254,13 +255,17 @@ const Meeting = () => {
 
             // Replace screen track with webcam track in the local stream
             const videoTrack = webcamStream.getVideoTracks()[0];
-            const sender = pcsRef.current[Object.keys(pcsRef.current)[0]].getSenders().find(s => s.track?.kind === 'video');
-            sender?.replaceTrack(videoTrack);
+            Object.values(pcsRef.current).forEach(pc => {
+                const sender = pc.getSenders().find(s => s.track?.kind === 'video');
+                sender?.replaceTrack(videoTrack);
+            });
 
+            setIsVideoEnabled(true)
         } catch (e) {
             console.error("Error stopping screen share: ", e);
         }
     }, []);
+
 
     useEffect(() => {
         if (!SOCKET_SERVER_URL) return;
@@ -394,26 +399,49 @@ const Meeting = () => {
         return () => leaveCall()
     }, [leaveCall]);
 
-    return (
-        <Sheet sx={{
-            display: "flex",
-            justifyContent: "center", height: "100vh"
-        }}>
-            {/* {remoteAudioTrack && <AudioProcessor {...remoteAudioTrack} ></AudioProcessor>} */}
-            <Video toggleAudio={toggleAudio} email={user.email || "..."} videoRef={localVideoRef} muted={isAudioMuted} isLocalStream={true} />
 
-            {users.map((user, index) => {
-                return (
-                    user.stream.active &&
-                    <Video key={index} email={user.email} isLocalStream={false}
-                        stream={user.stream} muted={Boolean(user.muted)} toggleAudio={() => muteUser(user.id)}// Check if any audio track is enabled
-                    />
-                )
-            })}
+    return (
+        <Box sx={{
+            width: "auto",
+            justifyContent: "center",
+            display: "flex",
+            height: "100vh",
+            backgroundColor: "GrayText"
+        }}>
+            <Grid container minWidth={"50%"} spacing={1}>
+                <Grid
+                    xs={true}
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    minHeight={"50vh"}
+                    minWidth={"50%"}
+
+                >
+                    <Video toggleAudio={toggleAudio} email={user.email || "..."} videoRef={localVideoRef} muted={true} isLocalStream={true} />
+                </Grid>
+                {users.map((user, index) => {
+                    return (
+                        user.stream.active &&
+                        <Grid
+                            xs={true}
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                            minHeight={"50vh"}
+                            minWidth={"50%"}
+                        >
+                            <Video key={index} email={user.email} isLocalStream={false}
+                                stream={user.stream} muted={true} toggleAudio={() => muteUser(user.id)}// Check if any audio track is enabled
+                            />
+                        </Grid>
+                    )
+                })}
+            </Grid>
             <MediaControlPanel shareScreen={startScreenShare} toggleAudio={toggleAudio} toggleVideo={toggleVideo} isAudioMuted={isAudioMuted} leaveCall={leaveCall} setTranslationLanguage={changeLanguage}
                 isVideoEnabled={isVideoEnabled} isCaptionsEnabled={isCaptionsEnabled} toggleCaptions={toggleCaptions} />
             {alert && <AlertDialogModal message={alert.message} onClose={alert.onClose} onYes={alert.onYes} type={alert.type}></AlertDialogModal>}
-        </Sheet >
+        </Box>
     )
 }
 
