@@ -1,4 +1,4 @@
-import React from "react";
+
 import { Box, Typography, List, ListItem, IconButton } from "@mui/joy";
 import MailIcon from "@mui/icons-material/Mail";
 import PhoneIcon from "@mui/icons-material/Phone";
