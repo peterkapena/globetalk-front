@@ -1,4 +1,4 @@
-import { Box, Grid, Sheet } from '@mui/joy';
+import { AspectRatio, Avatar, Box, CardContent, CardCover, Grid, Sheet, Typography, styled } from '@mui/joy';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Socket, io } from "socket.io-client";
 import Video from '../components/Video';
@@ -10,6 +10,7 @@ import { Language } from '../helpers/i18n';
 import { useTranslation } from 'react-i18next';
 import { updateLanguage } from '../redux/meeting-slice';
 import { useAppDispatch } from '../redux/hooks';
+import { LocationOnRounded } from '@mui/icons-material';
 
 // https://github.com/millo-L/Typescript-ReactJS-WebRTC-1-N-P2P
 
@@ -59,8 +60,6 @@ const Meeting = () => {
     const socketRef = useRef<Socket>()
     const localStreamRef = useRef<MediaStream>();
     const localVideoRef = useRef<HTMLVideoElement>(null);
-    const localScreenVideoRef = useRef<HTMLVideoElement>(null);
-    const [isSharingScreen, setIsSharingScreen] = useState(false)
     const pcsRef = useRef<{ [socketId: string]: RTCPeerConnection }>({});
     const [alert, setAlert] = useState<AlertProps>()
     const [users, setUsers] = useState<WebRTCUser[]>([]);
@@ -68,6 +67,7 @@ const Meeting = () => {
     const [isVideoEnabled, setIsVideoEnabled] = useState(true);
     const [isCaptionsEnabled, setIsCaptionsEnabled] = useState(true);
     const [_, setRemoteAudioTrack] = useState<{ socketId: string, audioTrack: MediaStreamTrack, sourceLanguage: string, targetLanguage: string }>()
+
     const { i18n } = useTranslation();
     const dispatch = useAppDispatch();
     const currentLanguage = i18n.language;
@@ -225,6 +225,48 @@ const Meeting = () => {
         }
     }, []);
 
+    const startScreenShare = useCallback(async () => {
+        try {
+            const screenStream = await navigator.mediaDevices.getDisplayMedia({
+                video: true,
+            });
+
+            // Replace video track in the local stream
+            const videoTrack = screenStream.getVideoTracks()[0];
+            Object.values(pcsRef.current).forEach(pc => {
+                const sender = pc.getSenders().find(s => s.track?.kind === 'video');
+                sender?.replaceTrack(videoTrack);
+            });
+
+            videoTrack.onended = () => {
+                stopScreenShare();
+            };
+
+        } catch (e) {
+            console.error("Error starting screen share: ", e);
+        }
+    }, []);
+
+    const stopScreenShare = useCallback(async () => {
+        try {
+            const webcamStream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+            });
+
+            // Replace screen track with webcam track in the local stream
+            const videoTrack = webcamStream.getVideoTracks()[0];
+            Object.values(pcsRef.current).forEach(pc => {
+                const sender = pc.getSenders().find(s => s.track?.kind === 'video');
+                sender?.replaceTrack(videoTrack);
+            });
+
+            setIsVideoEnabled(true)
+        } catch (e) {
+            console.error("Error stopping screen share: ", e);
+        }
+    }, []);
+
+
     useEffect(() => {
         if (!SOCKET_SERVER_URL) return;
         socketRef.current = io(SOCKET_SERVER_URL);
@@ -335,7 +377,7 @@ const Meeting = () => {
             })
 
             socketRef.current.on('mute_user', toggleAudio)
-          
+
             socketRef.current.on('getLanguage', ({ language, id }: { language: string, id: string }) => {
                 setUsers((oldUsers) => oldUsers.map(user => user.id === id ? { ...user, language } : user),);
             })
@@ -351,49 +393,55 @@ const Meeting = () => {
                 delete pcsRef.current[user.id];
             });
         };
-    }, [createPeerConnection, currentLanguage, getLocalStream, toggleAudio, users]);
+    }, [createPeerConnection, getLocalStream]);
 
     useEffect(() => {
         return () => leaveCall()
     }, [leaveCall]);
 
-    return (
-        <Sheet sx={{
-            width: "100%",
-            height: "100vh",
-            display: "flex",
-            justifyContent: "center",
-        }}>
-            {/* {remoteAudioTrack && <AudioProcessor {...remoteAudioTrack} ></AudioProcessor>} */}
-            <Box sx={{ flexGrow: 1 }}>
-                <Grid container direction={"row"}>
-                    {isSharingScreen &&
-                        <Grid xs={12} sm={6} md={9}>
-                            <Box sx={{ display: 'flex', }}>
-                                {isSharingScreen && <video style={{ width: "100%", height: "100%" }} ref={localScreenVideoRef} muted autoPlay />}
-                            </Box>
-                        </Grid>}
 
-                    <Grid container spacing={2} xs={12} justifyContent={'center'} sm={isSharingScreen ? 6 : 12} md={isSharingScreen ? 3 : 12}>
-                        <Grid xs={12} sm={6} md={3} >
-            <Video toggleAudio={toggleAudio} email={user.email || "..."} videoRef={localVideoRef} muted={isAudioMuted} isLocalStream={true} />
+    return (
+        <Box sx={{
+            width: "auto",
+            justifyContent: "center",
+            display: "flex",
+            height: "100vh",
+            backgroundColor: "GrayText"
+        }}>
+            <Grid container minWidth={"50%"} spacing={1}>
+                <Grid
+                    xs={true}
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    minHeight={"50vh"}
+                    minWidth={"50%"}
+
+                >
+                    <Video toggleAudio={toggleAudio} email={user.email || "..."} videoRef={localVideoRef} muted={true} isLocalStream={true} />
+                </Grid>
+                {users.map((user, index) => {
+                    return (
+                        user.stream.active &&
+                        <Grid
+                            xs={true}
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                            minHeight={"50vh"}
+                            minWidth={"50%"}
+                        >
+                            <Video key={index} email={user.email} isLocalStream={false}
+                                stream={user.stream} muted={true} toggleAudio={() => muteUser(user.id)}// Check if any audio track is enabled
+                            />
                         </Grid>
-            {users.map((user, index) => {
-                return (
-                    user.stream.active &&
-                                <Grid xs={12} sm={6} md={3} key={index}>
-                    <Video key={index} email={user.email} isLocalStream={false}
-                        stream={user.stream} muted={Boolean(user.muted)} toggleAudio={() => muteUser(user.id)}// Check if any audio track is enabled
-                    />
-                                </Grid>
-                )
-            })}
-                    </Grid>  </Grid>
-            </Box>
-            <MediaControlPanel shareScreen={() => { }} toggleAudio={toggleAudio} toggleVideo={toggleVideo} isAudioMuted={isAudioMuted} leaveCall={leaveCall} setTranslationLanguage={changeLanguage}
+                    )
+                })}
+            </Grid>
+            <MediaControlPanel shareScreen={startScreenShare} toggleAudio={toggleAudio} toggleVideo={toggleVideo} isAudioMuted={isAudioMuted} leaveCall={leaveCall} setTranslationLanguage={changeLanguage}
                 isVideoEnabled={isVideoEnabled} isCaptionsEnabled={isCaptionsEnabled} toggleCaptions={toggleCaptions} />
             {alert && <AlertDialogModal message={alert.message} onClose={alert.onClose} onYes={alert.onYes} type={alert.type}></AlertDialogModal>}
-        </Sheet >
+        </Box>
     )
 }
 

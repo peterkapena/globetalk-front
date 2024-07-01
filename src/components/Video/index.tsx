@@ -1,5 +1,5 @@
-import { MicOffOutlined, KeyboardVoiceOutlined } from '@mui/icons-material';
-import { AspectRatio, Box, Card, CardContent, CardOverflow, IconButton, Typography } from '@mui/joy';
+import { MicOffOutlined, KeyboardVoiceOutlined, LocationOnRounded, CreateNewFolder, Favorite, Visibility, Fullscreen, FullscreenOutlined } from '@mui/icons-material';
+import { AspectRatio, Avatar, Box, Card, CardContent, CardCover, CardOverflow, Chip, IconButton, Link, Typography } from '@mui/joy';
 import { useEffect, useRef, useState } from 'react';
 
 interface Props {
@@ -27,47 +27,92 @@ const Video = ({ email, stream, muted = false, videoRef, isLocalStream, toggleAu
 
 	const [isMuted, setIsMuted] = useState<boolean>(muted);
 
+	function toggleFullScreen() {
+		if (usedRef.current) {
+			usedRef.current.requestFullscreen({ navigationUI: 'hide' })
+		}
+	}
+
 	return (
-		<Box sx={{ m: 1, position: 'relative',width:"100%"}}>
-			<Box sx={{ position: 'relative', pb: '100%', overflow: 'hidden' }}>
-				<Box
-					component="video"
-					muted={isLocalStream || isMuted}
-					ref={usedRef}
-					autoPlay
+		<Card
+			variant="plain" 
+			sx={{
+				width: 1,
+				bgcolor: 'initial',
+				p: 0,
+			}}
+		>
+			<Box sx={{ position: 'relative' }}>
+				<AspectRatio ratio="1">
+					<Box component={"video"}
+						muted={isLocalStream || isMuted}
+						ref={usedRef}
+						autoPlay
+						controls={false}
+						loop />
+				</AspectRatio>
+				<CardCover
+					className="gradient-cover"
 					sx={{
-						position: 'absolute',
-						top: 0,
-						left: 0,
-						width: '100%',
-						height: '100%',
-						objectFit: 'cover',
-						borderRadius: 20
+						'&:hover, &:focus-within': {
+							opacity: 1,
+						},
+						opacity: 0,
+						transition: '0.1s ease-in',
+						background:
+							'linear-gradient(180deg, transparent 62%, rgba(0,0,0,0.00345888) 63.94%, rgba(0,0,0,0.014204) 65.89%, rgba(0,0,0,0.0326639) 67.83%, rgba(0,0,0,0.0589645) 69.78%, rgba(0,0,0,0.0927099) 71.72%, rgba(0,0,0,0.132754) 73.67%, rgba(0,0,0,0.177076) 75.61%, rgba(0,0,0,0.222924) 77.56%, rgba(0,0,0,0.267246) 79.5%, rgba(0,0,0,0.30729) 81.44%, rgba(0,0,0,0.341035) 83.39%, rgba(0,0,0,0.367336) 85.33%, rgba(0,0,0,0.385796) 87.28%, rgba(0,0,0,0.396541) 89.22%, rgba(0,0,0,0.4) 91.17%)',
 					}}
-				/>
-				<IconButton
-					size="md"
-					variant="solid"
-					color="neutral"
-					sx={{
-						position: 'absolute',
-						zIndex: 2,
-						borderRadius: '50%',
-						right: '1rem',
-						bottom: 30,
-						transform: 'translateY(50%)',
-					}}
-					onClick={toggleAudio}
 				>
-					{isMuted ? <MicOffOutlined color='error' /> : <KeyboardVoiceOutlined />}
-				</IconButton>
+					{/* The first box acts as a container that inherits style from the CardCover */}
+					<div>
+						<Box
+							sx={{
+								p: 2,
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: "space-evenly",
+								gap: 1,
+								// flexGrow: 1,
+								alignSelf: 'flex-end',
+							}}
+						>
+							<Typography level="h2" noWrap
+								sx={{
+									width: "50%",
+									fontSize: 'lg', color: '#fff',
+									textOverflow: 'ellipsis',
+									overflow: 'hidden',
+									display: 'block',
+								}}>
+								{email}
+							</Typography>
+							<IconButton
+								size="md"
+								variant="solid"
+								color="neutral"
+								sx={{
+									borderRadius: '50%',
+								}}
+								onClick={toggleAudio}
+							>
+								{isMuted ? <MicOffOutlined /> : <KeyboardVoiceOutlined />}
+							</IconButton>
+							<IconButton
+								size="md"
+								variant="solid"
+								color="neutral"
+								sx={{
+									borderRadius: '50%',
+								}}
+								onClick={toggleFullScreen}
+							>
+								<FullscreenOutlined />
+							</IconButton>
+						</Box>
+					</div>
+				</CardCover>
 			</Box>
-			<Box sx={{  }}>
-				<Typography level="body-sm" textOverflow={'ellipsis'} overflow={'hidden'}>
-					{email}
-				</Typography>
-			</Box>
-		</Box>
+		</Card>
 	);
 };
 

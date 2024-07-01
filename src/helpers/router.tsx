@@ -39,7 +39,7 @@ export const router = createBrowserRouter([
       {
         path: ROUTES.SUPPORT,
         element: <Support />,
-      },      
+      },
       {
         path: ROUTES.SETTING,
         element: <Settings />,
