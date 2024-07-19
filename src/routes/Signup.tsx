@@ -19,14 +19,47 @@ import { ColorSchemeToggle } from "../components/ColorSchemeToggle";
 
 const AUTO_SIGNIN_TIMEOUT_REDIRECT = 5;
 
+const SIGNUP = gql`
+  mutation Signup($input: SignupInput!) {
+    signup(input: $input)
+  }
+`;
+
+export const FormSchema = z
+  .object({
+    password: z
+      .string()
+      .min(1, "Password is required")
+      .min(8, "Password must be at least 8 characters")
+      .max(100, "Password must be less than 100 characters"),
+    confirm_password: z
+      .string()
+      .min(1, "Confirm password is required")
+      .min(8, "Confirm password must be at least 8 characters")
+      .max(100, "Confirm password must be less than 100 characters"),
+    email: z
+      .string()
+      .min(1, "Email is required")
+      .email("Invalid email address")
+      .max(100, "Email must be less than 100 characters"),
+  })
+  .refine((data) => data.password === data.confirm_password, {
+    message: "Passwords do not match",
+    path: ["confirm_password"],
+  });
+
+type FormSchemaType = z.infer<typeof FormSchema>;
+
 export default function Page() {
   const [showSubmitButton, setShowSubmitButton] = useState(true);
   const [messages, setMessages] = useState<string[]>([]);
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState<boolean>();
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
+  const [gotoSigninTimeout, setGotoSigninTimeout] =
+    useState<NodeJS.Timeout | null>(null);
+  const navigate = useNavigate();
   const [signup] = useMutation(SIGNUP);
-  const [gotoSigninTimeout, setGotoSigninTimeout] = useState<NodeJS.Timeout>()
+
   const {
     register,
     handleSubmit,
@@ -42,71 +75,81 @@ export default function Page() {
   });
 
   const processForm: SubmitHandler<FormSchemaType> = async (data) => {
+    setIsLoading(true);
+
     try {
-      setIsLoading(true);
       const input: SignupInput = {
         password: data.password,
         email: data.email,
       };
-      const rtn = (await signup({ variables: { input } })).data.signup;
-      // if (IS_DEVELOPER) console.log(rtn);
+      const response = await signup({ variables: { input } });
+      const success = response.data?.signup;
 
       setShowSubmitButton(false);
-      if (rtn) {
+      if (success) {
         setMessages([
-          ...messages,
           "Sign up was successful. You will be redirected to sign-in in " +
-          AUTO_SIGNIN_TIMEOUT_REDIRECT +
-          " seconds or signin now.",
+            AUTO_SIGNIN_TIMEOUT_REDIRECT +
+            " seconds or sign in now.",
         ]);
-        setGotoSigninTimeout(setTimeout(
-          () => (window.location.href = "/"),
-          AUTO_SIGNIN_TIMEOUT_REDIRECT * 1000
-        ));
+        setGotoSigninTimeout(
+          setTimeout(
+            () => navigate(ROUTES.SIGNIN),
+            AUTO_SIGNIN_TIMEOUT_REDIRECT * 1000
+          )
+        );
       } else {
         setMessages([
-          ...messages,
           "Sign up failed. Try using different credentials. Otherwise, please contact support.",
         ]);
       }
-      setIsSuccess(Boolean(rtn));
+      setIsSuccess(success);
     } catch (error) {
+      setMessages(["Sign up failed. Please try again later."]);
+      console.error("Sign-up error:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <Sheet sx={{ width: "100%", display: "flex", justifyContent: "center", m: 0, height: "100vh" }}>
+    <Sheet
+      sx={{
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+      }}
+    >
       <Sheet
         sx={{
-          width: "550px",
-          mx: "auto",
-          height: "55%",
-          my: 5,
+          width: "100%",
+          maxWidth: "550px",
           p: 3,
-          display: "flex",
-          flexDirection: "column",
           borderRadius: "sm",
           boxShadow: "md",
         }}
         variant="outlined"
       >
         <form onSubmit={handleSubmit(processForm)}>
-          <Box sx={{ display: "grid", placeItems: "center" }}>
-            <div style={{ justifySelf: "end" }}>
+          <Box sx={{ display: "grid", placeItems: "center", mb: 3 }}>
+            <div style={{ justifySelf: "left" }}>
               <ColorSchemeToggle />
             </div>
-            <div>
-              <Typography level="h2" component="h1" sx={{ mb: 0 }}>
-                <b>{t("auth.signup")}</b>
-              </Typography>
-            </div>
+
+            <Typography
+              level="h2"
+              component="h1"
+              sx={{ mb: 1, textAlign: "center" }}
+            >
+              <b>{t("auth.signup")}</b>
+            </Typography>
             <Button
               variant="plain"
               size="sm"
               onClick={() => navigate(ROUTES.SIGNIN)}
-              sx={{ fontSize: "0.70rem" }}
+              sx={{ fontSize: "0.75rem" }}
             >
               {t("auth.already_has_acc")}
             </Button>
@@ -116,37 +159,31 @@ export default function Page() {
             showSubmitButton={showSubmitButton}
             error={errors.email}
             register={register}
-          ></Email>
+          />
 
           <Password
             showSubmitButton={showSubmitButton}
             error={errors.password}
             register={register}
-          ></Password>
+          />
+
           <ConfirmPassword
             showSubmitButton={showSubmitButton}
             error={errors.confirm_password}
             register={register}
-          ></ConfirmPassword>
+          />
 
-          <Box
-            sx={{
-              my: 1,
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            {" "}
-            <Typography style={{ fontSize: 12 }}>
+          <Box sx={{ my: 1, display: "flex", justifyContent: "center" }}>
+            <Typography sx={{ fontSize: "0.75rem" }}>
               {t("auth.signup_to_continue")}
             </Typography>
           </Box>
+
           {showSubmitButton && (
             <SubmitLoadingButton
               isLoading={isLoading}
               title={t("auth.sign_up_btn")}
-            ></SubmitLoadingButton>
+            />
           )}
 
           {!showSubmitButton && messages.length > 0 && (
@@ -155,9 +192,10 @@ export default function Page() {
               onClose={() => {
                 setShowSubmitButton(true);
                 setMessages([]);
-                clearTimeout(gotoSigninTimeout)
+                if (gotoSigninTimeout) {
+                  clearTimeout(gotoSigninTimeout);
+                }
                 reset();
-                isSuccess && navigate(ROUTES.SIGNIN);
               }}
               messages={messages}
             />
@@ -167,35 +205,3 @@ export default function Page() {
     </Sheet>
   );
 }
-
-const SIGNUP = gql(`
-mutation Signup($input: SignupInput!) {
-  signup(input: $input)
-}
-`);
-
-export const FormSchema = z
-  .object({
-    password: z
-      .string({})
-      .min(1, "this is required")
-      .min(8, "Not shorter than 8")
-      .max(100, "This must be less than 100 characters long"),
-    confirm_password: z
-      .string({})
-      .min(1, "this is required")
-      .min(8, "Not shorter than 8")
-      .max(100, "This must be less than 100 characters long"),
-    email: z
-      .string({})
-      .min(1, "this is required")
-      .email("Invalid email")
-      .max(100, "This must be less than 100 characters long"),
-  })
-  .refine((data) => data.password === data.confirm_password, {
-    message: "Passwords do not match",
-    path: ["confirm_password"],
-  });
-
-type FormSchemaType = z.infer<typeof FormSchema>;
-
