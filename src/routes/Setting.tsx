@@ -1,5 +1,5 @@
 /* eslint-disable no-lone-blocks */
-import { Box, Divider, IconButton, Typography } from "@mui/joy";
+import { Box, Checkbox, Divider, IconButton, Typography } from "@mui/joy";
 import { t } from "i18next";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import Password from "../components/Password";
@@ -14,6 +14,14 @@ import { useMutation } from "@apollo/client/react/hooks/useMutation";
 import { gql } from "@apollo/client";
 import { SubmitLoadingButton } from "../components/SubmitLoadingButton";
 import { Notice } from "../components/Notice";
+import CustomSwitch from "../components/CustomSwitch";
+import { UserType, useUser } from "../redux/user-slice";
+
+const SetUserTypeMutation = gql`
+  mutation SetUserType($userType: Float!) {
+    setUserType(userType: $userType)
+  }
+`;
 
 export default function Setting() {
   //const [showSubmitButton] = useState(true);
@@ -22,6 +30,8 @@ export default function Setting() {
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<string[]>([]);
   const [isSuccess, setIsSuccess] = useState<boolean>();
+  const user = useUser();
+  const [isPremium, setIsPremium] = useState(user.userType !== 0)
 
   const {
     register,
@@ -60,6 +70,7 @@ export default function Setting() {
   ];
 
   const [passwordUpdate] = useMutation(PASSWORDUPDATE);
+  const [setUserType] = useMutation(SetUserTypeMutation);
 
   const processForm: SubmitHandler<FormSchemaType> = async (data) => {
     try {
@@ -83,6 +94,10 @@ export default function Setting() {
       setIsLoading(false);
     }
   };
+
+  async function setAccountType(isPremium: boolean) {
+    await setUserType({ variables: { userType: isPremium ? UserType.PREMIUM : UserType.BASIC } })
+  }
 
   return (
     <>
@@ -132,6 +147,12 @@ export default function Setting() {
                   />
                 )}
               </form>
+              <Box sx={{ m: 5, textAlign: "center" }}>
+                <Divider />
+              </Box>
+              <Box sx={{ my: 5 }}>
+                <CustomSwitch checked={isPremium} setChecked={setIsPremium} label="Premium" onChange={setAccountType}></CustomSwitch>
+              </Box>
             </Box>
           </Box>
         </Box>
@@ -139,6 +160,7 @@ export default function Setting() {
         <Box sx={{ my: -5, mx: 15, textAlign: "center" }}>
           <Divider />
         </Box>
+
 
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           <Box sx={{ my: 8, mx: -20 }}>

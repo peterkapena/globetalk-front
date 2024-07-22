@@ -26,7 +26,14 @@ const alerts: AlertProps[] = [
         type: "error",
         onClose: () => { },
         onYes: () => { }
+    },
+    {
+        message: "The meeting room is full. Please ask the host to uprade to premium to accommodate more users than the basic limit.",
+        type: "notice",
+        onClose: () => { window.location.href = "/" },
+        onYes: () => { }
     }
+
 ]
 
 type WebRTCUser = {
@@ -150,6 +157,7 @@ const Meeting = () => {
                     room: roomId,
                     email: user.email,
                     language: currentLanguage,
+                    userType: user.userType
                 });
                 sessionStorage.setItem("id", String(socketRef.current.id));
             }
@@ -266,7 +274,6 @@ const Meeting = () => {
         }
     }, []);
 
-
     useEffect(() => {
         if (!SOCKET_SERVER_URL) return;
         socketRef.current = io(SOCKET_SERVER_URL);
@@ -381,6 +388,10 @@ const Meeting = () => {
             socketRef.current.on('getLanguage', ({ language, id }: { language: string, id: string }) => {
                 setUsers((oldUsers) => oldUsers.map(user => user.id === id ? { ...user, language } : user),);
             })
+
+            socketRef.current.on('room_full', () => {
+                setAlert(alerts[2])
+            })
         }
 
         return () => {
@@ -423,7 +434,7 @@ const Meeting = () => {
                 {users.map((user, index) => {
                     return (
                         user.stream.active &&
-                        <Grid
+                        <Grid key={index}
                             xs={true}
                             display="flex"
                             justifyContent="center"

@@ -16,12 +16,37 @@ import { useTranslation } from "react-i18next";
 import Email from "../components/Email";
 import { ColorSchemeToggle } from "../components/ColorSchemeToggle";
 
+const SIGNIN = gql`
+  mutation Signin($input: SigninInput!) {
+    signin(input: $input) {
+      email
+      messages
+      token
+    }
+  }
+`;
+
+const FormSchema = z.object({
+  password: z
+    .string()
+    .min(1, "Password is required")
+    .min(8, "Password must be at least 8 characters")
+    .max(100, "Password must be less than 100 characters"),
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .email("Invalid email address")
+    .max(100, "Email must be less than 100 characters"),
+});
+
+type FormSchemaType = z.infer<typeof FormSchema>;
+
 export default function Page() {
   const [showSubmitButton, setShowSubmitButton] = useState(true);
   const [messages, setMessages] = useState<string[]>([]);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState<boolean>();
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const { t } = useTranslation();
 
   const {
@@ -39,29 +64,27 @@ export default function Page() {
   const [signin] = useMutation(SIGNIN);
 
   const processForm: SubmitHandler<FormSchemaType> = async (data) => {
-    try {
-      setIsLoading(true);
+    setIsLoading(true);
 
+    try {
       const input: SigninInput = {
         password: data.password,
         email: data.email,
       };
 
-      const rtn = (await signin({ variables: { input } })).data?.signin;
+      const response = await signin({ variables: { input } });
+      const { messages, token } = response.data?.signin || {};
 
-      // if (IS_DEVELOPER) console.log(rtn);
-
-      if (rtn?.messages.length > 0) {
-        setMessages(["sign in failed"]);
-      } else if (rtn?.token) {
-        localStorage.setItem(STR_TOKEN, rtn.token);
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        window.location.href = ROUTES.HOME;
+      if (messages && messages.length > 0) {
+        setMessages(["Sign in failed"]);
+      } else if (token) {
+        localStorage.setItem(STR_TOKEN, token);
+        setTimeout(() => navigate(ROUTES.HOME), 1000);
       }
-      setIsSuccess(Boolean(rtn?.messages.length === 0));
+      setIsSuccess(messages?.length === 0);
     } catch (error) {
-      setMessages(["sign in failed"]);
-      console.error(error);
+      setMessages(["Sign in failed"]);
+      console.error("Sign-in error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -73,52 +96,60 @@ export default function Page() {
         width: "100%",
         display: "flex",
         justifyContent: "center",
-        m: 0,
-        height: "100vh",
+        alignItems: "center",
+        minHeight: "100vh",
+        p: 2,
       }}
     >
       <Sheet
         sx={{
-          width: "550px",
-          mx: "auto",
-          height: "65%",
-          my: 5,
+          width: "100%",
+          maxWidth: "550px",
           p: 3,
-          display: "flex",
-          flexDirection: "column",
           borderRadius: "sm",
           boxShadow: "md",
+          position: "relative", // Added to position ColorSchemeToggle
         }}
         variant="outlined"
       >
-        <form onSubmit={handleSubmit(processForm)}>
-          <Box sx={{ mb: 3, display: "grid", placeItems: "center" }}>
-            <div style={{ justifySelf: "end" }}>
-              <ColorSchemeToggle />
-            </div>
-            <div>
-              <Typography level="h2" component="h1" sx={{ mb: 2 }}>
-                <b>{t("auth.signin")}</b>
-              </Typography>
-            </div>
-          </Box>
+        <div style={{ justifySelf: "left" }}>
+          <ColorSchemeToggle />
+        </div>
 
+        <Box
+          sx={{
+            mb: 3,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center", // Center the content
+          }}
+        >
+          <Typography
+            level="h2"
+            component="h1"
+            sx={{ mb: 1, textAlign: "center" }}
+          >
+            <b>{t("auth.signin")}</b>
+          </Typography>
+        </Box>
+
+        <form onSubmit={handleSubmit(processForm)}>
           <Email
             showSubmitButton={showSubmitButton}
             error={errors.email}
             register={register}
-          ></Email>
+          />
           <Password
             showSubmitButton={showSubmitButton}
             error={errors.password}
             register={register}
-          ></Password>
+          />
 
           {messages.length === 0 && showSubmitButton && (
             <SubmitLoadingButton
               isLoading={isLoading}
               title={t("auth.signin")}
-            ></SubmitLoadingButton>
+            />
           )}
 
           {messages.length > 0 && (
@@ -140,42 +171,22 @@ export default function Page() {
               alignItems: "center",
             }}
           >
-            {" "}
-            <Typography style={{ fontSize: 12 }}>
+            <Typography sx={{ fontSize: "0.75rem" }}>
               {t("auth.signin_to_continue")}
             </Typography>
+            <Button
+              variant="plain"
+              size="sm"
+              onClick={() => navigate(ROUTES.FORGOT_PASSWORD)}
+              sx={{ textDecoration: "underline" }}
+            >
+              {t("auth.forgot_password")}
+            </Button>
           </Box>
 
-          <Box
-            sx={{
-              my: 4,
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Box sx={{ marginLeft: "auto" }}>
-              <Button
-                variant="plain"
-                size="sm"
-                onClick={() => navigate(ROUTES.FORGOT_PASSWORD)}
-                sx={{ textDecoration: "underline" }}
-              >
-                {t("auth.forgot_password")}
-              </Button>
-            </Box>
-          </Box>
+          <Divider sx={{ my: 3 }}>New to our community</Divider>
 
-          <Divider> New to our community </Divider>
-
-          <Box
-            sx={{
-              my: 3,
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Button
               variant="plain"
               size="sm"
@@ -189,28 +200,3 @@ export default function Page() {
     </Sheet>
   );
 }
-
-const SIGNIN = gql(`
-mutation Signin($input: SigninInput!) {
-  signin(input: $input) {
-    email
-    messages
-    token
-  }
-}
-`);
-
-const FormSchema = z.object({
-  password: z
-    .string({})
-    .min(1, "this is required")
-    .min(8, "Not shorter than 8")
-    .max(100, "This must be less than 100 characters long"),
-  email: z
-    .string({})
-    .min(1, "this is required")
-    //.email("Invalid email")
-    .max(100, "This must be less than 100 characters long"),
-});
-
-type FormSchemaType = z.infer<typeof FormSchema>;

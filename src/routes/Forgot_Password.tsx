@@ -46,7 +46,6 @@ export default function Page() {
         email: data.email,
       };
       const rtn = (await signup({ variables: { input } })).data.signup;
-      // if (IS_DEVELOPER) console.log(rtn);
 
       setShowSubmitButton(false);
       if (rtn) {
@@ -81,55 +80,48 @@ export default function Page() {
         width: "100%",
         display: "flex",
         justifyContent: "center",
-        m: 0,
         height: "100vh",
+        p: 2,
       }}
     >
       <Sheet
         sx={{
-          width: "400px",
+          width: { xs: "100%", sm: "400px" },
           mx: "auto",
-          height: "40%",
-          my: 8,
-          p: 6,
+          my: "auto",
+          p: 4,
           display: "flex",
           flexDirection: "column",
-          borderRadius: "sm",
-          boxShadow: "md",
+          borderRadius: "md",
+          boxShadow: "sm",
         }}
         variant="outlined"
       >
         <form onSubmit={handleSubmit(processForm)}>
-          <Box sx={{ display: "grid", placeItems: "center" }}>
-            <div style={{ justifySelf: "end" }}>
+          <Box sx={{ display: "grid", placeItems: "center", mb: 2 }}>
+            <div style={{ justifySelf: "left" }}>
               <ColorSchemeToggle />
             </div>
-            <div>
-              <Typography level="h2" component="h1" sx={{ mb: 0 }}>
-                <b>{t("auth.forgot_password")}</b>
-              </Typography>
-            </div>
-            <div>
-              <Typography component="h1" sx={{ mb: 0, fontSize: "80%" }}>
-                <b>{t("auth.password_reset_Info")}</b>
-              </Typography>
-            </div>
+            <Typography level="h2" component="h1" sx={{ mb: 0 }}>
+              <b>{t("auth.forgot_password")}</b>
+            </Typography>
+            <Typography component="p" sx={{ mb: 0, fontSize: "80%" }}>
+              <b>{t("auth.password_reset_Info")}</b>
+            </Typography>
           </Box>
 
           <Email
             showSubmitButton={showSubmitButton}
             error={errors.email}
             register={register}
-          ></Email>
+          />
 
-          {showSubmitButton && (
+          {showSubmitButton ? (
             <SubmitLoadingButton
               isLoading={isLoading}
               title={t("auth.send_to_reset_btn")}
-            ></SubmitLoadingButton>
-          )}
-
-          {!showSubmitButton && messages.length > 0 && (
+            />
+          ) : messages.length > 0 ? (
             <Notice
               isSuccess={isSuccess}
               onClose={() => {
@@ -141,27 +133,15 @@ export default function Page() {
               }}
               messages={messages}
             />
-          )}
+          ) : null}
 
           {showSubmitButton && (
-            <SubmitLoadingButton
-              isLoading={isLoading}
-              title={t("auth.back_to_login_btn")}
-            ></SubmitLoadingButton>
-          )}
-
-          {!showSubmitButton && messages.length > 0 && (
-            <Notice
-              isSuccess={isSuccess}
-              onClose={() => {
-                setShowSubmitButton(true);
-                setMessages([]);
-                clearTimeout(gotoSigninTimeout);
-                reset();
-                isSuccess && navigate(ROUTES.SIGNIN);
-              }}
-              messages={messages}
-            />
+            <Box onClick={() => navigate(ROUTES.SIGNIN)} sx={{ mt: 2 }}>
+              <SubmitLoadingButton
+                isLoading={isLoading}
+                title={t("auth.back_to_login_btn")}
+              />
+            </Box>
           )}
         </form>
       </Sheet>

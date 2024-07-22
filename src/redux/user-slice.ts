@@ -2,9 +2,15 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { STR_TOKEN } from "../helpers/common";
 import { useAppSelector } from "./hooks";
 
+export enum UserType {
+  BASIC,
+  PREMIUM
+}
+
 // Define a type for the slice state
 interface UserState {
   email?: string | null | undefined;
+  userType?: UserType | null | undefined;
 }
 
 // Define the initial state using that type
@@ -16,6 +22,7 @@ export const UserSlice = createSlice({
   reducers: {
     setUser: (state, action: PayloadAction<{ user: UserState }>) => {
       state.email = action.payload.user.email;
+      state.userType = action.payload.user.userType;
     },
     signOut: () => {
       localStorage.removeItem(STR_TOKEN);
