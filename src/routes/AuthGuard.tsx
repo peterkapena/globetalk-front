@@ -11,6 +11,7 @@ mutation VerifyToken($input: String!) {
     isValid
     token
     email
+    userType
   }
 }
 `);
@@ -38,9 +39,10 @@ export default function AuthGuard({ children }: RootProps) {
         if (rtn.data) {
           const { isValid } = rtn.data?.verifyToken;
           if (isValid) {
-            const { email, token } = rtn.data?.verifyToken;
+            const { email, token, userType } = rtn.data?.verifyToken;
+            console.log(rtn.data?.verifyToken)
             localStorage.setItem(STR_TOKEN, token);
-            dispatch(setUser({ user: { email } }));
+            dispatch(setUser({ user: { email, userType } }));
             setLoaded(true);
           } else {
             localStorage.removeItem(STR_TOKEN);
