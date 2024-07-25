@@ -55,5 +55,13 @@
     "terms_of_use": "Gebruiksvoorwaardes",
     "privacy_policy": "Privaatheidsbeleid",
     "save": "Stoor"
+  },
+  "support": {
+    "wording1": "As jy hulp nodig het, is ons hier om te help! Jy kan ons kontak deur enige van die volgende metodes.",
+    "wording2": "Vir onmiddellike hulp, skakel asseblief ons 24/7 ondersteuningslyn by +27 (800) 123-4567.",
+    "emailsupport": "E-pos Ondersteuning",
+    "phonesupport": "Telefoon Ondersteuning",
+    "faq": "Gereelde Vrae",
+    "faqs": "Gereeld Vrae"
   }
 }
