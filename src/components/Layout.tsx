@@ -102,7 +102,7 @@ function Main(props: BoxProps) {
             component="main"
             className="Main"
             {...props}
-            sx={[{ p: 2 }, ...(Array.isArray(props.sx) ? props.sx : [props.sx])]}
+            sx={[{ p: 2, px: 3, width: "100vh" }, ...(Array.isArray(props.sx) ? props.sx : [props.sx])]}
         />
     );
 }

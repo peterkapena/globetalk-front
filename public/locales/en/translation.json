@@ -56,5 +56,13 @@
     "terms_of_use": "Terms of use",
     "privacy_policy": "Privacy Policy",
     "save": "Save"
+  },
+  "support": {
+    "wording1": "If you need assistance, we're here to help! You can reach out to us through any of the following methods.",
+    "wording2": "For immediate assistance, please call our 24/7 support line at +27 (800) 123-4567..",
+    "emailsupport": "Email Support",
+    "phonesupport": "Phone Support",
+    "faq": "FAQ",
+    "faqs": "Frequently Asked Questions"
   }
 }

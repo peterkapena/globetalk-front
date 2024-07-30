@@ -12,7 +12,7 @@ import Forgot_Password from "../routes/Forgot_Password";
 import Layout from "../Layout";
 import Add_Payment_Method from "../routes/Add_Payment_Method";
 import About_Us from "../routes/About_Us";
-import Privacy_Policy from "../routes/Privacy_Policy";
+import Privacy_Policy from "../routes/PrivacyPolicy";
 import Terms_Of_Use from "../routes/Terms_Of_Use";
 import Notifications from "../routes/Notifications";
 import Support from "../routes/Support";
