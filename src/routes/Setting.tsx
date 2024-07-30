@@ -89,7 +89,6 @@ export default function Setting() {
   }
 
   return (
-<<<<<<< HEAD
     <>
       <Box sx={{ width: "1100px", margin: "0 auto", padding: 4 }}>
         <Box sx={{ my: 1, mx: 0, textAlign: "left" }}>
@@ -192,86 +191,8 @@ export default function Setting() {
             </form>
           </Box>
         </Box>
-=======
-    <Box>
-      <Box sx={{ my: 2, }}>
-        <Typography component="h1" sx={{ fontSize: "2.5rem" }}>
-          {t("sidebar.settings")}
-        </Typography>
->>>>>>> 161634077b2be705185b36662fc9f47b9ebe5336
       </Box>
-      <Box sx={{ my: 2, }}>
-        <Typography component="h6" sx={{ fontSize: "1.5rem" }}>
-          {t("settings.change_password")}
-        </Typography>
-      </Box>
-      <form onSubmit={handleSubmit(processForm)}>
-        <Password
-          showSubmitButton={showSubmitButton}
-          error={errors.password}
-          register={register}
-        ></Password>
-        <ConfirmPassword
-          showSubmitButton={showSubmitButton}
-          error={errors.confirm_password}
-          register={register}
-        ></ConfirmPassword>
-
-        {messages.length === 0 && showSubmitButton && (
-          <SubmitLoadingButton
-            isLoading={isLoading}
-            title={t("settings.save")}
-          ></SubmitLoadingButton>
-        )}
-
-        {messages.length > 0 && (
-          <Notice
-            isSuccess={isSuccess}
-            onClose={() => {
-              setShowSubmitButton(true);
-              setMessages([]);
-            }}
-            messages={messages}
-          />
-        )}
-      </form>
-      <Box sx={{}}>
-        <Divider />
-      </Box>
-      <Box sx={{my:2}}>
-        <CustomSwitch checked={isPremium} setChecked={setIsPremium} label="Premium" onChange={setAccountType}></CustomSwitch>
-      </Box>
-      <Typography component="h6" sx={{ fontSize: "1.5rem" }}>
-        {t("settings.More")}
-      </Typography>
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
-
-        {menuItems.map((item, index) => (
-          <Box
-            key={index}
-            sx={{
-              mb: 1,
-              display: "grid",
-              gridTemplateColumns: "1fr auto",
-              alignItems: "center",
-              width: "100%",
-              maxWidth: 400,
-              margin: "0 auto",
-            }}
-          >
-            <Typography sx={{ mb: 0 }}>
-              <span
-                onClick={item.onClick}
-                style={{ cursor: "pointer" }}
-              >
-                {item.label}
-              </span>
-            </Typography>
-            <IconButton onClick={item.onClick}>{item.icon}</IconButton>
-          </Box>
-        ))}
-      </Box>
-    </Box>
+    </>
   );
 }
 
