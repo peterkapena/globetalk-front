@@ -1,5 +1,5 @@
 /* eslint-disable no-lone-blocks */
-import { Box, Checkbox, Divider, IconButton, Typography } from "@mui/joy";
+import { Box, Divider, IconButton, Typography } from "@mui/joy";
 import { t } from "i18next";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import Password from "../components/Password";
@@ -24,14 +24,13 @@ const SetUserTypeMutation = gql`
 `;
 
 export default function Setting() {
-  //const [showSubmitButton] = useState(true);
   const navigate = useNavigate();
   const [showSubmitButton, setShowSubmitButton] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<string[]>([]);
   const [isSuccess, setIsSuccess] = useState<boolean>();
   const user = useUser();
-  const [isPremium, setIsPremium] = useState(user.userType !== 0)
+  const [isPremium, setIsPremium] = useState(user.userType !== 0);
 
   const {
     register,
@@ -41,16 +40,6 @@ export default function Setting() {
     resolver: zodResolver(FormSchema),
   });
 
-  {
-    /* {
-      label: t("settings.add_a_payment_method"),
-      icon: <ChevronRightIcon />,
-      onClick: () => navigate(ROUTES.ADD_A_PAYMENT_METHOD),
-    }, 
-    */
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const menuItems = [
     {
       label: t("settings.about_us"),
@@ -79,8 +68,6 @@ export default function Setting() {
       const rtn = (await passwordUpdate({ variables: { ...data } })).data
         ?.passwordUpdate;
 
-      // if (IS_DEVELOPER) console.log(rtn);
-
       if (rtn) {
         setIsSuccess(rtn);
         setMessages(["password updated."]);
@@ -96,108 +83,112 @@ export default function Setting() {
   };
 
   async function setAccountType(isPremium: boolean) {
-    await setUserType({ variables: { userType: isPremium ? UserType.PREMIUM : UserType.BASIC } })
+    await setUserType({
+      variables: { userType: isPremium ? UserType.PREMIUM : UserType.BASIC },
+    });
   }
 
   return (
     <>
       <Box sx={{ width: "1100px", margin: "0 auto", padding: 4 }}>
-        <Box sx={{ my: 1, mx: 4, justifyContent: "center" }}>
+        <Box sx={{ my: 1, mx: 0, textAlign: "left" }}>
           <Typography component="h1" sx={{ fontSize: "2.5rem" }}>
             {t("sidebar.settings")}
           </Typography>
         </Box>
 
-        <Box sx={{ display: "flex", justifyContent: "center" }}>
-          <Box sx={{ my: 6, mx: -30 }}>
+        <Box sx={{ display: "flex", justifyContent: "left" }}>
+          <Box sx={{ my: 3, mx: 0 }}>
             <Typography component="h6" sx={{ fontSize: "1.5rem" }}>
               {t("settings.change_password")}
             </Typography>
           </Box>
+        </Box>
 
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Box sx={{ my: 13, mx: 15 }}>
-              <form onSubmit={handleSubmit(processForm)}>
-                <Password
-                  showSubmitButton={showSubmitButton}
-                  error={errors.password}
-                  register={register}
-                ></Password>
-                <ConfirmPassword
-                  showSubmitButton={showSubmitButton}
-                  error={errors.confirm_password}
-                  register={register}
-                ></ConfirmPassword>
+        <Box sx={{ display: "flex", justifyContent: "left" }}>
+          <Box sx={{ my: 3, mx: 0 }}>
+            <form onSubmit={handleSubmit(processForm)}>
+              <Password
+                showSubmitButton={showSubmitButton}
+                error={errors.password}
+                register={register}
+              ></Password>
+              <ConfirmPassword
+                showSubmitButton={showSubmitButton}
+                error={errors.confirm_password}
+                register={register}
+              ></ConfirmPassword>
 
-                {messages.length === 0 && showSubmitButton && (
-                  <SubmitLoadingButton
-                    isLoading={isLoading}
-                    title={t("settings.save")}
-                  ></SubmitLoadingButton>
-                )}
+              {messages.length === 0 && showSubmitButton && (
+                <SubmitLoadingButton
+                  isLoading={isLoading}
+                  title={t("settings.save")}
+                ></SubmitLoadingButton>
+              )}
 
-                {messages.length > 0 && (
-                  <Notice
-                    isSuccess={isSuccess}
-                    onClose={() => {
-                      setShowSubmitButton(true);
-                      setMessages([]);
-                    }}
-                    messages={messages}
-                  />
-                )}
-              </form>
-              <Box sx={{ m: 5, textAlign: "center" }}>
-                <Divider />
-              </Box>
-              <Box sx={{ my: 5 }}>
-                <CustomSwitch checked={isPremium} setChecked={setIsPremium} label="Premium" onChange={setAccountType}></CustomSwitch>
-              </Box>
+              {messages.length > 0 && (
+                <Notice
+                  isSuccess={isSuccess}
+                  onClose={() => {
+                    setShowSubmitButton(true);
+                    setMessages([]);
+                  }}
+                  messages={messages}
+                />
+              )}
+            </form>
+
+            <Box sx={{ my: 7, mx: 0 }}>
+              <Divider sx={{ width: "85%" }} />
+            </Box>
+
+            <Box sx={{ my: 2 }}>
+              <CustomSwitch
+                checked={isPremium}
+                setChecked={setIsPremium}
+                label="Premium"
+                onChange={setAccountType}
+              ></CustomSwitch>
             </Box>
           </Box>
         </Box>
 
-        <Box sx={{ my: -5, mx: 15, textAlign: "center" }}>
-          <Divider />
+        <Box sx={{ my: 2, mx: 0 }}>
+          <Divider sx={{ width: "20%" }} />
         </Box>
 
-
-        <Box sx={{ display: "flex", justifyContent: "center" }}>
-          <Box sx={{ my: 8, mx: -20 }}>
+        <Box sx={{ display: "flex", justifyContent: "left", my: 2 }}>
+          <Box sx={{ my: 3, mx: 0 }}>
             <Typography component="h6" sx={{ fontSize: "1.5rem" }}>
               {t("settings.More")}
             </Typography>
           </Box>
+        </Box>
 
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Box sx={{ my: 13, mx: 25 }}>
-              <form>
-                {menuItems.map((item, index) => (
-                  <Box
-                    key={index}
-                    sx={{
-                      mb: 1,
-                      display: "grid",
-                      gridTemplateColumns: "1fr auto",
-                      alignItems: "center",
-                      width: "100%",
-                      maxWidth: 400,
-                      margin: "0 auto",
-                    }}
-                  >
-                    <Typography sx={{ mb: 0 }}>
-                      <span
-                        onClick={item.onClick}
-                        style={{ cursor: "pointer" }}
-                      >
-                        {item.label}
-                      </span>
-                    </Typography>
-                    <IconButton onClick={item.onClick}>{item.icon}</IconButton>
-                  </Box>
-                ))}
-              </form>
-            </Box>
+        <Box sx={{ display: "flex", justifyContent: "left" }}>
+          <Box sx={{ my: 3, mx: 0 }}>
+            <form>
+              {menuItems.map((item, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    mb: 1,
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    alignItems: "center",
+                    width: "100%",
+                    maxWidth: 400,
+                  }}
+                >
+                  <Typography sx={{ mb: 0 }}>
+                    <span onClick={item.onClick} style={{ cursor: "pointer" }}>
+                      {item.label}
+                    </span>
+                  </Typography>
+                  <IconButton onClick={item.onClick}>{item.icon}</IconButton>
+                </Box>
+              ))}
+            </form>
           </Box>
         </Box>
       </Box>
@@ -209,7 +200,7 @@ const PASSWORDUPDATE = gql(`
 mutation PasswordUpdate($password: String!) {
   passwordUpdate(password: $password)
 }
-  `);
+`);
 
 export const FormSchema = z
   .object({
