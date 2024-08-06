@@ -5,6 +5,23 @@ html {
 body {
     margin: 0;
 }
+
 video::-webkit-media-controls-start-playback-button {
     display: none;
 }
+
+@keyframes blink {
+    0% {
+      box-shadow: 0 0 10px red;
+    }
+    50% {
+      box-shadow: 0 0 20px red;
+    }
+    100% {
+      box-shadow: 0 0 10px red;
+    }
+  }
+  
+  .glow-red {
+    animation: blink 1.5s infinite;
+  }

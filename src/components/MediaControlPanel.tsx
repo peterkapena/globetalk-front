@@ -1,10 +1,12 @@
-import { CallEndOutlined, CheckCircleOutlined, ClosedCaptionDisabledOutlined, ClosedCaptionOffOutlined, CopyAllOutlined, InterpreterModeOutlined, KeyboardVoiceOutlined, MicOffOutlined, MonitorOutlined, PinDropOutlined, PushPinOutlined, ScreenShare, ScreenShareOutlined, VideocamOffOutlined, VideocamOutlined } from '@mui/icons-material';
+import { CallEndOutlined, CheckCircleOutlined, ClosedCaptionDisabledOutlined, ClosedCaptionOffOutlined, CopyAllOutlined, InterpreterModeOutlined, KeyboardVoiceOutlined, MicOffOutlined, MonitorOutlined, PinDropOutlined, PlayCircleFilled, PushPinOutlined, ScreenShare, ScreenShareOutlined, StopCircleOutlined, VideocamOffOutlined, VideocamOutlined } from '@mui/icons-material';
 import { Box, Dropdown, IconButton, Menu, MenuButton, MenuItem, Sheet, Stack, Tooltip, } from '@mui/joy';
 import { Language, languages } from '../helpers/i18n';
 import { copyToClipboard } from '../helpers/helpers';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Notice } from './Notice';
+import AlertDialogModal from './Alert';
 
 type MeetingBottomControlProps = {
     toggleAudio: any;
@@ -13,16 +15,19 @@ type MeetingBottomControlProps = {
     isVideoEnabled: boolean;
     toggleCaptions: any;
     isCaptionsEnabled: boolean;
+    isRecording: boolean;
     leaveCall: any;
     setTranslationLanguage: (l: Language) => void;
     shareScreen: () => void;
+    toggleRecording: () => void;
 }
 
-export function MediaControlPanel({ isAudioMuted, toggleAudio, isVideoEnabled, toggleVideo, isCaptionsEnabled, toggleCaptions, leaveCall, setTranslationLanguage, shareScreen }: MeetingBottomControlProps) {
+export function MediaControlPanel({ isAudioMuted, toggleAudio, isVideoEnabled, isRecording, toggleVideo, isCaptionsEnabled, toggleCaptions, toggleRecording, leaveCall, setTranslationLanguage, shareScreen }: MeetingBottomControlProps) {
     const [pinned, setPinned] = useState(false)
     const [copied_icon, setCopied_icon] = useState(<CopyAllOutlined />)
     const navigate = useNavigate()
     const { t } = useTranslation();
+    const [confirmRecording, setConfirmRecording] = useState(false)
 
     async function copy() {
         if (await copyToClipboard(window.location.href)) {
@@ -76,6 +81,16 @@ export function MediaControlPanel({ isAudioMuted, toggleAudio, isVideoEnabled, t
                                 <MonitorOutlined />
                             </IconButton>
                         </Tooltip>
+                        <Tooltip title={t("meeting.record")}>
+                            <IconButton sx={{ m: 2 }} variant='solid' size='lg' onClick={() => {
+                                setConfirmRecording(!confirmRecording)
+                                if (isRecording) {
+                                    toggleRecording()
+                                }
+                            }}>
+                                {isRecording ? <StopCircleOutlined className='glow-red' /> : <PlayCircleFilled />}
+                            </IconButton>
+                        </Tooltip>
 
                         <Tooltip title={t("meeting.caption")}>
                             <IconButton sx={{ m: 2 }} variant='solid' size='lg' onClick={() => toggleCaptions(!isCaptionsEnabled)}>
@@ -120,6 +135,11 @@ export function MediaControlPanel({ isAudioMuted, toggleAudio, isVideoEnabled, t
                         <IconButton sx={{ m: 2 }} variant='solid' size='lg' onClick={() => setPinned(!pinned)}  >
                             <PushPinOutlined sx={{ right: 3, position: "relative" }} />
                         </IconButton>
+                        {confirmRecording && <AlertDialogModal onClose={() => {
+                            setConfirmRecording(false)
+                        }} message={t("meeting.record_notice")} onYes={() => {
+                            toggleRecording()
+                        }} type={'confirm'}></AlertDialogModal>}
                     </Stack>
                 </Box>
             }

@@ -1,4 +1,4 @@
-import { AspectRatio, Avatar, Box, CardContent, CardCover, Grid, Sheet, Typography, styled } from '@mui/joy';
+import { AspectRatio, Avatar, Box, Button, CardContent, CardCover, Grid, Sheet, Typography, styled } from '@mui/joy';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Socket, io } from "socket.io-client";
 import Video from '../components/Video';
@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { updateLanguage } from '../redux/meeting-slice';
 import { useAppDispatch } from '../redux/hooks';
 import { LocationOnRounded } from '@mui/icons-material';
+import { saveAs } from 'file-saver';
 
 // https://github.com/millo-L/Typescript-ReactJS-WebRTC-1-N-P2P
 
@@ -73,6 +74,9 @@ const Meeting = () => {
     const [isAudioMuted, setIsAudioMuted] = useState(false);
     const [isVideoEnabled, setIsVideoEnabled] = useState(true);
     const [isCaptionsEnabled, setIsCaptionsEnabled] = useState(true);
+    const [isRecording, setIsRecording] = useState(false);
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const recordedChunksRef = useRef<Blob[]>([]);
 
     const { i18n } = useTranslation();
     const dispatch = useAppDispatch();
@@ -82,6 +86,42 @@ const Meeting = () => {
         dispatch(updateLanguage(script));
         socketRef.current?.emit("updateLanguage", script)
     }
+
+    const startRecording = () => {
+        if (localStreamRef.current) {
+            const audioStreams = users.map(user => user.stream).concat(localStreamRef.current).filter(stream => stream.getAudioTracks().length > 0);
+            const combinedStream = new MediaStream(audioStreams.flatMap(stream => stream.getAudioTracks()));
+
+            mediaRecorderRef.current = new MediaRecorder(combinedStream);
+            mediaRecorderRef.current.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    recordedChunksRef.current.push(event.data);
+                }
+            };
+            mediaRecorderRef.current.onstop = () => {
+                const blob = new Blob(recordedChunksRef.current, { type: 'audio/webm' });
+                saveAs(blob, 'recording.webm');
+                recordedChunksRef.current = [];
+            };
+            mediaRecorderRef.current.start();
+            setIsRecording(true);
+        }
+    };
+
+    const stopRecording = () => {
+        if (mediaRecorderRef.current) {
+            mediaRecorderRef.current.stop();
+            setIsRecording(false);
+        }
+    };
+
+    const toggleRecording = () => {
+        if (isRecording) {
+            stopRecording();
+        } else {
+            startRecording();
+        }
+    };
 
     const leaveCall = useCallback(() => {
         // Notify other users
@@ -413,6 +453,10 @@ const Meeting = () => {
             height: "100vh",
             backgroundColor: "GrayText"
         }}>
+            {/* <Button onClick={toggleRecording}>
+                {isRecording ? "Stop Recording" : "Start Recording"}
+            </Button> */}
+
             <Grid container minWidth={"50%"} spacing={1}>
                 <Grid
                     xs={true}
@@ -421,7 +465,6 @@ const Meeting = () => {
                     alignItems="center"
                     minHeight={"50vh"}
                     minWidth={"50%"}
-
                 >
                     <Video toggleAudio={toggleAudio} email={user.email || "..."} videoRef={localVideoRef} muted={isAudioMuted} isLocalStream={true} />
                 </Grid>
@@ -445,7 +488,7 @@ const Meeting = () => {
                     )
                 })}
             </Grid>
-            <MediaControlPanel shareScreen={startScreenShare} toggleAudio={toggleAudio} toggleVideo={toggleVideo} isAudioMuted={isAudioMuted} leaveCall={leaveCall} setTranslationLanguage={changeLanguage}
+            <MediaControlPanel toggleRecording={toggleRecording} isRecording={isRecording} shareScreen={startScreenShare} toggleAudio={toggleAudio} toggleVideo={toggleVideo} isAudioMuted={isAudioMuted} leaveCall={leaveCall} setTranslationLanguage={changeLanguage}
                 isVideoEnabled={isVideoEnabled} isCaptionsEnabled={isCaptionsEnabled} toggleCaptions={toggleCaptions} />
             {alert && <AlertDialogModal message={alert.message} onClose={alert.onClose} onYes={alert.onYes} type={alert.type}></AlertDialogModal>}
         </Box>

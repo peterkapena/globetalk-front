@@ -43,7 +43,9 @@
     "camera": "Camera toggle",
     "microphone": "Microphone toggle",
     "meetingdetails": "Meeting details",
-    "share_screen": "Share screen"
+    "share_screen": "Share screen",
+    "record": "Start recording",
+    "record_notice": "Are you sure you are about to record. Please adhere to the privacy terms of other users in the session. Additionally, note that your recording is locally stored in your machine and may be lost if the tab or browser is restarted. In case of loss, you are welcome to carry on with the recording but any previous recording may not be recoberable."
   },
   "settings": {
     "account_settings": "Account Settings",
