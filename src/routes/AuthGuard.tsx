@@ -40,7 +40,7 @@ export default function AuthGuard({ children }: RootProps) {
           const { isValid } = rtn.data?.verifyToken;
           if (isValid) {
             const { email, token, userType } = rtn.data?.verifyToken;
-            console.log(rtn.data?.verifyToken)
+            // console.log(rtn.data?.verifyToken)
             localStorage.setItem(STR_TOKEN, token);
             dispatch(setUser({ user: { email, userType } }));
             setLoaded(true);

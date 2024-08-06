@@ -73,7 +73,6 @@ const Meeting = () => {
     const [isAudioMuted, setIsAudioMuted] = useState(false);
     const [isVideoEnabled, setIsVideoEnabled] = useState(true);
     const [isCaptionsEnabled, setIsCaptionsEnabled] = useState(true);
-    const [_, setRemoteAudioTrack] = useState<{ socketId: string, audioTrack: MediaStreamTrack, sourceLanguage: string, targetLanguage: string }>()
 
     const { i18n } = useTranslation();
     const dispatch = useAppDispatch();
@@ -199,11 +198,6 @@ const Meeting = () => {
             };
 
             pc.ontrack = (e) => {
-                // console.log(e)
-                console.log('ontrack success');
-                if (e.track.kind === 'audio') {
-                    setRemoteAudioTrack({ socketId, audioTrack: e.track, sourceLanguage: language, targetLanguage: currentLanguage })
-                }
                 setUsers((oldUsers) =>
                     oldUsers
                         .filter((user) => user.id !== socketId)
@@ -429,9 +423,11 @@ const Meeting = () => {
                     minWidth={"50%"}
 
                 >
-                    <Video toggleAudio={toggleAudio} email={user.email || "..."} videoRef={localVideoRef} muted={true} isLocalStream={true} />
+                    <Video toggleAudio={toggleAudio} email={user.email || "..."} videoRef={localVideoRef} muted={isAudioMuted} isLocalStream={true} />
                 </Grid>
                 {users.map((user, index) => {
+                    user.stream.onaddtrack = (track => console.log(track))
+                    console.log()
                     return (
                         user.stream.active &&
                         <Grid key={index}
@@ -443,7 +439,7 @@ const Meeting = () => {
                             minWidth={"50%"}
                         >
                             <Video key={index} email={user.email} isLocalStream={false}
-                                stream={user.stream} muted={true} toggleAudio={() => muteUser(user.id)}// Check if any audio track is enabled
+                                stream={user.stream} muted={user.muted ?? false} toggleAudio={() => muteUser(user.id)}// Check if any audio track is enabled
                             />
                         </Grid>
                     )
